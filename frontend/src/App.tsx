@@ -1,4 +1,6 @@
 import {useState} from "react";
+import {BsArrowsFullscreen} from "react-icons/all";
+import {Fullscreen} from "./Fullscreen"
 
 export default function App() {
 
@@ -13,14 +15,12 @@ export default function App() {
     return (
         <div className="h-screen flex flex-col">
             <div className="grow dark:bg-anno-space-700">
-
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
-
+                <Fullscreen />
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
                 <p className="text-white">&copy; Anno 2023 | The University of Auckland | New Zealand </p>
-
                 {/*TODO: Remove when we have users */}
                 <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
             </footer>
