@@ -1,5 +1,4 @@
 import {useState} from "react";
-import {BsArrowsFullscreen} from "react-icons/all";
 import {Fullscreen} from "./Fullscreen"
 
 export default function App() {

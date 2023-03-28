@@ -1,8 +1,8 @@
 import React from "react";
-import {BsArrowsFullscreen} from "react-icons/all";
+import {ArrowsPointingOutIcon} from "@heroicons/react/20/solid";
 
 export function Fullscreen(){
     return (
-        <button className="p-1 border-2 rounded-full border-black"><BsArrowsFullscreen /></button>
+        <ArrowsPointingOutIcon className="h-7 w-7 p-1 border-2 rounded-full border-black"></ArrowsPointingOutIcon>
     );
 }
