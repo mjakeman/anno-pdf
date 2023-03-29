@@ -19,7 +19,7 @@ export default function App() {
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
-                <p className="text-white">&copy; Anno 2023 | The University of Auckland | New Zealand </p>
+                <p className="text-white text-center">&copy; Anno 2023 | The University of Auckland | New Zealand </p>
 
                 {/*TODO: Remove when we have users */}
                 <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
