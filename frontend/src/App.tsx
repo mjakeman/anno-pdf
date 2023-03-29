@@ -1,4 +1,3 @@
-import {useState} from "react";
 import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
