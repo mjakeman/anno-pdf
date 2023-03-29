@@ -1,5 +1,6 @@
 import {useState} from "react";
-import {Fullscreen} from "./Fullscreen"
+import Fullscreen from "./Fullscreen"
+import {ArrowsPointingOutIcon} from "@heroicons/react/20/solid";
 
 export default function App() {
 
@@ -15,7 +16,7 @@ export default function App() {
         <div className="h-screen flex flex-col">
             <div className="grow dark:bg-anno-space-700">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
-                <Fullscreen />
+                <Fullscreen label={""} icon={<ArrowsPointingOutIcon className="h-7 w-7 p-1 border-2 rounded-full border-black" />} onClick={() => console.log('Clicked!')}/>
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
