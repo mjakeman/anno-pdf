@@ -3,8 +3,6 @@ import {ArrowsPointingOutIcon} from "@heroicons/react/20/solid";
 interface FullscreenButtonProps {
     onClick:  (params: any) => any;
     label: string,
-    icon?: React.ReactNode,
-
 }
 export default function Fullscreen({onClick, label} : FullscreenButtonProps){
     return (
