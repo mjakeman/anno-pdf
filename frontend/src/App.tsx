@@ -23,7 +23,7 @@ export default function App() {
                 
                 {/*Share Button - TODO: Doesn't do anything at the moment*/}
                 <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => console.log('Clicked!')}/>
-                <MeasurementToolbar onToolSelect={()=>onToolSelect}></MeasurementToolbar>
+                <MeasurementToolbar onToolSelect={(tool)=>onToolSelect(tool)}></MeasurementToolbar>
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">

@@ -12,7 +12,7 @@ interface MeasurementToolbarProps {
   onToolSelect: (tool: string) => void;
 }
 
-const MeasurementToolbar: React.FC<MeasurementToolbarProps> = ({ onToolSelect }) => {
+export default function MeasurementToolbar({ onToolSelect }:MeasurementToolbarProps) {
   const tools = [
     { name: 'grab', icon: <HandRaisedIcon/> },
     { name: 'select', icon: <img src='./select_icon.svg'/> },
@@ -32,7 +32,7 @@ const MeasurementToolbar: React.FC<MeasurementToolbarProps> = ({ onToolSelect })
       {tools.map((tool) => (
         <button
           key={tool.name}
-          className="bg-white hover:bg-gray-200 dark:bg-anno-space-800 p-2 rounded-full transition-colors dark:hover:bg-blue-800 w-8 h-8"
+          className="bg-white hover:bg-gray-200 dark:bg-anno-space-800 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 w-8 h-8"
           onClick={() => onToolSelect(tool.name)}
         >
           {tool.icon}
@@ -42,4 +42,3 @@ const MeasurementToolbar: React.FC<MeasurementToolbarProps> = ({ onToolSelect })
   );
 };
 
-export default MeasurementToolbar;
