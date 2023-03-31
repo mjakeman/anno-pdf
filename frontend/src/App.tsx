@@ -2,6 +2,7 @@ import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
+import MeasurementToolbar from "./MeasurementToolbar";
 
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
                 
                 {/*Share Button - TODO: Doesn't do anything at the moment*/}
                 <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => console.log('Clicked!')}/>
+                <MeasurementToolbar onToolSelect={()=>onToolSelect}></MeasurementToolbar>
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
@@ -32,4 +34,8 @@ export default function App() {
             </footer>
         </div>
     )
+}
+
+function onToolSelect(tool: string) {
+    console.log(tool);
 }
