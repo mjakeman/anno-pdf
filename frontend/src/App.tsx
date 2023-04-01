@@ -43,7 +43,7 @@ export default function App() {
 
     return (
         <div className="h-screen flex flex-col overflow-hidden justify-between">
-            <header className="flex flex-row dark:bg-anno-space-700 border-b-2">
+            <header className="flex flex-row dark:bg-anno-space-700 border-b-2 overflow-visible">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
 
                 <span className="grow"/>
@@ -61,7 +61,7 @@ export default function App() {
                     {/*Share Button - TODO: Doesn't do anything at the moment*/}
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
                 </span>
-                <span className={`fixed right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
+                <span className={`fixed z-50 right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
                     <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                 </span>
                 </div>
