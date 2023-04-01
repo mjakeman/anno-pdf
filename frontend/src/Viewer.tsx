@@ -41,8 +41,6 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         ctx.drawImage(pageCanvas, 0, 0);
 
         ctx.restore();
-
-        ctx.fillRect(0, 0, 20, 20);
     };
 
     const createCanvasForPage = async (page: PDFPageProxy) => {
