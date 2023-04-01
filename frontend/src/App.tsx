@@ -2,6 +2,7 @@ import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
+import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
 import ActiveUserBubbles from "./ActiveUserBubbles";
 
@@ -45,6 +46,10 @@ export default function App() {
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
 
                 <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
+                <Zoom />
+
+                {/*Share Button - TODO: Doesn't do anything at the moment*/}
+                <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => console.log('Clicked!')}/>
 
                 {/* Active Users */}
                 <ActiveUserBubbles activeUsers={activeUsers} />
