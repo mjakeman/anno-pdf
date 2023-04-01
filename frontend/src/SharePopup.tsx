@@ -3,22 +3,15 @@ import SharedWithUserRow from "./SharedWithUserRow";
 
 interface SharePopupProps {
     onSharePress:  (params: any) => any;
+
+    peopleSharedWith: {id: number, fullName: string, email: string}[],
 }
-export default function SharePopup({onSharePress } : SharePopupProps) {
+export default function SharePopup({onSharePress, peopleSharedWith} : SharePopupProps) {
 
-    // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
-    const testPeople = [
-        { id: 0, name: 'John Doe', email: 'johndoe@gmail.com', },
-        { id: 1, name: 'Alice Smith', email: 'alice@hotmail.com', },
-        { id: 2, name: 'Charlie Hopkins', email: 'charlie@yahoo.com', },
-        { id: 3, name: 'Bob Brown', email: 'bob@gmail.com', },
-        { id: 4, name: 'David Mannings', email: 'david@yahoo.com', },
-        { id: 5, name: 'Eve Post', email: 'eve@hotmail.com', },
-    ];
 
-    const [sharedWithUsers, setSharedWithUsers] = useState(testPeople);
+    const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
 
-    function removeFromPeople(idOfSharedUserToBeRemoved: number, peopleList: { id: number, name: string, email: string }[]) {
+    function removeFromPeople(idOfSharedUserToBeRemoved: number, peopleList: { id: number, fullName: string, email: string }[]) {
         const indexOfObject = peopleList.findIndex(object => {
             return object.id === idOfSharedUserToBeRemoved;
         });
@@ -26,15 +19,13 @@ export default function SharePopup({onSharePress } : SharePopupProps) {
             ...peopleList.slice(0, indexOfObject),
             ...peopleList.slice(indexOfObject + 1),
         ]);
-
-
     }
 
     // TODO: replace with the actual name of the doc, from context (or state?)
     const docName = 'Employment Contract w/ UoA';
 
     return (
-        <div className="shadow-md rounded-lg p-4 flex flex-col gap-2 w-104">
+        <div className="shadow-md rounded-lg p-4 flex flex-col gap-2 w-104 bg-white">
             <h1 className="font-bold">Share '{docName}'</h1>
             <div className="flex flex-row gap-4">
                 <input className="px-2 py-1 grow border-2 border-zinc-300 rounded-lg text-black focus:outline-anno-pink  placeholder:text-neutral-400 placeholder:font-light" placeholder="Enter email address here..." type="email" id="share-email"/>
@@ -45,7 +36,7 @@ export default function SharePopup({onSharePress } : SharePopupProps) {
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
-                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.name} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
+                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.fullName} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
                     ))
                     :
                     <div className="flex justify-center items-center italic font-light text-zinc-300">

@@ -2,7 +2,7 @@ import React from "react";
 
 export enum ProfileBubbleSizes {
     Small = "w-12 h-12 text-lg",
-    Large = "w-16 h-16 text-2xl"
+    Large = "w-14 h-14 text-2xl"
 }
 
 interface ProfileBubbleProps {
@@ -32,6 +32,7 @@ function normaliseHashCode(code: number, min: number, max: number) {
     return Math.floor((code % (max - min)) + min);
 }
 
+// TODO: might be worth storing this somewhere to improve effiency (either on backend or somewhere else)
 function getHashCode(fullName: string) : number {
     let hash = 0;
     for (let i = 0; i < fullName.length; i++) {
