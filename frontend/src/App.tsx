@@ -2,6 +2,7 @@ import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
+import MeasurementToolbar from "./MeasurementToolbar";
 import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
 
@@ -27,6 +28,7 @@ export default function App() {
 
                 {/*Share Button - TODO: Doesn't do anything at the moment*/}
                 <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => console.log('Clicked!')}/>
+                <MeasurementToolbar onToolSelect={(tool)=>onToolSelect(tool)}></MeasurementToolbar>
 
                 {/*TODO: add the ability to click anywhere from popup and close it*/}
                 <div className="relative">
@@ -48,4 +50,8 @@ export default function App() {
             </footer>
         </div>
     )
+}
+
+function onToolSelect(tool: string) {
+    console.log(tool);
 }
