@@ -24,6 +24,9 @@ module.exports = {
         'karla' : ['Karla', 'sans-serif'],
         'sans': ['Karla', ...defaultTheme.fontFamily.sans], // Sets default font
       },
+      dropShadow: {
+        'around': '0 1px 2px rgba(0, 0, 0, 0.4)',
+      }
     },
   },
   plugins: [],
