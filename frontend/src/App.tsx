@@ -43,7 +43,7 @@ export default function App() {
 
     return (
         <div className="h-screen flex flex-col overflow-hidden justify-between">
-            <header className="flex flex-row dark:bg-anno-space-700 border-b-2 overflow-visible">
+            <header className="flex flex-row dark:bg-anno-space-700 border-b-2 z-10 overflow-visible">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
 
                 <span className="grow"/>
