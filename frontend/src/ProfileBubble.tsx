@@ -2,7 +2,7 @@ import React from "react";
 
 export enum ProfileBubbleSizes {
     Small = "w-12 h-12 text-lg",
-    Large = "w-16 h-16 text-2xl"
+    Large = "w-14 h-14 text-2xl"
 }
 
 interface ProfileBubbleProps {
