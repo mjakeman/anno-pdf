@@ -6,6 +6,7 @@ import MeasurementToolbar from "./MeasurementToolbar";
 import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
 import ActiveUserBubbles from "./ActiveUserBubbles";
+import Viewer from "./Viewer";
 
 export default function App() {
 
@@ -37,14 +38,15 @@ export default function App() {
     ];
 
     const [showSharePopup, setShowSharePopup] = useState(false);
+    const [pageNumber, setPageNumber] = useState(1);
 
 
     return (
         <div className="h-screen flex flex-col">
-            <div className="grow dark:bg-anno-space-700">
-
-
+            <div className="flex flex-row dark:bg-anno-space-700 border-b-2">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
+
+                <span className="grow"/>
 
                 <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
                 <Zoom />
@@ -55,18 +57,28 @@ export default function App() {
                 {/* Share button*/}
                 {/*TODO: add the ability to click anywhere from popup and close it*/}
                 <div className="relative">
-                    <span className="absolute">
-                        {/*Share Button - TODO: Doesn't do anything at the moment*/}
-                        <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
-                    </span>
+                <span className="absolute">
+                    {/*Share Button - TODO: Doesn't do anything at the moment*/}
+                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
+                </span>
                     <span className={`absolute mt-12 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
-                    </span>
+                    <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
+                </span>
                 </div>
 
                 <MeasurementToolbar onToolSelect={(tool)=>onToolSelect(tool)}></MeasurementToolbar>
 
             </div>
+
+            {/* Document Space */}
+            <main className="grow bg-zinc-300 dark:bg-zinc-800">
+                <Viewer url="test.pdf" pageNumber={pageNumber}/>
+                // TODO: Make react component
+                <div className="">
+                    <button className="" onClick={e => setPageNumber(pageNumber - 1)}>Prev</button>
+                    <button className="" onClick={e => setPageNumber(pageNumber + 1)}>Next</button>
+                </div>
+            </main>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
                 <p className="text-white text-center">&copy; Anno 2023 | The University of Auckland | New Zealand </p>
