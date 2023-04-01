@@ -2,6 +2,7 @@ import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
+import MeasurementToolbar from "./MeasurementToolbar";
 import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
 import ActiveUserBubbles from "./ActiveUserBubbles";
@@ -62,6 +63,9 @@ export default function App() {
                         <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                     </span>
                 </div>
+
+                <MeasurementToolbar onToolSelect={(tool)=>onToolSelect(tool)}></MeasurementToolbar>
+
             </div>
 
             <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
@@ -72,4 +76,8 @@ export default function App() {
             </footer>
         </div>
     )
+}
+
+function onToolSelect(tool: string) {
+    console.log(tool);
 }

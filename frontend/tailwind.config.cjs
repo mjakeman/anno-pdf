@@ -24,6 +24,9 @@ module.exports = {
         'karla' : ['Karla', 'sans-serif'],
         'sans': ['Karla', ...defaultTheme.fontFamily.sans], // Sets default font
       },
+      dropShadow: {
+        'around': '0 1px 2px rgba(0, 0, 0, 0.4)',
+      },
       // Custom widths
       // Note that they should adhere to step of each increment being 0.25rem i.e. w-1 = 0.25rem, w-2 = 0.5rem.
       width: {
