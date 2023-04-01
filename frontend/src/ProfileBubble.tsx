@@ -32,6 +32,7 @@ function normaliseHashCode(code: number, min: number, max: number) {
     return Math.floor((code % (max - min)) + min);
 }
 
+// TODO: might be worth storing this somewhere to improve effiency (either on backend or somewhere else)
 function getHashCode(fullName: string) : number {
     let hash = 0;
     for (let i = 0; i < fullName.length; i++) {
