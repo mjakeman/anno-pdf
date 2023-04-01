@@ -9,7 +9,7 @@ export default function Fullscreen({onClick, label} : FullscreenButtonProps){
         <button type="button"
                 onClick={onClick}>
             <span>{label}</span>
-            <ArrowsPointingOutIcon className="h-7 w-7 p-1 border-2 rounded-full border-black" />
+            <ArrowsPointingOutIcon className="h-7 w-7 p-1 border-2 rounded-full border-black dark:border-white dark:text-white" />
         </button>
     )
 }

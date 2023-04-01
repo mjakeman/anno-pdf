@@ -11,9 +11,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'anno-space-900': '#312D45', // dark mode - app header
-        'anno-space-800': '#3F3B56', // dark mode - toolbar
-        'anno-space-700': '#5A5578', // dark mode bg
+        'anno-space-900': '#312D45', // Dark mode - App header
+        'anno-space-800': '#3F3B56', // Dark mode - Toolbar
+        'anno-space-700': '#5A5578', // Dark mode - Background
         'anno-space-100': '#CAC6DD',
         'anno-red-primary': '#CA2D37',
         'anno-red-secondary' : '#EB4E54',
@@ -26,6 +26,11 @@ module.exports = {
       },
       dropShadow: {
         'around': '0 1px 2px rgba(0, 0, 0, 0.4)',
+      },
+      // Custom widths
+      // Note that they should adhere to step of each increment being 0.25rem i.e. w-1 = 0.25rem, w-2 = 0.5rem.
+      width: {
+        '104': '26rem',
       }
     },
   },
