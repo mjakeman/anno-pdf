@@ -42,7 +42,7 @@ export default function App() {
 
 
     return (
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col overflow-hidden justify-between">
             <div className="flex flex-row dark:bg-anno-space-700 border-b-2">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
 
@@ -57,11 +57,11 @@ export default function App() {
                 {/* Share button*/}
                 {/*TODO: add the ability to click anywhere from popup and close it*/}
                 <div className="relative">
-                <span className="absolute">
+                <span>
                     {/*Share Button - TODO: Doesn't do anything at the moment*/}
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
                 </span>
-                    <span className={`absolute mt-12 ${!showSharePopup ? "hidden" : "block"} `}>
+                <span className={`fixed right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
                     <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                 </span>
                 </div>
@@ -71,21 +71,21 @@ export default function App() {
             </div>
 
             {/* Document Space */}
-            <main className="grow bg-zinc-300 dark:bg-zinc-800">
+            <main className="h-full max-h-full bg-zinc-300 dark:bg-zinc-800 overflow-hidden">
                 <Viewer url="test.pdf" pageNumber={pageNumber}/>
-                // TODO: Make react component
+                {/* TODO: Make react component */}
                 <div className="">
                     <button className="" onClick={e => setPageNumber(pageNumber - 1)}>Prev</button>
                     <button className="" onClick={e => setPageNumber(pageNumber + 1)}>Next</button>
                 </div>
             </main>
 
-            <footer className="justify-self-end bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
+            {/*<footer className="bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
                 <p className="text-white text-center">&copy; Anno 2023 | The University of Auckland | New Zealand </p>
 
-                {/*TODO: Remove when we have users */}
+                {/*TODO: Remove when we have users /}
                 <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
-            </footer>
+            </footer>*/}
         </div>
     )
 }
