@@ -48,9 +48,6 @@ export default function App() {
                 <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
                 <Zoom />
 
-                {/*Share Button - TODO: Doesn't do anything at the moment*/}
-                <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => console.log('Clicked!')}/>
-
                 {/* Active Users */}
                 <ActiveUserBubbles activeUsers={activeUsers} />
 
