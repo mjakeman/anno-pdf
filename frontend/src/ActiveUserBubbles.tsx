@@ -43,7 +43,7 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
     const [showOverflowUsersList, setShowOverflowUsersList] = useState(false);
 
     return (
-        <div className={"flex flex-row ml-4 items-center gap-2"}>
+        <div className={"flex flex-row z-50 ml-4 items-center gap-2"}>
 
             {/* Active User Bubbles */}
             <div className="flex flex-row">
