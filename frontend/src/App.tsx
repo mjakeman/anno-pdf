@@ -1,7 +1,7 @@
 import Fullscreen from "./Fullscreen"
 import React, {useState} from "react";
 import PrimaryButton from "./PrimaryButton";
-import {UserPlusIcon} from "@heroicons/react/24/outline";
+import {UserPlusIcon, ArrowLeftIcon, ArrowRightIcon} from "@heroicons/react/24/outline";
 import MeasurementToolbar from "./MeasurementToolbar";
 import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
@@ -43,7 +43,7 @@ export default function App() {
 
     return (
         <div className="h-screen flex flex-col overflow-hidden justify-between">
-            <div className="flex flex-row dark:bg-anno-space-700 border-b-2">
+            <header className="flex flex-row dark:bg-anno-space-700 border-b-2">
                 <p>Layout Component goes here (everything else goes inside layout)?</p>
 
                 <span className="grow"/>
@@ -65,19 +65,29 @@ export default function App() {
                     <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                 </span>
                 </div>
+            </header>
 
+            {/* Toolbar */}
+            <div className="absolute translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
                 <MeasurementToolbar onToolSelect={(tool)=>onToolSelect(tool)}></MeasurementToolbar>
-
             </div>
 
             {/* Document Space */}
-            <main className="h-full max-h-full bg-zinc-300 dark:bg-zinc-800 overflow-hidden">
+            <main className="relative h-full max-h-full bg-zinc-300 dark:bg-zinc-800 overflow-hidden">
                 <Viewer url="test.pdf" pageNumber={pageNumber}/>
                 {/* TODO: Make react component */}
-                <div className="">
-                    <button className="" onClick={e => setPageNumber(pageNumber - 1)}>Prev</button>
-                    <button className="" onClick={e => setPageNumber(pageNumber + 1)}>Next</button>
+                <div className="absolute top-[50%] left-0 ml-4">
+                    <button className="transition-all bg-black opacity-50 hover:opacity-70 rounded-full p-2" onClick={e => setPageNumber(pageNumber - 1)}>
+                        <ArrowLeftIcon className="text-white h-6 w-6"/>
+                    </button>
                 </div>
+
+                <div className="absolute top-[50%] right-0 mr-4">
+                    <button className="transition-all bg-black opacity-50 hover:opacity-70 rounded-full p-2" onClick={e => setPageNumber(pageNumber + 1)}>
+                        <ArrowRightIcon className="text-white h-6 w-6"/>
+                    </button>
+                </div>
+
             </main>
 
             {/*<footer className="bg-anno-red-primary p-8 flex flex-col items-center justify-center items-center gap-4 dark:bg-anno-red-secondary">
