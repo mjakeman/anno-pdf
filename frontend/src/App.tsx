@@ -7,6 +7,7 @@ import Zoom from "./Zoom";
 import SharePopup from "./SharePopup";
 import ActiveUserBubbles from "./ActiveUserBubbles";
 import Viewer from "./Viewer";
+import ActionMenu from "./ActionMenu";
 
 export default function App() {
 
@@ -43,8 +44,9 @@ export default function App() {
 
     return (
         <div className="h-screen flex flex-col overflow-hidden justify-between">
-            <header className="flex flex-row dark:bg-anno-space-700 border-b-2 z-10 overflow-visible">
-                <p>Layout Component goes here (everything else goes inside layout)?</p>
+            <header className="flex flex-row items-center px-4 dark:bg-anno-space-700 border-b-2 z-10 overflow-visible">
+
+                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
 
                 <span className="grow"/>
 
