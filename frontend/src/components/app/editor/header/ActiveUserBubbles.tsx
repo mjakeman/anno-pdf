@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import ProfileBubble, {ProfileBubbleSizes} from "./ProfileBubble";
-import ActiveUserBubble from "./assets/ActiveUserBubble";
+import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
+import ActiveUserBubble from "./ActiveUserBubble";
 import {ChevronUpIcon} from "@heroicons/react/24/solid";
 interface UserData {
     id: number,

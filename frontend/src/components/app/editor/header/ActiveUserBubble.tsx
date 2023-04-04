@@ -1,4 +1,4 @@
-import ProfileBubble, {ProfileBubbleSizes} from "../ProfileBubble";
+import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import React, {useState} from "react";
 
 interface ActiveUserBubbleProps {
