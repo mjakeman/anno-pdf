@@ -44,7 +44,7 @@ export default function EditorHeader() {
     const [showSharePopup, setShowSharePopup] = useState(false);
 
     return (
-        <header className="flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
+        <header className="fixed bg-white border-b-[1px] border-zinc-400 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
 
             {/* Left side */}
             <div className="flex flex-row items-center justify-between gap-4">
