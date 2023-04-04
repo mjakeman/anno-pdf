@@ -1,6 +1,6 @@
 import ActionMenu from "./ActionMenu";
 import Fullscreen from "./Fullscreen";
-import Zoom from "../../../../Zoom";
+import Zoom from "./Zoom";
 import ActiveUserBubbles from "./ActiveUserBubbles";
 import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";

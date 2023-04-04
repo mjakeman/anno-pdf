@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {MinusCircleIcon, PlusCircleIcon} from "@heroicons/react/24/outline";
 
+// TODO - probably want to prevent being able to enter > 200 or less than 0
 export default function Zoom() {
     const [zoom, setZoom] = useState("100");
 
