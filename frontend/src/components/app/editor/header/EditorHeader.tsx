@@ -6,17 +6,9 @@ import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
+import DarkModeToggleTest from "../../../DarkModeToggleTest";
 
 export default function EditorHeader() {
-
-
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    function toggleDarkMode() {
-        // TODO: Add the localStorage and systemPreference when we have users + their reference
-        isDarkMode ? document.documentElement.classList.remove('dark') : document.documentElement.classList.add('dark');
-        setIsDarkMode(!isDarkMode);
-    }
 
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testPeople = [
@@ -63,7 +55,7 @@ export default function EditorHeader() {
 
                 <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
 
-                <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
+                <DarkModeToggleTest/>
 
             </div>
 
