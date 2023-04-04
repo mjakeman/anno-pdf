@@ -70,7 +70,7 @@ export default function EditorHeader() {
             {/* Right Side */}
             <div className="flex flex-row items-center justify-between gap-2">
 
-                <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
+                <Fullscreen onClick={() => console.log('Clicked!')}/>
 
                 <Zoom />
 
