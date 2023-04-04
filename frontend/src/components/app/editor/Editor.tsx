@@ -3,7 +3,6 @@ import MeasurementToolbar from "./MeasurementToolbar";
 import Viewer from "./Viewer";
 import React, {useState} from "react";
 import EditorHeader from "./header/EditorHeader";
-import EditorFooter from "./header/EditorFooter";
 
 export default function Editor() {
 
@@ -42,7 +41,6 @@ export default function Editor() {
             {/*<div className="justify-self-end">*/}
             {/*    <EditorFooter />*/}
             {/*</div>*/}
-
         </div>
     );
 

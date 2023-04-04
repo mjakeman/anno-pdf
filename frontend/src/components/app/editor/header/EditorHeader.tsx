@@ -37,33 +37,59 @@ export default function EditorHeader() {
         {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
     ];
 
+    // TODO: change to actual documentDetails
+    const testDocumentName = 'Employment Contract w/ UoA';
+    const testLastUpdated = 'Last updated 23 Feb 2023 at 11:04am by me';
+
     const [showSharePopup, setShowSharePopup] = useState(false);
 
     return (
-        <header className="flex flex-row items-center px-4 dark:bg-anno-space-700 border-b-2 z-10 overflow-visible">
-            <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
+        <header className="flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
 
-            <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
+            {/* Left side */}
+            <div className="flex flex-row items-center justify-between gap-4">
 
-            <span className="grow"/>
+                {/*TODO: Insert logo here*/}
 
-            <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
-            <Zoom />
+                {/* Document details */}
+                <div className="flex flex-col justify-start">
+                    <h1 className="text-lg font-bold text-anno-red-primary self-end">
+                        {testDocumentName}
+                    </h1>
+                    <p className="text-xs text-neutral-400 font-light self-start">
+                        {testLastUpdated}
+                    </p>
+                </div>
 
-            {/* Active Users */}
-            <ActiveUserBubbles activeUsers={activeUsers} />
+                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
 
-            {/* Share button*/}
-            {/*TODO: add the ability to click anywhere from popup and close it*/}
-            <div className="relative">
-                <span>
-                    {/*Share Button - TODO: Doesn't do anything at the moment*/}
-                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
-                </span>
-                <span className={`fixed z-50 right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
-                    <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
-                </span>
+                <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
+
             </div>
+
+            {/* Right Side */}
+            <div className="flex flex-row items-center justify-between gap-2">
+
+                <Fullscreen label={""} onClick={() => console.log('Clicked!')}/>
+
+                <Zoom />
+
+                {/* Active Users */}
+                <ActiveUserBubbles activeUsers={activeUsers} />
+
+                {/* Share button*/}
+                {/*TODO: add the ability to click anywhere from popup and close it*/}
+                <div className="relative">
+
+                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
+
+                    <span className={`fixed z-50 right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
+                        <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
+                    </span>
+
+                </div>
+            </div>
+
         </header>
     );
 }
