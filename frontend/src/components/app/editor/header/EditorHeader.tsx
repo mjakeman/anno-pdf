@@ -49,7 +49,7 @@ export default function EditorHeader() {
             {/* Left side */}
             <div className="flex flex-row items-center justify-between gap-4">
 
-                {/*TODO: Insert logo here*/}
+                {/* TODO: Insert logo here */}
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
@@ -78,12 +78,12 @@ export default function EditorHeader() {
                 <ActiveUserBubbles activeUsers={activeUsers} />
 
                 {/* Share button*/}
-                {/*TODO: add the ability to click anywhere from popup and close it*/}
+                {/* TODO: add the ability to click anywhere from popup and close it */}
                 <div className="relative">
 
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
 
-                    <span className={`fixed z-50 right-0 mt-6 ${!showSharePopup ? "hidden" : "block"} `}>
+                    <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
                         <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                     </span>
 

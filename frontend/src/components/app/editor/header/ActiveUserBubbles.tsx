@@ -43,12 +43,14 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
     const [showOverflowUsersList, setShowOverflowUsersList] = useState(false);
 
     return (
-        <div className={"flex flex-row z-50 ml-4 items-center gap-2"}>
+        <div className={"flex flex-row z-50 items-center gap-2 justify-between"}>
 
             {/* Active User Bubbles */}
-            <div className="flex flex-row">
+            <div className="flex flex-row ml-4">
                 {displayedUsers.map((user, index) => (
-                    <ActiveUserBubble user={user} key={index}/>
+                    <span className="-ml-4">
+                        <ActiveUserBubble user={user} key={index}/>
+                    </span>
                 ))}
             </div>
 
@@ -66,7 +68,8 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
                 </button>
 
                 {/* Toggled when clicking above button */}
-                <div className={`${!showOverflowUsersList && "hidden"} absolute max-h-72 overflow-auto w-max bg-white shadow px-6 py-4 rounded-xl flex flex-col gap-2`}>
+                {/* TODO add ability such that when clicking anywhere it disappears */}
+                <div className={`${!showOverflowUsersList && "hidden"} mt-4 right-0 absolute max-h-72 overflow-auto w-max bg-white shadow px-6 py-4 rounded-xl flex flex-col gap-2`}>
                     {overflowUsers.map((user, index) => (
                         <div key={index} className="flex flex-row items-center gap-2">
                             <ProfileBubble size={ProfileBubbleSizes.Small} fullName={user.fullName}/>

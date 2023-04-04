@@ -25,7 +25,7 @@ export default function SharePopup({onSharePress, peopleSharedWith} : SharePopup
     const docName = 'Employment Contract w/ UoA';
 
     return (
-        <div className="shadow-md rounded-lg p-4 flex flex-col gap-2 w-104 bg-white">
+        <div className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white">
             <h1 className="font-bold">Share '{docName}'</h1>
             <div className="flex flex-row gap-4">
                 <input className="px-2 py-1 grow border-2 border-zinc-300 rounded-lg text-black focus:outline-anno-pink  placeholder:text-neutral-400 placeholder:font-light" placeholder="Enter email address here..." type="email" id="share-email"/>
