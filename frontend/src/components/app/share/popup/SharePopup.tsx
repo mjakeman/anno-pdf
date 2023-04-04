@@ -32,7 +32,7 @@ export default function SharePopup({onSharePress, peopleSharedWith} : SharePopup
                 <button type="button" className="bg-anno-red-primary px-4 text-white flex flex-row font-light items-center content-center rounded-lg gap-1 transition-colors hover:bg-anno-red-secondary">Share</button>
             </div>
             <p className="text-neutral-400 text-sm">People with access</p>
-            <div className="overflow-auto flex flex-col border-t-2 border-zinc-300 px-2 py-4 gap-2 h-60">
+            <div className="overflow-auto flex flex-col border-t-2 border-zinc-300 px-2 py-4  h-60">
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (

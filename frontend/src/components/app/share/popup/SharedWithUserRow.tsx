@@ -24,7 +24,7 @@ export default function SharedWithUserRow({userId, fullName, email, onConfirmRem
     }
 
     return (
-        <div className={`flex items-center gap-4 p-2 rounded-xl transition-colors ${showConfirmation && "bg-red-200"}`}>
+        <div className={`flex flex-row items-center gap-4 p-2 rounded-xl transition-colors ${showConfirmation && "bg-red-200"}`}>
 
             <ProfileBubble size={ProfileBubbleSizes.Small} fullName={fullName}/>
 
