@@ -3,13 +3,14 @@ import MeasurementToolbar from "./MeasurementToolbar";
 import Viewer from "./Viewer";
 import React, {useState} from "react";
 import EditorHeader from "./header/EditorHeader";
+import EditorFooter from "./header/EditorFooter";
 
 export default function Editor() {
 
     const [pageNumber, setPageNumber] = useState(1);
 
     return (
-        <div className="h-screen flex flex-col overflow-hidden justify-between">
+        <div className="h-screen flex flex-col">
 
             <EditorHeader/>
 
@@ -19,7 +20,7 @@ export default function Editor() {
             </div>
 
             {/* Document Space */}
-            <main className="relative h-full max-h-full bg-zinc-300 dark:bg-zinc-800 overflow-hidden">
+            <main className="grow bg-zinc-300 ">
 
                 <Viewer url="test.pdf" pageNumber={pageNumber}/>
 
@@ -37,6 +38,11 @@ export default function Editor() {
                 </div>
 
             </main>
+
+            {/*<div className="justify-self-end">*/}
+            {/*    <EditorFooter />*/}
+            {/*</div>*/}
+
         </div>
     );
 
