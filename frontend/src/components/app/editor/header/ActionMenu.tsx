@@ -36,7 +36,7 @@ export default function ActionMenu({onDownload, onCopy, onDelete} : ActionMenuPr
 
                         <div className="border-l-2 border-anno-pink my-1 translate-x-1/2"></div>
 
-                        <button onClick={onDelete}  type="button" className="rounded-lg px-2 hover:bg-red-1 00">
+                        <button onClick={onDelete}  type="button" className="rounded-lg px-2 hover:bg-red-100">
                             <TrashIcon className="w-5 h-5 stroke-2 text-red-500" />
                         </button>
 
