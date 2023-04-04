@@ -48,8 +48,8 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
             {/* Active User Bubbles */}
             <div className="flex flex-row ml-4">
                 {displayedUsers.map((user, index) => (
-                    <span className="-ml-4">
-                        <ActiveUserBubble user={user} key={index}/>
+                    <span key={index} className="-ml-4">
+                        <ActiveUserBubble user={user} />
                     </span>
                 ))}
             </div>
