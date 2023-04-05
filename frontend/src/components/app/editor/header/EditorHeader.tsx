@@ -36,7 +36,7 @@ export default function EditorHeader() {
     const [showSharePopup, setShowSharePopup] = useState(false);
 
     return (
-        <header className="fixed bg-white border-b-[1px] border-zinc-400 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
+        <header className="fixed bg-white dark:bg-anno-space-900 border-b-[1px] border-zinc-400 dark:border-anno-space-100 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
 
             {/* Left side */}
             <div className="flex flex-row items-center justify-between gap-4">
@@ -45,10 +45,11 @@ export default function EditorHeader() {
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
-                    <h1 className="text-lg font-bold text-anno-red-primary self-end">
+                    {/* TODO: add edit function*/}
+                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink self-end">
                         {testDocumentName}
                     </h1>
-                    <p className="text-xs text-neutral-400 font-light self-start">
+                    <p className="text-xs text-neutral-400 dark:text-white font-light self-start">
                         {testLastUpdated}
                     </p>
                 </div>

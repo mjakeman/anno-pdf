@@ -19,7 +19,7 @@ export default function Editor() {
             </div>
 
             {/* Document Space */}
-            <main className="grow bg-zinc-300 ">
+            <main className="grow bg-zinc-300 dark:bg-anno-space-700">
 
                 <Viewer url="test.pdf" pageNumber={pageNumber}/>
 
