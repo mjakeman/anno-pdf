@@ -6,9 +6,9 @@ interface FullscreenButtonProps {
 }
 export default function Fullscreen({onClick, label} : FullscreenButtonProps){
     return (
-        <button type="button" onClick={onClick}>
+        <button type="button" onClick={onClick} className="border-2 p-1.5 rounded-full border-black dark:border-anno-space-100 hover:bg-anno-space-100 transition-colors">
             {label && <span>{label}</span>}
-            <ArrowsPointingOutIcon className="h-10 w-10 p-1.5 border-2 rounded-full border-black dark:border-white dark:text-white" />
+            <ArrowsPointingOutIcon className="h-6 w-6 text-black dark:text-white" />
         </button>
     )
 }
