@@ -1,5 +1,6 @@
+import annoLogo from '../assets/logo.svg';
 export default function Logo() {
     return (
-        <img src="/frontend/src/assets/logo.svg"/>
+        <img src={annoLogo} />
     )
 }
