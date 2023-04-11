@@ -13,6 +13,7 @@ module.exports = {
       colors: {
         'anno-space-900': '#312D45', // Dark mode - App header
         'anno-space-800': '#3F3B56', // Dark mode - Toolbar
+        'anno-space-750': '#504A77',
         'anno-space-700': '#5A5578', // Dark mode - Background
         'anno-space-100': '#CAC6DD',
         'anno-red-primary': '#CA2D37',

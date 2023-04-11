@@ -29,8 +29,8 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
         <>
             {searchResults.documents.length > 0 &&
                 <div className="flex flex-col gap-2 w-full">
-                    <h1 className="text-neutral-400 text-lg">
-                        Settings
+                    <h1 className="text-neutral-400 text-lg dark:text-white">
+                        Documents
                     </h1>
                     <div className={"flex flex-col"}>
                         {searchResults.documents.map((command, index) => (
@@ -43,7 +43,7 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
             }
             {searchResults.settings.length > 0 &&
                 <div className="flex flex-col gap-2 w-full">
-                    <h1 className="text-neutral-400 text-lg">
+                    <h1 className="text-neutral-400 text-lg dark:text-white">
                         Settings
                     </h1>
                     <div className={"flex flex-col"}>

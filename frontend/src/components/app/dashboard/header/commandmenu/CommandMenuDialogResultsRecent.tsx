@@ -10,13 +10,13 @@ export default function CommandMenuDialogResultsRecent( {recent} : CommandMenuDi
     if (recent.length === 0) {
         return (
             <div className="flex items-center justify-center w-full h-full">
-                <p className="text-stone-400">No recent searches</p>
+                <p className="text-stone-400 dark:text-white">No recent searches</p>
             </div>
         )
     }
     return (
         <div className="flex flex-col gap-2 w-full">
-            <h1 className="text-neutral-400 text-lg">
+            <h1 className="text-neutral-400 text-lg dark:text-white">
                 Recent
             </h1>
             <div className={"flex flex-col"}>
