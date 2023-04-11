@@ -31,6 +31,12 @@ module.exports = {
       // Note that they should adhere to step of each increment being 0.25rem i.e. w-1 = 0.25rem, w-2 = 0.5rem.
       width: {
         '104': '26rem',
+        '180' : '45rem',
+      },
+      fontSize: {
+        '2xs': ['0.625rem', {
+          lineHeight: '0.75rem',
+        }]
       }
     },
   },
