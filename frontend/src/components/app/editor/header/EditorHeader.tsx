@@ -7,6 +7,7 @@ import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
 import DarkModeToggleTest from "../../../DarkModeToggleTest";
+import Logo from "../../../Logo";
 
 export default function EditorHeader() {
 
@@ -41,7 +42,8 @@ export default function EditorHeader() {
             {/* Left side */}
             <div className="flex flex-row items-center justify-between gap-4">
 
-                {/* TODO: Insert logo here */}
+                {/* Logo */}
+                <Logo></Logo>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
