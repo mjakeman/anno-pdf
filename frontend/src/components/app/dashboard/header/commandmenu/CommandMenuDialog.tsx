@@ -1,0 +1,41 @@
+import React, {ChangeEvent, useState} from "react";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
+import CommandMenuDialogResults from "./CommandMenuDialogResults";
+interface CommandMenuDialogProps {
+    onClose: (params: any) => any,
+}
+
+
+export type CommandOption = {
+    iconType: 'Document' | 'Gear',
+    text: string,
+    href: string,
+    newTab: boolean,
+}
+
+
+export default function CommandMenuDialog({onClose} : CommandMenuDialogProps) {
+
+
+    const [searchInput, setSearchInput] = useState('');
+
+    function handleSearchInputChange(event: ChangeEvent<HTMLInputElement>) {
+        setSearchInput(event.target.value);
+    }
+
+    return (
+        <div className="bg-white shadow rounded-xl flex flex-col w-180 h-96">
+            <div className="flex flex-row justify-between w-full items-center border-b-2 border-b-neutral-200 p-4">
+                <div className="flex flex-row gap-1 items-center">
+                    <MagnifyingGlassIcon className="w-6 h-6 text-stone-500"/>
+                    <input autoFocus onChange={handleSearchInputChange} type="text" placeholder="Search for anything..." className="text-lg px-2 py-1 focus:outline-0 placeholder:text-neutral-400"/>
+                </div>
+                {/* TODO: add 3d Effect */}
+                <button onClick={onClose} type="button" className="rounded-lg p-1 transition-colors hover:bg-zinc-200 transition-colors font-bold font-mono text-2xs border-t-2 border-x-2 border-b-4 border-zinc-500 text-zinc-500">
+                    ESC
+                </button>
+            </div>
+            <CommandMenuDialogResults searchInput={searchInput} />
+        </div>
+    );
+}

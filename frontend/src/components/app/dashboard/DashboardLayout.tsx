@@ -1,23 +1,40 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Outlet} from "react-router-dom";
 import DashboardFooter from "./DashboardFooter";
-import EditorHeader from "../editor/header/EditorHeader";
 import DashboardHeader from "./header/DashboardHeader";
+import Overlay, {OverlayChildPosition} from "../../../Overlay";
+import CommandMenuDialog from "./header/commandmenu/CommandMenuDialog";
+import useDialogToggle from "../../../hooks/useDialogToggle";
 
 export default function DashboardLayout() {
+
+    // TODO: refactor to context?
+    const [showDialog, setShowDialog] = useDialogToggle('Escape', 'k');
+
     return (
-        <div className="h-screen flex flex-col">
+        <>
+            {/* Modals */}
+            {showDialog &&
+                <Overlay onClick={() => setShowDialog(false) } twColor="black" position={OverlayChildPosition.MIDDLE}>
+                    <CommandMenuDialog onClose={() => setShowDialog(false)}/>
+                </Overlay>
+            }
 
-            <DashboardHeader />
+            {/* Core Layout */}
+            <div className="h-screen flex flex-col">
 
-            {/* Main Space */}
-            <main className="grow bg-zinc-300 ">
-                <Outlet />
-            </main>
+                <DashboardHeader  onCommandMenuClicked={() => setShowDialog(true)}/>
 
-            <div className="justify-self-end">
-                <DashboardFooter/>
+                {/* Main Space */}
+                <main className="grow bg-zinc-300 ">
+                    <Outlet />
+                </main>
+
+                <div className="justify-self-end">
+                    <DashboardFooter/>
+                </div>
+
             </div>
-        </div>
+        </>
     );
 }
