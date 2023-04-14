@@ -6,6 +6,7 @@ import PublicLayout from "./components/public/layout/PublicLayout";
 import Home from "./components/public/pages/Home";
 import About from "./components/public/pages/About";
 import Contact from "./components/public/pages/Contact";
+import Terms from "./components/public/pages/Terms";
 
 export default function App() {
 
@@ -17,6 +18,7 @@ export default function App() {
                 <Route index element={<Home/>} />
                 <Route path="about" element={<About/>} />
                 <Route path="contact" element={<Contact/>} />
+                <Route path="terms" element={<Terms/>} />
             </Route>
             <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
                 <Route index element={<Dashboard/>} />
