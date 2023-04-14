@@ -43,7 +43,7 @@ export default function EditorHeader() {
             <div className="flex flex-row items-center justify-between gap-4">
 
                 {/* Logo */}
-                <Logo></Logo>
+                <Logo className="w-8 h-8"/>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
