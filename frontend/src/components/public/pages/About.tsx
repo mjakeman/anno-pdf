@@ -15,7 +15,7 @@ export default function About() {
             <Container>
                 <section className="mt-12">
                     <p className="text-neutral-400 dark:text-white">About Us</p>
-                    <h1 className="text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500">The idea, the team, and all things in-between</h1>
+                    <h1 className="mt-2 text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500">The idea, the team, and all things in-between</h1>
                     <div className="mt-8 flex flex-row gap-12 items-center">
                         <img className="w-1/2 object-cover h-112 rounded-xl" src={heroImg} alt="Holding a light bulb"/>
                         <div className="w-1/2 text-lg dark:text-white text-justify">
