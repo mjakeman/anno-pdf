@@ -73,13 +73,12 @@ export default function EditorHeader() {
                 <ActiveUserBubbles activeUsers={activeUsers} />
 
                 {/* Share button*/}
-                {/* TODO: add the ability to click anywhere from popup and close it */}
                 <div className="relative">
 
-                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
+                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
+                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                     </span>
 
                 </div>

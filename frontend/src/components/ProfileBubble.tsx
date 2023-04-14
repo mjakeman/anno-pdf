@@ -33,6 +33,7 @@ function normaliseHashCode(code: number, min: number, max: number) {
 }
 
 // TODO: might be worth storing this somewhere to improve effiency (either on backend or somewhere else)
+// TODO: Also worth just adding a timestamp part to it
 function getHashCode(fullName: string) : number {
     let hash = 0;
     for (let i = 0; i < fullName.length; i++) {

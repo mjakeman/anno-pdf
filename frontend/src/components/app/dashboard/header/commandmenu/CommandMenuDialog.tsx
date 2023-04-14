@@ -1,6 +1,7 @@
-import React, {ChangeEvent, useState} from "react";
+import React, {ChangeEvent, useRef, useState} from "react";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
 import CommandMenuDialogResults from "./CommandMenuDialogResults";
+import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 interface CommandMenuDialogProps {
     onClose: (params: any) => any,
 }
@@ -17,6 +18,10 @@ export type CommandOption = {
 export default function CommandMenuDialog({onClose} : CommandMenuDialogProps) {
 
 
+    const dialogRef = useRef<HTMLDivElement>(null);
+
+    useDetectOutsideClick(dialogRef, onClose);
+
     const [searchInput, setSearchInput] = useState('');
 
     function handleSearchInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -24,7 +29,7 @@ export default function CommandMenuDialog({onClose} : CommandMenuDialogProps) {
     }
 
     return (
-        <div className="bg-white shadow rounded-xl flex flex-col w-180 h-96 dark:bg-anno-space-900">
+        <div ref={dialogRef} className="bg-white shadow rounded-xl flex flex-col w-180 h-96 dark:bg-anno-space-900">
             <div className="flex flex-row gap-2 justify-between w-full items-center border-b-2 border-neutral-200 dark:border-white p-4">
                 <div className="grow flex flex-row gap-2 items-center">
                     <MagnifyingGlassIcon className="w-6 h-6 text-stone-500 dark:text-white"/>
