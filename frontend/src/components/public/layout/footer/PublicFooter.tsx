@@ -16,7 +16,7 @@ export default function PublicFooter() {
                 <PublicFooterNavLink to={"/signup"} label="Sign up"/>
             </div>
             <div className="flex flex-col">
-                <a href={"https://github.com/UOA-CS732-SE750-Students-2023/project-group-fearless-foxes"} target="_blank" className="transition-colors text-white hover:text-anno-pink">GitHub</a>
+                <a href={"https://github.com/UOA-CS732-SE750-Students-2023/project-group-fearless-foxes"} target="_blank" className="transition-colors text-white hover:text-anno-pink-500">GitHub</a>
             </div>
             <DarkModeToggleTest />
         </footer>

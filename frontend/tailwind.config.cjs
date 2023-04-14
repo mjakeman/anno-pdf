@@ -18,7 +18,9 @@ module.exports = {
         'anno-space-100': '#CAC6DD',
         'anno-red-primary': '#CA2D37',
         'anno-red-secondary' : '#EB4E54',
-        'anno-pink': '#FF99A7',
+        'anno-pink-500': '#FF99A7',
+        'anno-pink-200': '#FFCED5',
+        'anno-pink-100': '#FFEAED',
       },
       fontFamily: {
         'halant': ['Halant', 'sans-serif'],

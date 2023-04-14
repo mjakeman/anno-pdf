@@ -45,7 +45,7 @@ export default function SharedWithUserRow({userId, fullName, email, onConfirmRem
                 <button onClick={() => setShowConfirmation(false)} type="button" className="w-8 h-8 transition-colors rounded-full border-2 border-gray-300 bg-gray-200 dark:bg-anno-space-700 dark:text-white dark:border-anno-space-100 dark:hover:bg-anno-space-100 flex items-center justify-center hover:bg-gray-100 hover:border-gray-200 text-gray-400">
                     <XMarkIcon className="w-5 h-5"/>
                 </button>
-                <button onClick={() => handleDeleteConfirm()} type="button" className="w-8 h-8 bg-gray-200 rounded-full border-2 border-anno-red-primary bg-anno-pink flex items-center hover:bg-gray-100 hover:bg-red-400 hover:border-red-700 transition-colors justify-center text-anno-red-primary">
+                <button onClick={() => handleDeleteConfirm()} type="button" className="w-8 h-8 bg-gray-200 rounded-full border-2 border-anno-red-primary bg-anno-pink-500 flex items-center hover:bg-gray-100 hover:bg-red-400 hover:border-red-700 transition-colors justify-center text-anno-red-primary">
                     <TrashIcon className="w-5 h-5"/>
                 </button>
             </div>

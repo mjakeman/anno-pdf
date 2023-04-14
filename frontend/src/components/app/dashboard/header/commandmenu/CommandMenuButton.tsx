@@ -26,7 +26,7 @@ export default function CommandMenuButton( { onClick } : CommandMenuButtonProps)
 
 
     return (
-        <button onClick={onClick} type="button" className="w-104 flex flex-row justify-between items-center border-2 border-zinc-300 hover:border-zinc-500 transition-colors px-2 py-1 rounded-lg focus:outline-anno-pink dark:text-anno-space-100 dark:border-anno-space-100 dark:bg-anno-space-700">
+        <button onClick={onClick} type="button" className="w-104 flex flex-row justify-between items-center border-2 border-zinc-300 hover:border-zinc-500 transition-colors px-2 py-1 rounded-lg focus:outline-anno-pink-500 dark:text-anno-space-100 dark:border-anno-space-100 dark:bg-anno-space-700">
             <div className="flex flex-row gap-1">
                 <MagnifyingGlassIcon className="w-6 h-6 text-neutral-400 dark:text-anno-space-100" />
                 <div className="text-zinc-400 dark:text-anno-space-100">
