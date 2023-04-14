@@ -6,18 +6,10 @@ import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
+import DarkModeToggleTest from "../../../DarkModeToggleTest";
 import Logo from "../../../Logo";
 
 export default function EditorHeader() {
-
-
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    function toggleDarkMode() {
-        // TODO: Add the localStorage and systemPreference when we have users + their reference
-        isDarkMode ? document.documentElement.classList.remove('dark') : document.documentElement.classList.add('dark');
-        setIsDarkMode(!isDarkMode);
-    }
 
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testPeople = [
@@ -66,7 +58,7 @@ export default function EditorHeader() {
 
                 <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
 
-                <button className="bg-gray-200 text-black px-3 py-2 transition-colors hover:bg-blue-200 rounded" onClick={() => toggleDarkMode()}>Toggle Dark Mode: {isDarkMode ? 'DARK' : 'LIGHT'}</button>
+                <DarkModeToggleTest/>
 
             </div>
 
@@ -81,13 +73,12 @@ export default function EditorHeader() {
                 <ActiveUserBubbles activeUsers={activeUsers} />
 
                 {/* Share button*/}
-                {/* TODO: add the ability to click anywhere from popup and close it */}
                 <div className="relative">
 
-                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(!showSharePopup)}/>
+                    <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
+                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
                     </span>
 
                 </div>

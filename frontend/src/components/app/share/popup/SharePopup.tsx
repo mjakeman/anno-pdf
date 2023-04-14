@@ -1,13 +1,18 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
+import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
 
 interface SharePopupProps {
     onSharePress:  (params: any) => any;
 
     peopleSharedWith: {id: number, fullName: string, email: string}[],
+    onOutsideClick: (params: any) => any;
 }
-export default function SharePopup({onSharePress, peopleSharedWith} : SharePopupProps) {
+export default function SharePopup({onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
 
+    const shareDropdown = useRef<HTMLDivElement>(null);
+
+    useDetectOutsideClick(shareDropdown, onOutsideClick);
 
     const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
 
@@ -25,7 +30,7 @@ export default function SharePopup({onSharePress, peopleSharedWith} : SharePopup
     const docName = 'Employment Contract w/ UoA';
 
     return (
-        <div className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100">
+        <div ref={shareDropdown} className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100">
             <h1 className="font-bold text-black dark:text-white">Share '{docName}'</h1>
             <div className="flex flex-row gap-4">
                 <input className="px-2 py-1 grow border-2 border-zinc-300 rounded-lg text-black focus:outline-anno-pink  placeholder:text-neutral-400 placeholder:font-light" placeholder="Enter email address here..." type="email" id="share-email"/>
