@@ -8,6 +8,7 @@ import About from "./components/public/pages/About";
 import Contact from "./components/public/pages/Contact";
 import Terms from "./components/public/pages/Terms";
 import Login from "./components/public/pages/Login";
+import SignUp from "./components/public/pages/SignUp";
 
 export default function App() {
 
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="contact" element={<Contact/>} />
                 <Route path="terms" element={<Terms/>} />
                 <Route path="login" element={<Login/>} />
+                <Route path="signup" element={<SignUp/>} />
             </Route>
             <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
                 <Route index element={<Dashboard/>} />

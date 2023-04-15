@@ -2,12 +2,16 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 
-export default function Login() {
+export default function SignUp() {
     return (
         <Container>
             <div className="flex flex-col items-center my-12">
-                <h1 className="text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500 text-center">Log in</h1>
+                <h1 className="text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500 text-center">Sign up</h1>
                 <form className="my-8 px-24 py-12 flex flex-col gap-6 bg-white dark:bg-anno-space-900 drop-shadow-around border-2 dark:border-anno-space-100 rounded-xl">
+                    <div className="w-96">
+                        <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="name-input" >Name:</label>
+                        <input type="text" id="name-input" placeholder="Enter your name here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                    </div>
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="email-input" >Email:</label>
                         <input type="email" id="email-input" placeholder="Enter your email address here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
@@ -16,9 +20,13 @@ export default function Login() {
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="password-input" >Password:</label>
                         <input type="password" id="password-input" placeholder="Enter your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
+                    <div className="w-96">
+                        <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="c-password-input" >Confirm Password:</label>
+                        <input type="password" id="c-password-input" placeholder="Confirm your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                    </div>
 
                     {/* TODO: add LOGIN functionality */}
-                   <PrimaryButton onClick={() => console.log('Log in!')} label="Log in"/>
+                    <PrimaryButton onClick={() => console.log('Log in!')} label="Sign up"/>
 
                     <div className="flex flex-row gap-6 items-center text-zinc-500 dark:text-white">
                         <hr className="w-full" />
@@ -31,9 +39,7 @@ export default function Login() {
                         <img className="w-6 h-6" src={googleLogo} alt="Google logo" />
                         <span className="text-lg font-light">Continue with Google</span>
                     </button>
-
-                    <a href="#" className="text-zinc-400 underline text-center transition-colors hover:text-anno-pink-500 dark:hover:text-anno-pink-500 dark:text-white ">Forgot password?</a>
-
+                    
                 </form>
             </div>
         </Container>
