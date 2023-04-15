@@ -43,12 +43,12 @@ export default function EditorHeader() {
             <div className="flex flex-row items-center justify-between gap-4">
 
                 {/* Logo */}
-                <Logo></Logo>
+                <Logo className="w-8 h-8"/>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
                     {/* TODO: add edit function*/}
-                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink self-end">
+                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-end">
                         {testDocumentName}
                     </h1>
                     <p className="text-xs text-neutral-400 dark:text-white font-light self-start">

@@ -16,11 +16,11 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
-            <div className="flex flex-row gap-4">
-                <Logo />
+            <div className="flex flex-row gap-4 items-center">
+                <Logo className="w-8 h-8"/>
                 <button type="button" className="relative hover:cursor-not-allowed transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 p-3 rounded-xl gap-12 flex flex-row items-center justify-between ">
-                    <span className="text-anno-red-primary dark:text-anno-pink font-semibold">My Workspace</span>
-                    <ChevronDownIcon className="text-anno-red-secondary dark:text-anno-pink w-6 h-6" />
+                    <span className="text-anno-red-primary dark:text-anno-pink-500 font-semibold">My Workspace</span>
+                    <ChevronDownIcon className="text-anno-red-secondary dark:text-anno-pink-500 w-6 h-6" />
                 </button>.
             </div>
             <CommandMenuButton onClick={onCommandMenuClicked}/>
