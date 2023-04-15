@@ -8,9 +8,15 @@ export default function SignUp() {
             <div className="flex flex-col items-center my-12">
                 <h1 className="text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500 text-center">Sign up</h1>
                 <form className="my-8 px-24 py-12 flex flex-col gap-6 bg-white dark:bg-anno-space-900 drop-shadow-around border-2 dark:border-anno-space-100 rounded-xl">
-                    <div className="w-96">
-                        <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="name-input" >Name:</label>
-                        <input type="text" id="name-input" placeholder="Enter your name here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                    <div className="w-96 flex flex-row gap-4">
+                        <span>
+                            <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="fname-input" >First Name:</label>
+                            <input type="text" id="fname-input" placeholder="Enter your first name here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                        </span>
+                        <span>
+                            <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="jname-input" >Last Name:</label>
+                            <input type="text" id="lname-input" placeholder="Enter your last name here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                        </span>
                     </div>
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="email-input" >Email:</label>
@@ -39,7 +45,7 @@ export default function SignUp() {
                         <img className="w-6 h-6" src={googleLogo} alt="Google logo" />
                         <span className="text-lg font-light">Continue with Google</span>
                     </button>
-                    
+
                 </form>
             </div>
         </Container>
