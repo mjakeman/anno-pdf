@@ -8,9 +8,10 @@ import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
 import DarkModeToggleTest from "../../../DarkModeToggleTest";
 import Logo from "../../../Logo";
+import { useNavigate } from "react-router-dom";
 
 export default function EditorHeader() {
-
+    const navigate = useNavigate();
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testPeople = [
         {id: 0, fullName: 'John Doe', email: 'johndoe@gmail.com',},
@@ -43,7 +44,7 @@ export default function EditorHeader() {
             <div className="flex flex-row items-center justify-between gap-4">
 
                 {/* Logo */}
-                <Logo className="w-8 h-8"/>
+                <Logo className="w-8 h-8 hover:cursor-pointer" onClick={()=>navigate("/project-group-fearless-foxes/dash")}/>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
