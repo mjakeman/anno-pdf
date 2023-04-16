@@ -1,7 +1,9 @@
 import {Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
 import {Link} from "react-router-dom";
-import React, {useRef, useState} from "react";
+import React, {useContext, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
+import useLocalStorage from "../../../../hooks/useLocalStorage";
+import {DarkModeContext} from "../../../../App";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -11,20 +13,18 @@ export default function ProfileDropdown({ onOutsideClick } : ProfileDropdownProp
 
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
-    // TODO: Put this into context
+
     function turnOnDarkMode() {
         if (!isDarkMode) {
-            document.documentElement.classList.add('dark');
             setIsDarkMode(true);
         }
     }
 
     function turnOffDarkMode() {
         if (isDarkMode) {
-            document.documentElement.classList.remove('dark');
             setIsDarkMode(false);
         }
     }

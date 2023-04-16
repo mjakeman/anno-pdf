@@ -2,7 +2,7 @@ import Container from "../../../Container";
 import Logo from "../../../Logo";
 import PublicHeaderNavLink from "./PublicHeaderNavLink";
 import PrimaryButton from "../../../PrimaryButton";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export default function PublicHeader() {
 
@@ -12,10 +12,10 @@ export default function PublicHeader() {
       <header className="bg-white dark:bg-anno-space-900 py-4">
           <Container>
               <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-row  gap-2">
+                  <Link to={"/project-group-fearless-foxes/"} className="flex flex-row  gap-2">
                         <span className="font-halant text-3xl font-medium text-anno-red-primary dark:text-anno-pink-500">Anno</span>
                         <Logo className="w-8 h-8" />
-                  </div>
+                  </Link>
                   <div className="flex flex-row gap-12 items-center">
                       <PublicHeaderNavLink to={"/about"} label={"About"} />
                       <PublicHeaderNavLink to={"/contact"} label={"Contact"} />
