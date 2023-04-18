@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import * as http from "http";
 import cors from "cors"
 
@@ -19,11 +19,26 @@ const io = new Server(server, {
     }
 });
 
-io.on("connection", (socket) => {
-   console.log("user connected");
+type SocketMap = {
+    [key: string]: string;
+}
+
+const socketMap: SocketMap = {};
+
+io.on("connection", async (socket) => {
+   console.log(socket.id + " user connected");
+
+    socket.on("set-username", data => {
+        console.log("username: " + data);
+        socketMap[socket.id] = data;
+    });
+
+   socket.on("count-changed", data => {
+      console.log(socketMap[socket.id] + ": " + data);
+   });
 
    socket.on('disconnect', () => {
-       console.log("user disconnected");
+       console.log(socket.id + " user disconnected");
    })
 });
 

@@ -1,17 +1,31 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import socketio from 'socket.io-client'
+import socketio, {Socket} from 'socket.io-client'
+import {generateUsername} from "unique-username-generator";
 
 const server = "http://localhost:8080"
 
 function App() {
   const [count, setCount] = useState(0);
+  const socketRef = useRef<Socket|null>();
 
   useEffect(() => {
-      socketio(server);
+      const socket = socketio(server);
+      socketRef.current = socket;
+
+      const username = generateUsername("-");
+      socketRef.current!.emit("set-username", username);
+
+      return () => {
+          socket.disconnect();
+      }
   }, []);
+
+  useEffect(() => {
+      socketRef.current!.emit("count-changed", count);
+  }, [count]);
 
   return (
     <div className="App">
@@ -25,7 +39,9 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={() => {
+            setCount((count) => count + 1);
+        }}>
           count is {count}
         </button>
         <p>
