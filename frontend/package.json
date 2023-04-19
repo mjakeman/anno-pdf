@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",
+    "firebase": "^9.19.1",
     "pdfjs-dist": "^3.4.120",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-firebase-hooks": "^5.1.1",
     "react-router-dom": "^6.10.0"
   },
   "devDependencies": {
