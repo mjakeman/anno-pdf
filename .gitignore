@@ -1,6 +1,6 @@
 # Generic
 **/node_modules
-dist/
+**/dist
 **/**/*.log
 
 # Logs
