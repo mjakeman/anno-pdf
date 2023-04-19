@@ -3,6 +3,10 @@ import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 
 export default function Login() {
+
+    // TODO: Add signin with google (similar to SignUp.tsx)
+    // TODO: Add signin with email and password https://github.com/CSFrequency/react-firebase-hooks/tree/master/auth#usesigninwithemailandpassword
+
     return (
         <Container>
             <div className="flex flex-col items-center my-12">
