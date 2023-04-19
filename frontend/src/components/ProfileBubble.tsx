@@ -1,8 +1,8 @@
 import React from "react";
 
 export enum ProfileBubbleSizes {
-    Small = "w-12 h-12 text-lg",
-    Large = "w-14 h-14 text-2xl"
+    Small = "w-10 h-10 text-lg",
+    Large = "w-12 h-12 text-xl"
 }
 
 interface ProfileBubbleProps {
@@ -21,7 +21,7 @@ export default function ProfileBubble({size, fullName} : ProfileBubbleProps) {
 
     return (
         <div>
-            <div className={`${size} font-semibold text-white rounded-full flex items-center justify-center border-2`} style={profileColor}>
+            <div className={`${size} font-medium text-white rounded-full flex items-center justify-center border-2`} style={profileColor}>
                 {fullName[0]}
             </div>
 
@@ -33,6 +33,7 @@ function normaliseHashCode(code: number, min: number, max: number) {
 }
 
 // TODO: might be worth storing this somewhere to improve effiency (either on backend or somewhere else)
+// TODO: Also worth just adding a timestamp part to it
 function getHashCode(fullName: string) : number {
     let hash = 0;
     for (let i = 0; i < fullName.length; i++) {

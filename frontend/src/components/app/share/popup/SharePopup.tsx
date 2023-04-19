@@ -1,13 +1,18 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
+import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
 
 interface SharePopupProps {
     onSharePress:  (params: any) => any;
 
     peopleSharedWith: {id: number, fullName: string, email: string}[],
+    onOutsideClick: (params: any) => any;
 }
-export default function SharePopup({onSharePress, peopleSharedWith} : SharePopupProps) {
+export default function SharePopup({onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
 
+    const shareDropdown = useRef<HTMLDivElement>(null);
+
+    useDetectOutsideClick(shareDropdown, onOutsideClick);
 
     const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
 
@@ -25,14 +30,14 @@ export default function SharePopup({onSharePress, peopleSharedWith} : SharePopup
     const docName = 'Employment Contract w/ UoA';
 
     return (
-        <div className="shadow-md rounded-lg p-4 flex flex-col gap-2 w-104 bg-white">
-            <h1 className="font-bold">Share '{docName}'</h1>
+        <div ref={shareDropdown} className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100">
+            <h1 className="font-bold text-black dark:text-white">Share '{docName}'</h1>
             <div className="flex flex-row gap-4">
-                <input className="px-2 py-1 grow border-2 border-zinc-300 rounded-lg text-black focus:outline-anno-pink  placeholder:text-neutral-400 placeholder:font-light" placeholder="Enter email address here..." type="email" id="share-email"/>
-                <button type="button" className="bg-anno-red-primary px-4 text-white flex flex-row font-light items-center content-center rounded-lg gap-1 transition-colors hover:bg-anno-red-secondary">Share</button>
+                <input className="px-2 py-1 grow border-2 border-zinc-300 rounded-lg text-black focus:outline-anno-pink-500 placeholder:text-neutral-400 placeholder:font-light" placeholder="Enter email address here..." type="email" id="share-email"/>
+                <button type="button" className="bg-anno-red-primary dark:bg-anno-red-secondary px-4 text-white flex flex-row font-light items-center content-center rounded-lg gap-1 transition-colors hover:bg-anno-red-secondary dark:hover:bg-anno-pink-500">Share</button>
             </div>
-            <p className="text-neutral-400 text-sm">People with access</p>
-            <div className="overflow-auto flex flex-col border-t-2 border-zinc-300 px-2 py-4 gap-2 h-60">
+            <p className="text-neutral-400 text-sm dark:text-white">People with access</p>
+            <div className="overflow-auto flex flex-col border-t-2 border-zinc-300 px-2 py-4 h-60">
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
