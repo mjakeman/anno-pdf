@@ -1,6 +1,8 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
+import { useRef } from "react"
 import { useState } from "react"
+import useDetectOutsideClick from "../../../hooks/useDetectOutsideClick"
 import DarkModeToggleTest from "../../DarkModeToggleTest"
 import Modal from "../../Modal"
 
@@ -13,9 +15,11 @@ interface SettingModalProps {
 
 export default function SettingModal({isVisible, onOutsideClick}: SettingModalProps) {
     const [activeTab, setActiveTab] = useState<SettingTabs>("account")
+    const settingModal = useRef<HTMLDivElement>(null);
 
     return(
-        <div className="grid grid-cols-10 bg-white h-full">
+        <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
+        <div ref={settingModal} className="grid grid-cols-10 bg-white h-full">
             <div className="col-span-3 bg-gray-200 h-full">
                 <div className="flex flex-col gap-4">
                     <span onClick={()=>setActiveTab("account")} className="flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg">
@@ -33,6 +37,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
                 {activeTab === "settings" && <DarkModeToggleTest/>}
             </div>
         </div>
+        </Modal>
     )
 }
 

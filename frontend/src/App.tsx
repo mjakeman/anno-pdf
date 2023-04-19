@@ -34,7 +34,7 @@ export default function App() {
                         <Route path="terms" element={<Terms/>} />
                         <Route path="login" element={<Login/>} />
                         <Route path="signup" element={<SignUp/>} />
-                        <Route path="account" element={<SettingModal/>}></Route>
+                        {/* <Route path="account" element={<SettingModal/>}></Route> */}
                     </Route>
                     <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
                         <Route index element={<Dashboard/>} />

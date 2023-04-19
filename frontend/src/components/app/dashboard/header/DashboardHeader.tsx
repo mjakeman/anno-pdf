@@ -21,7 +21,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 <button type="button" className="relative hover:cursor-not-allowed transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 p-3 rounded-xl gap-12 flex flex-row items-center justify-between ">
                     <span className="text-anno-red-primary dark:text-anno-pink-500 font-semibold">My Workspace</span>
                     <ChevronDownIcon className="text-anno-red-secondary dark:text-anno-pink-500 w-6 h-6" />
-                </button>.
+                </button>
             </div>
             <CommandMenuButton onClick={onCommandMenuClicked}/>
             <div className="relative">
@@ -38,7 +38,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 </button>
                 {showProfileDropdown &&
                     <div className="absolute right-0">
-                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} />
+                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} onAccountSettingsClicked={()=>setShowProfileDropdown(false)}/>
                     </div>
                 }
             </div>
