@@ -5,6 +5,7 @@ import FilterButton from "./FilterButton";
 import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import { DocumentIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
+import Tooltip from "../../Tooltip";
 const documentData = [
     {
         name: "Document 2",
@@ -72,8 +73,12 @@ export default function DashboardTable() {
     return(
         <>
             <div className="flex flex-row gap-2">
-                <FilterButton label="All" onClick={()=> setFilter("All")}/>
-                <FilterButton label="Private" onClick={()=> setFilter("Me")}/>
+                <Tooltip text="Filter by" position="bottom">
+                    <FilterButton label="All" onClick={()=> setFilter("All")}/>
+                </Tooltip>
+                <Tooltip text="Filter by" position="top">
+                    <FilterButton label="Private" onClick={()=> setFilter("Me")}/>
+                </Tooltip>
                 <FilterButton label="Shared" onClick={()=> setFilter("Shared")}/>
                 <PrimaryButton label="Upload PDF +" onClick={()=> uploadPDF()}></PrimaryButton>
             </div>
