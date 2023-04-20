@@ -46,7 +46,6 @@ export default function DashboardTable() {
     const [sortDirection, setSortDirection] = useState<SortOrder>("Ascending");
 
     const sortedData = useCallback(()=>{
-        console.log(sortKey, sortDirection)
         return documentData.sort((a, b) => {
             if (sortDirection === "Ascending") {
                 if (a[sortKey] < b[sortKey]) {
