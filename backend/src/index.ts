@@ -1,13 +1,40 @@
-import './pre-start'; // Must be the first import
-import logger from 'jet-logger';
+import * as express from "express";
+import * as http from "http";
+import * as socketio from "socket.io";
 
-import EnvVars from '@src/constants/EnvVars';
-import server from './server';
+const port = 8080;
+const app = express.default();
 
+app.get("/", (_req, res) => {
+    res.send({ uptime: process.uptime() });
+});
 
-// **** Run **** //
+const server = http.createServer(app);
+const io = new socketio.Server(server);
 
-const SERVER_START_MSG = ('Express server started on port: ' + 
-  EnvVars.Port.toString());
+type SocketMap = {
+    [key: string]: string;
+}
 
-server.listen(EnvVars.Port, () => logger.info(SERVER_START_MSG));
+const socketMap: SocketMap = {};
+
+io.on("connection", async (socket) => {
+    console.log(socket.id + " user connected");
+
+    socket.on("set-username", data => {
+        console.log("username: " + data);
+        socketMap[socket.id] = data;
+    });
+
+    socket.on("count-changed", data => {
+        console.log(socketMap[socket.id] + ": " + data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log(socket.id + " user disconnected");
+    });
+});
+
+server.listen(port, () => {
+    console.log(`Listening to the server on ${port}`);
+});
