@@ -5,6 +5,10 @@ async function getUsers() {
 }
 
 async function createUser(user: any) {
+    const existingUser = await User.findOne({ uuid: user.uuid });
+    if (existingUser) {
+        return null;
+    }
     return await User.create(user);
 }
 

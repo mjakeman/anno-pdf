@@ -11,11 +11,11 @@ class UserController {
     const dbUser = await createUser(req.body);
 
     if (dbUser) {
-      console.log('User created - Email : ' + dbUser.email);
+      console.log('User created - uuid : ' + dbUser.uuid);
       return res.status(201).json(dbUser);
     }
 
-    return res.sendStatus(422);
+    return res.status(422).send('User already exists');
   }
 }
 
