@@ -16,11 +16,9 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-    //const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
-    //useDetectOutsideClick(profileDropdownRef, onOutsideClick)
+    useDetectOutsideClick(profileDropdownRef, onOutsideClick)
 
     function turnOnDarkMode() {
         if (!isDarkMode) {
@@ -36,7 +34,6 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     return (
         <div ref={profileDropdownRef} className=" drop-shadow-around rounded-lg bg-white px-2 py-2 flex flex-col gap-4 dark:bg-anno-space-700 relative z-[100]">
-            {/* <SettingModal isVisible={isModalOpen} onOutsideClick={()=>setIsModalOpen(false)}></SettingModal> */}
 
             <div className="flex flex-row gap-4 items-center pl-4 py-2  pr-12">
                 {/*TODO: replace with profile square component*/}
