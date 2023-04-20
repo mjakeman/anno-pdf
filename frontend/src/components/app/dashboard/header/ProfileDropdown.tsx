@@ -9,14 +9,14 @@ import Modal from "../../../Modal";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
-    onAccountSettingsClicked: (params: any) => any,
+    onAccountSettingsClicked: () => any,
 }
 
 export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClicked } : ProfileDropdownProps) {
 
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    //const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
@@ -36,7 +36,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     return (
         <div ref={profileDropdownRef} className=" drop-shadow-around rounded-lg bg-white px-2 py-2 flex flex-col gap-4 dark:bg-anno-space-700 relative z-[100]">
-            <SettingModal isVisible={isModalOpen} onOutsideClick={()=>setIsModalOpen(false)}></SettingModal>
+            {/* <SettingModal isVisible={isModalOpen} onOutsideClick={()=>setIsModalOpen(false)}></SettingModal> */}
 
             <div className="flex flex-row gap-4 items-center pl-4 py-2  pr-12">
                 {/*TODO: replace with profile square component*/}
@@ -69,8 +69,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
         </div>
     );
     function openSettingModal(){
-        setIsModalOpen(true);
-        //  onAccountSettingsClicked(null);
+        onAccountSettingsClicked();
     }
 }
 

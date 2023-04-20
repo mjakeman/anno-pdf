@@ -5,6 +5,7 @@ import {ChevronDownIcon, Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/reac
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import {Link} from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
+import SettingModal from "../../setting/SettingModal";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -13,6 +14,8 @@ interface DashboardHeaderProps {
 export default function DashboardHeader({  onCommandMenuClicked } : DashboardHeaderProps) {
 
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+
+    const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
@@ -38,11 +41,16 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 </button>
                 {showProfileDropdown &&
                     <div className="absolute right-0">
-                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} onAccountSettingsClicked={()=>setShowProfileDropdown(false)}/>
+                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} onAccountSettingsClicked={()=>openSettingModal()}/>
                     </div>
                 }
             </div>
-
+            <SettingModal isVisible={isSettingModalOpen} onOutsideClick={()=>{setIsSettingModalOpen(false)}}/>
         </header>
     );
+
+    function openSettingModal() {
+        setShowProfileDropdown(false);
+        setIsSettingModalOpen(true);
+    }
 }
