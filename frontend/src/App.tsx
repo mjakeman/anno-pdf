@@ -11,7 +11,6 @@ import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
 import {createContext, useEffect} from "react";
-import SettingModal from "./components/app/setting/SettingModal";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -34,7 +33,6 @@ export default function App() {
                         <Route path="terms" element={<Terms/>} />
                         <Route path="login" element={<Login/>} />
                         <Route path="signup" element={<SignUp/>} />
-                        {/* <Route path="account" element={<SettingModal/>}></Route> */}
                     </Route>
                     <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
                         <Route index element={<Dashboard/>} />
