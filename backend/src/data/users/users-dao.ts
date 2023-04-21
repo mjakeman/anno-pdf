@@ -9,11 +9,12 @@ async function getUser(id: String) {
 }
 
 async function createUser(user: any) {
-    const existingUser = await User.findOne({ uuid: user.uuid });
-    if (existingUser) {
+    try {
+        return await User.create(user);
+    } catch (e) {
+        // User already exists
         return null;
     }
-    return await User.create(user);
 }
 
 export { createUser, getUsers, getUser }
