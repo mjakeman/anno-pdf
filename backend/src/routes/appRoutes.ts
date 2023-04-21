@@ -7,7 +7,7 @@ import documentRouter from '../routes/api/documents'
  */
 const router = Router();
 
-router.use('/users', userRouter);
+router.use(['/users', '/user'], userRouter);
 router.use('/documents', documentRouter);
 
 export default router;
