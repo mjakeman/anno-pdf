@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { createDocument, deleteDocument } from "../data/documents/documents-dao";
+import { createDocument, deleteDocument, updateDocument } from "../data/documents/documents-dao";
 
 class DocumentController {
+
     async getDocuments(_req: Request, res: Response) {
         res.send("Not implemented");
     }
@@ -17,11 +18,21 @@ class DocumentController {
         return res.sendStatus(422);
     }
 
-    async deleteDocument (req: Request, res: Response) {
+    async deleteDocument(req: Request, res: Response) {
         const dbDoc = await deleteDocument(req.params.id);
 
         if (dbDoc) {
             return res.status(200).send('Document deleted - id: ' + dbDoc._id);
+        }
+
+        return res.status(404).send('Document not found');
+    }
+
+    async updateDocument(req: Request, res: Response) {
+        const updatedDoc = await updateDocument(req.params.id, req.body);
+
+        if (updatedDoc) {
+            return res.status(200).json(updatedDoc);
         }
 
         return res.status(404).send('Document not found');

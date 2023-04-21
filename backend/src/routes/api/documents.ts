@@ -14,4 +14,7 @@ router.post('/', documentController.createDocument);
 // Delete document by id
 router.delete('/:id/delete', documentController.deleteDocument);
 
+// Update document by id
+router.post('/:id/update', documentController.updateDocument)
+
 export default router;
