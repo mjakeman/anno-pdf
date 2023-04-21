@@ -1,13 +1,18 @@
 import * as express from "express";
 import * as http from "http";
 import * as socketio from "socket.io";
+import mongoose from "mongoose";
+import Config from "./util/Config";
 
-const port = 8080;
+const port = Config.PORT;
 const app = express.default();
 
-app.get("/", (_req, res) => {
-    res.send({ uptime: process.uptime() });
-});
+// Setup body-parser
+app.use(express.json());
+
+// Setup our routes.
+import routes from './routes/appRoutes';
+app.use('/', routes);
 
 const server = http.createServer(app);
 const io = new socketio.Server(server);
@@ -35,6 +40,10 @@ io.on("connection", async (socket) => {
     });
 });
 
-server.listen(port, () => {
-    console.log(`Listening to the server on ${port}`);
-});
+mongoose.connect(Config.MONGODB_URI)
+    .then(() => {
+        console.log('Connected to MongoDB');
+        server.listen(port, () => {
+            console.log(`Listening to the server on ${port}`);
+        });
+    })
