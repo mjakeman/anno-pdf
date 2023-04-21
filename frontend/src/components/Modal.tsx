@@ -1,3 +1,4 @@
+import { XMarkIcon } from "@heroicons/react/20/solid"
 import ReactDOM from "react-dom"
 
 interface ModalProps {
@@ -14,9 +15,9 @@ return ReactDOM.createPortal(
     {isVisible && 
     <div className="bg-white rounded-lg z-[200] relative h-5/6">
         {children}
-        <button onClick={onOutsideClick} className="absolute top-0 right-0 p-2">
-            X
-        </button>
+        <span className="absolute top-2 right-2 hover:cursor-pointer">
+            <XMarkIcon onClick={onOutsideClick} className="w-6 h-6"/>
+        </span>
     </div>
     }
 </div>
