@@ -47,7 +47,6 @@ export default function DashboardTable() {
     const [sortDirection, setSortDirection] = useState<SortOrder>("Ascending");
 
     const sortedData = useCallback(()=>{
-        console.log(sortKey, sortDirection)
         return documentData.sort((a, b) => {
             if (sortDirection === "Ascending") {
                 if (a[sortKey] < b[sortKey]) {
@@ -71,7 +70,7 @@ export default function DashboardTable() {
     , [sortKey, sortDirection])
 
     return(
-        <>
+        <>  
             <div className="flex flex-row gap-2">
                 <Tooltip text="Filter by" position="bottom">
                     <FilterButton label="All" onClick={()=> setFilter("All")}/>
@@ -83,8 +82,8 @@ export default function DashboardTable() {
                 <PrimaryButton label="Upload PDF +" onClick={()=> uploadPDF()}></PrimaryButton>
             </div>
                 <div className="relative overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead className="text-lg text-gray-500 dark:text-gray-400">
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-200">
+                    <thead className="text-lg text-gray-500 dark:text-gray-200">
                         <tr>
                             <HeaderCell label="Name" setSortKey={setSortKey} setSortDirection={setSortDirection} sortDirection={sortDirection}/>
                             <HeaderCell label="Owner" setSortKey={setSortKey} setSortDirection={setSortDirection} sortDirection={sortDirection}/>
@@ -94,7 +93,7 @@ export default function DashboardTable() {
                     <tbody>
                     {sortedData().filter((document) => filter === "All" || document.owner === filter || filter === "Shared" && document.owner !== "Me")
                     .map((document, index) => (
-                            <tr key={index} className="border-b-2 text-gray-800">
+                            <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
                                     <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
                                     <button type="button" className="hover:underline" onClick={()=>navigate("/project-group-fearless-foxes/editor")}>{document.name}</button>

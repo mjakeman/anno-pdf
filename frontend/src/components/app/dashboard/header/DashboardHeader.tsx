@@ -5,6 +5,7 @@ import {ChevronDownIcon, Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/reac
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import {Link} from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
+import SettingModal from "../../setting/SettingModal";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -14,6 +15,8 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
+    const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
+
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
             <div className="flex flex-row gap-4 items-center">
@@ -21,7 +24,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 <button type="button" className="relative hover:cursor-not-allowed transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 p-3 rounded-xl gap-12 flex flex-row items-center justify-between ">
                     <span className="text-anno-red-primary dark:text-anno-pink-500 font-semibold">My Workspace</span>
                     <ChevronDownIcon className="text-anno-red-secondary dark:text-anno-pink-500 w-6 h-6" />
-                </button>.
+                </button>
             </div>
             <CommandMenuButton onClick={onCommandMenuClicked}/>
             <div className="relative">
@@ -38,11 +41,16 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 </button>
                 {showProfileDropdown &&
                     <div className="absolute right-0">
-                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} />
+                        <ProfileDropdown onOutsideClick={() => setShowProfileDropdown(false)} onAccountSettingsClicked={()=>openSettingModal()}/>
                     </div>
                 }
             </div>
-
+            <SettingModal isVisible={isSettingModalOpen} onOutsideClick={()=>{setIsSettingModalOpen(false)}}/>
         </header>
     );
+
+    function openSettingModal() {
+        setShowProfileDropdown(false);
+        setIsSettingModalOpen(true);
+    }
 }
