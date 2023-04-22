@@ -22,7 +22,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
 
     return(
         <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
-        <div ref={settingModal} className="grid grid-cols-10 bg-white h-full rounded-md dark:bg-anno-space-100">
+        <div ref={settingModal} className="grid grid-cols-10 bg-white h-[90vh] rounded-md dark:bg-anno-space-100">
             <div className="col-span-3 bg-gray-200 h-full rounded-md dark:bg-anno-space-700">
                 <div className="flex flex-col gap-4 p-2">
                     <span onClick={()=>setActiveTab("account")} className={"flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg " + isAccountActive}>
