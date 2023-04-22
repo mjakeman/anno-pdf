@@ -50,6 +50,18 @@ export default function SignUp() {
             // TODO: Add API call here for backend validation
             const createdUser = await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
             // TODO: Add API call here to create a user in our backend with returned uid
+
+            var loginJsonData = {
+                "email" : signUpForm.email,
+                "password" : signUpForm.password
+            }
+
+            await fetch('/auth', {
+                body: JSON.stringify(loginJsonData)
+            })
+                .then(response => console.log(response.text()))
+                .catch(error => console.error(error))
+
             console.log(createdUser);
         } catch (error) {
             console.error(error);

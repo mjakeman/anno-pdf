@@ -1,11 +1,24 @@
 import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
+import {useSignInWithGoogle} from "react-firebase-hooks/auth";
+import {auth} from "../../../firebaseAuth";
 
 export default function Login() {
 
     // TODO: Add signin with google (similar to SignUp.tsx)
     // TODO: Add signin with email and password https://github.com/CSFrequency/react-firebase-hooks/tree/master/auth#usesigninwithemailandpassword
+
+    const [signInWithGoogle] = useSignInWithGoogle(auth)
+
+    async function handleSignInWithGoogle() {
+        try {
+            const signedInUser = await signInWithGoogle();
+            // TODO: Add API call here to check for google authentication
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <Container>
@@ -21,8 +34,7 @@ export default function Login() {
                         <input type="password" id="password-input" placeholder="Enter your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
-                    {/* TODO: add LOGIN functionality */}
-                   <PrimaryButton onClick={() => console.log('Log in!')} label="Log in"/>
+                   <PrimaryButton onClick={handleSignInWithGoogle} label="Log in"/>
 
                     <div className="flex flex-row gap-6 items-center text-zinc-500 dark:text-white">
                         <hr className="w-full" />
@@ -31,7 +43,7 @@ export default function Login() {
                     </div>
 
                     {/* Continue with Google Button - TODO: add functionality or replace with package */}
-                    <button type="button" className="flex flex-row items-center justify-center gap-4 bg-white border-2 p-2 rounded transition-colors hover:bg-zinc-200">
+                    <button type="button" onClick={handleSignInWithGoogle} className="flex flex-row items-center justify-center gap-4 bg-white border-2 p-2 rounded transition-colors hover:bg-zinc-200">
                         <img className="w-6 h-6" src={googleLogo} alt="Google logo" />
                         <span className="text-lg font-light">Continue with Google</span>
                     </button>
