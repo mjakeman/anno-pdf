@@ -31,7 +31,7 @@ export default function Editor() {
                 {/* Document Space */}
                 <main className="grow bg-zinc-300 dark:bg-anno-space-700">
 
-                    // TODO: REMOVE - for testing only.
+                    {/* TODO: REMOVE - for testing only.*/}
                     {/*<div className="flex justify-center">*/}
                     {/*    <FabricJSCanvas width={1000} height={1000}/>*/}
                     {/*</div>*/}
