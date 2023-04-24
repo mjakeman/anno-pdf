@@ -10,8 +10,7 @@ class CustomObject extends fabric.Object {
     _isEditing: boolean
     _latestLeft: number | undefined
     _latestTop:  number | undefined
-
-    _width: number
+    type: string = "math";
 
     constructor(latex:string, options: any) {
         super(options);
@@ -22,7 +21,6 @@ class CustomObject extends fabric.Object {
         this.on('deselected', this.deselected)
         this._latestTop = options.top;
         this._latestLeft = options.left;
-        this._width = 10;
     }
 
     deselected() {
@@ -62,6 +60,10 @@ class CustomObject extends fabric.Object {
             });
         }
 
+    }
+
+    toObject(propertiesToInclude: string[] = ['_latex', '_svgImgString']) {
+        return super.toObject(propertiesToInclude);
     }
 
     edit() {
