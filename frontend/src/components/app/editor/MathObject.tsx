@@ -3,7 +3,7 @@ import React, {useRef} from "react";
 import TeXToSVG from 'tex-to-svg';
 
 
-class CustomObject extends fabric.Object {
+class MathObject extends fabric.Object {
     _latex: string
     _svgImgString: string
 
@@ -105,4 +105,4 @@ class CustomObject extends fabric.Object {
     }
 }
 
-export default CustomObject;
+export default MathObject;

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef} from 'react';
 import {fabric} from 'fabric';
-import CustomObject from "../../../CustomObject";
+import MathObject from "./MathObject";
 import {ToolContext} from "./Editor";
 
 interface Props {
@@ -62,7 +62,7 @@ export default function FabricJSCanvas( {width, height} : Props ) {
                 width: 300, // TODO Change initial width,
             }
         );
-        const customObj = new CustomObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+        const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
             left: 100,
             top: 100,
             scaleX: 4,
