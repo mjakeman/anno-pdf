@@ -1,10 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import * as pdfjs from 'pdfjs-dist';
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {useGesture} from "@use-gesture/react";
 import {useHotkeys} from "react-hotkeys-hook";
-import {mat4} from 'gl-matrix';
+import {ToolContext} from "./Editor";
+import {fabric} from "fabric";
+import MathObject from "./MathObject";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -15,31 +17,6 @@ interface Props {
     pageNumber: number;
 }
 
-const vertexShaderSource = `
-  attribute vec2 aPosition;
-  uniform vec2 uTranslation;
-  uniform vec2 uScale;
-  uniform mat4 uProjectionMatrix;
-  
-  attribute vec2 aTexCoord;
-  varying vec2 vTexCoord;
-
-  void main() {
-    gl_Position = uProjectionMatrix * vec4((aPosition * uScale) + uTranslation, 0.0, 1.0);
-    vTexCoord = aTexCoord;
-  }
-`;
-
-const fragmentShaderSource = `
-  precision mediump float;
-  uniform sampler2D uTexture;
-  varying vec2 vTexCoord;
-
-  void main() {
-    gl_FragColor = texture2D(uTexture, vTexCoord);
-  }
-`;
-
 // Constants for scale
 const SCALE_MAX = 8.0;
 const SCALE_MIN = 0.1;
@@ -49,8 +26,7 @@ const SCALE_MULTIPLIER = 0.8;
 const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const glContextRef = useRef<WebGLRenderingContext | null>(null);
-    const glShaderProgram = useRef<WebGLShader | null>(null);
+    const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const [width, setWidth] = useState(window.innerWidth);
     const [height, setHeight] = useState(window.innerHeight);
@@ -58,95 +34,19 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPage, setPdfPage] = useState<PDFPageProxy>();
 
-    const pdfPageTexture = useRef<WebGLTexture | null>(null);
+    const pdfPageTexture = useRef<fabric.Image | null>(null);
     const pdfPageAspectRatio = useRef<{w: number, h: number} | null>({w: 0, h: 0});
 
     const [scale, setScale] = useState(1);
     const [translation, setTranslation] = useState({ x: 0, y: 0});
 
-    const initialiseWebGL = (context: WebGLRenderingContext) => {
-
-        const gl = context;
-
-        // |-------------------|-------------------|
-        // |    -1.0    1.0    |     0.0    1.0    |
-        // |    -1.0   -1.0    |     0.0    0.0    |
-        // |     1.0    1.0    |     1.0    1.0    |
-        // |     1.0,  -1.0    |     1.0    1.0    |
-        // |-------------------|-------------------|
-        // | Vertex Data (x,y) | Tex Coords (x,y)  |
-        // |-------------------|-------------------|
-        const vertices = [
-            -1.0,  1.0,  0.0, 1.0,
-            -1.0, -1.0,  0.0, 0.0,
-            1.0,  1.0,  1.0, 1.0,
-            1.0, -1.0,  1.0, 0.0
-        ];
-
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER)!;
-        gl.shaderSource(vertexShader, vertexShaderSource);
-        gl.compileShader(vertexShader);
-
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)!;
-        gl.shaderSource(fragmentShader, fragmentShaderSource);
-        gl.compileShader(fragmentShader);
-
-        const program = gl.createProgram()!;
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        const aPosition = gl.getAttribLocation(program, 'aPosition');
-        gl.enableVertexAttribArray(aPosition);
-        gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 16, 0);
-
-        const aTexCoord = gl.getAttribLocation(program, 'aTexCoord');
-        gl.enableVertexAttribArray(aTexCoord);
-        gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, 16, 8);
-
-        gl.useProgram(program);
-
-        glShaderProgram.current = program;
-
-        // Create a new orthographic projection matrix
-        reproject();
-
-        const uTexture = gl.getUniformLocation(program, 'uTexture');
-        gl.uniform1i(uTexture, gl.TEXTURE0);
-    }
+    const [selectedTool, setSelectedTool] = useContext(ToolContext);
 
     const draw = () => {
         if (!pdfPage) return;
+        if (!fabricRef.current) return;
 
-        if (!glContextRef.current) return;
-        if (!pdfPageTexture.current) return;
-
-        const gl = glContextRef.current;
-        const program = glShaderProgram.current!;
-
-        const uTranslation = gl.getUniformLocation(program, 'uTranslation');
-        gl.uniform2f(uTranslation, translation.x, -translation.y);
-
-        // Retrieve the aspect ratio of the page
-        const {w, h} = pdfPageAspectRatio!.current!;
-        const aspectRatio = h / w;
-        console.log(scale * aspectRatio, scale);
-
-        // When applying the scale, multiply the height by the aspect ratio
-        // in order to preserve the original page dimensions when drawing. This
-        // avoids the page looking stretched.
-        const uScale = gl.getUniformLocation(program, 'uScale');
-        gl.uniform2f(uScale, scale * SCALE_MULTIPLIER, scale * aspectRatio * SCALE_MULTIPLIER);
-
-        // Clear the canvas to transparent (alpha = 0).
-        gl.clearColor(0.0, 0.0, 0.0, 0.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        fabricRef.current?.renderAll();
     };
 
     const renderPageToTexture = async (page: PDFPageProxy) => {
@@ -187,58 +87,18 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
         // Now comes the fun part. Let's turn it into a WebGL texture.
 
-        // Retrieve a WebGL context reference
-        const gl = glContextRef.current!;
+        const image = new Image();
+        image.id = "pdfPage";
+        image.src = canvas.toDataURL();
 
-        // Create a texture object on the GPU
-        const texture = gl.createTexture();
-
-        // Activate and bind it to the TEXTURE0 slot
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // Flip as PDF pages are rendered "upside down"
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-        // Set some sensible default texture parameters. These aren't
-        // really important.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-        // Upload the Canvas's image data to the WebGL texture.
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-
-        // And equivalently update our stored references to point to the texture
-        // and its dimensions. Note we use references rather than state here; we do
-        // not want to re-render at this point.
-        pdfPageTexture.current = texture;
-        pdfPageAspectRatio.current = { w: canvas.width, h: canvas.height };
+        const fabricImage = new fabric.Image(image, {});
+        pdfPageTexture.current = fabricImage;
 
         // Logging
         console.info("Created texture for page with size: ", canvas.width, canvas.height);
 
-        return texture;
+        return fabricImage;
     };
-
-    // Create an orthographic projection matrix to preserve aspect ratio
-    // while drawing.
-    const reproject = () => {
-
-        const gl = glContextRef.current;
-        if (!gl) return;
-
-        const canvas = gl.canvas;
-        const aspectRatio = canvas.width / canvas.height;
-
-        // Create an orthographic projection matrix.
-        const projectionMatrix = mat4.create();
-        mat4.ortho(projectionMatrix, -1.0, 1.0, -1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0);
-
-        const projectionMatrixLocation = gl.getUniformLocation(glShaderProgram.current!, "uProjectionMatrix");
-        gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
-    }
 
     // Load the PDF Document.
     useEffect(() => {
@@ -266,6 +126,8 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         renderPageToTexture(pdfPage).then(() => {
             // Once the texture exists, queue a drawing operation when the
             // browser next repaints the page
+            const fabric = fabricRef.current!;
+            fabric.setBackgroundImage(pdfPageTexture.current!, fabric.renderAll.bind(fabric), {});
             requestAnimationFrame(draw);
         });
 
@@ -276,35 +138,60 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     useEffect(() => {
         const dpi = window.devicePixelRatio;
 
+        const canvas = new fabric.Canvas(canvasRef.current, {
+            width: width,
+            height: height,
+            backgroundColor: 'black', // TODO REMOVE BG COLOR
+        });
+
+        fabricRef.current = canvas;
+
+        const text = new fabric.Textbox('Hello, World!',
+            {
+                left: 50,
+                top: 50,
+                selectable: true,
+                width: 300, // TODO Change initial width,
+            }
+        );
+        const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+            left: 100,
+            top: 100,
+            scaleX: 4,
+            scaleY: 4,
+            height: 10,
+            width: 30,
+        });
+
+        canvas.add(text);
+        canvas.add(customObj);
+
         const preventDefaultHandler = (e: Event) => e.preventDefault();
 
-        document.addEventListener('gesturestart', preventDefaultHandler)
-        document.addEventListener('gesturechange', preventDefaultHandler)
+        //document.addEventListener('gesturestart', preventDefaultHandler)
+        //document.addEventListener('gesturechange', preventDefaultHandler)
 
         function handleResize() {
             const canvas = canvasRef.current;
+            const fabricElement = fabricRef.current;
             if (!canvas) return;
 
-            canvas.width = canvas.clientWidth * dpi;
-            canvas.height = canvas.clientHeight * dpi;
+            const newWidth = canvas.clientWidth * dpi;
+            const newHeight = canvas.clientHeight * dpi;
 
-            setWidth(canvas.width);
-            setHeight(canvas.height);
+            fabricElement?.setWidth(newWidth);
+            fabricElement?.setHeight(newHeight);
 
-            const gl = glContextRef.current;
-            if (!gl) return;
-
-            reproject();
-
-            gl.viewport(0, 0, canvas.width, canvas.height);
+            setWidth(newWidth);
+            setHeight(newHeight);
         }
 
         handleResize();
         window.addEventListener('resize', handleResize);
 
         return () => {
-            document.removeEventListener('gesturestart', preventDefaultHandler);
-            document.removeEventListener('gesturechange', preventDefaultHandler);
+            //document.removeEventListener('gesturestart', preventDefaultHandler);
+            //document.removeEventListener('gesturechange', preventDefaultHandler);
             window.removeEventListener('resize', handleResize);
         };
 
@@ -315,7 +202,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         requestAnimationFrame(draw);
     });
 
-    useGesture(
+    /*useGesture(
         {
             onDrag: ({ down, offset: [sx, sy] }) => {
                 if (down) {
@@ -348,7 +235,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
                 preventDefault: true
             }
         }
-    );
+    );*/
 
     useHotkeys('0', () => {
         setScale(1.0);
@@ -363,17 +250,9 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         setScale(scale => Math.max(SCALE_MIN, scale - SCALE_STEP));
     }, [translation, scale]);
 
-    return <canvas
-        className="touch-none w-full h-full border-4 border-red-500 bg-zinc-300"
-        ref={(element) => {
-            if (element) {
-                const gl = element.getContext('webgl2')!;
-                glContextRef.current = gl;
-                canvasRef.current = element;
-                initialiseWebGL(gl);
-            }
-        }}
-    />;
+    return <div className="touch-none w-full h-full border-4 border-red-500 bg-zinc-300">
+        <canvas ref={canvasRef}/>
+    </div>;
 });
 
 export default Viewer;
