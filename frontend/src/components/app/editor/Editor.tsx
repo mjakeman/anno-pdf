@@ -36,7 +36,7 @@ export default function Editor() {
                     {/*    <FabricJSCanvas width={1000} height={1000}/>*/}
                     {/*</div>*/}
 
-                    <Viewer url="test.pdf" pageNumber={pageNumber} scale={1} translation={{x: 0, y: 0}}/>
+                    <Viewer url="test.pdf" pageNumber={pageNumber}/>
 
                     {/* TODO: Make react component */}
                     <div className="absolute top-[50%] left-0 ml-4">

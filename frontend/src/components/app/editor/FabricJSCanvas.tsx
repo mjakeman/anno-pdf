@@ -72,7 +72,7 @@ export default function FabricJSCanvas( {width, height} : Props ) {
         });
 
         // // add your canvas elements here
-        canvas.add(text);
+        canvas.add(text)
         canvas.add(customObj);
         console.log(canvas.toObject());
     }, [selectedTool]);

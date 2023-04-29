@@ -7,6 +7,8 @@ import {useHotkeys} from "react-hotkeys-hook";
 import {ToolContext} from "./Editor";
 import {fabric} from "fabric";
 import MathObject from "./MathObject";
+import {FabricJSCanvas, useFabricJSEditor} from "fabricjs-react";
+import {IEvent} from "fabric/fabric-impl";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -15,17 +17,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface Props {
     url: string;
     pageNumber: number;
-    scale: number;
-    translation: { x: number, y: number };
 }
 
 // Constants for scale
 const SCALE_MAX = 8.0;
 const SCALE_MIN = 0.1;
 const SCALE_STEP = 0.25;
-const SCALE_MULTIPLIER = 0.8;
+const SCALE_MULTIPLIER = 0.999;
 
-const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
+const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -36,11 +36,11 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPage, setPdfPage] = useState<PDFPageProxy>();
 
-    const pdfPageTexture = useRef<fabric.Image | null>(null);
-    const pdfPageAspectRatio = useRef<{w: number, h: number} | null>({w: 0, h: 0});
-
-    const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
+    const lastPos = useRef({ x: 0, y: 0 });
     const isDragging = useRef(false);
+
+    const [scale, setScale] = useState(1);
+    const [translation, setTranslation] = useState({ x: 0, y: 0});
 
     const [selectedTool, setSelectedTool] = useContext(ToolContext);
 
@@ -87,23 +87,20 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
         // we don't have to worry about blocking the main thread.
         await page.render(renderContext).promise;
 
-        // Now comes the fun part. Let's turn it into a WebGL texture.
+        return new Promise((resolve, _) => {
+            const image = new Image();
+            image.id = "pdfPage";
+            image.src = canvas.toDataURL();
+            image.onload = () => {
 
-        const image = new Image();
-        image.id = "pdfPage";
-        image.src = canvas.toDataURL();
+                const fabricImage = new fabric.Image(image, {});
 
-        image.onload = () => {
-            const fabricCanvas = fabricRef.current!;
-            const fabricImage = new fabric.Image(image, {});
+                // Logging
+                console.info("Created texture for page with size: ", fabricImage.width, fabricImage.height);
 
-            // Logging
-            console.info("Created texture for page with size: ", canvas.width, canvas.height);
-
-            // Add to Canvas
-            fabricCanvas.setBackgroundImage(fabricImage, fabricCanvas.renderAll.bind(fabric), {});
-            requestAnimationFrame(draw);
-        }
+                resolve(fabricImage);
+            }
+        });
     };
 
     // Load the PDF Document.
@@ -129,16 +126,107 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
         if (!pdfPage) return;
 
         // Render to texture and wait for the result
-        renderPageToTexture(pdfPage).then(() => {
+        renderPageToTexture(pdfPage).then((image) => {
             // Once the texture exists, queue a drawing operation when the
             // browser next repaints the page
             const fabric = fabricRef.current!;
-            fabric.setBackgroundImage(pdfPageTexture.current!, fabric.renderAll.bind(fabric), {});
+            fabric.setBackgroundImage(image as fabric.Image, fabric.renderAll.bind(fabric), {});
             requestAnimationFrame(draw);
         });
 
         return;
     }, [pdfPage]);
+
+    // Set canvas translation and zoom
+    useEffect(() => {
+        const canvas = fabricRef.current;
+        if (canvas) {
+            canvas.absolutePan(translation);
+            canvas.setZoom(scale);
+        }
+        requestAnimationFrame(draw);
+    }, [translation, scale]);
+
+    // Drawing function
+    useEffect(() => {
+        requestAnimationFrame(draw);
+    });
+
+    const onMouseWheel = (opt: IEvent<WheelEvent>) => {
+        const delta = opt.e.deltaY;
+        const canvas = fabricRef.current!;
+
+        // We NEED to use setScale because the current value of 'scale'
+        // is stack captured by the owning closure. Who thought this was
+        // a good language feature... >:(
+        setScale((zoom) => {
+            zoom *= SCALE_MULTIPLIER ** delta;
+
+            if (zoom > SCALE_MAX)
+                zoom = SCALE_MAX;
+
+            if (zoom < SCALE_MIN)
+                zoom = SCALE_MIN;
+
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+
+            if (zoom < 400 / 1000) {
+                translation.x = 200 - 1000 * zoom / 2;
+                translation.y = 200 - 1000 * zoom / 2;
+            } else {
+                if (translation.x >= 0) {
+                    translation.x = 0;
+                } else if (translation.x < canvas.getWidth() - 1000 * zoom) {
+                    translation.x = canvas.getWidth() - 1000 * zoom;
+                }
+                if (translation.y >= 0) {
+                    translation.y = 0;
+                } else if (translation.y < canvas.getHeight() - 1000 * zoom) {
+                    translation.y = canvas.getHeight() - 1000 * zoom;
+                }
+            }
+
+            return zoom;
+        });
+
+    };
+
+    const onMouseDown = (opt: IEvent<MouseEvent>) => {
+        const event = opt.e;
+        const canvas = fabricRef.current;
+        if (canvas && event.altKey) {
+            isDragging.current = true;
+            canvas.selection = false;
+            lastPos.current = { x: event.clientX, y: event.clientY };
+        }
+    };
+
+    const onMouseMove = (opt: IEvent<MouseEvent>) => {
+        const event = opt.e;
+        const canvas = fabricRef.current;
+        if (canvas && isDragging.current) {
+            setTranslation((viewport) => {
+                const x = viewport.x - (event.clientX - lastPos.current.x);
+                const y = viewport.y - (event.clientY - lastPos.current.y);
+
+                lastPos.current = { x: event.clientX, y: event.clientY };
+
+                // MUST be a new array
+                // Why? Because apparently React doesn't consider the state to
+                // have changed if it isn't a brand-new object. Yay for inefficiency.
+                return { x, y };
+            });
+        }
+    };
+
+    const onMouseUp = (_: IEvent<MouseEvent>) => {
+        const canvas = fabricRef.current;
+        if (canvas) {
+            isDragging.current = false;
+            canvas.selection = true;
+        }
+    };
 
     // Startup function
     useEffect(() => {
@@ -149,67 +237,12 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
             height: height
         });
 
-        canvas.on('mouse:wheel', function(opt) {
-            var delta = opt.e.deltaY;
-            var zoom = canvas.getZoom();
-            zoom *= 0.999 ** delta;
-            if (zoom > 20) zoom = 20;
-            if (zoom < 0.01) zoom = 0.01;
-            canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-            opt.e.preventDefault();
-            opt.e.stopPropagation();
-            const viewport = translation;
-            if (zoom < 400 / 1000) {
-                viewport.x = 200 - 1000 * zoom / 2;
-                viewport.y = 200 - 1000 * zoom / 2;
-            } else {
-                if (viewport.x >= 0) {
-                    viewport.x = 0;
-                } else if (viewport.x < canvas.getWidth() - 1000 * zoom) {
-                    viewport.x = canvas.getWidth() - 1000 * zoom;
-                }
-                if (viewport.y >= 0) {
-                    viewport.y = 0;
-                } else if (viewport.y < canvas.getHeight() - 1000 * zoom) {
-                    viewport.y = canvas.getHeight() - 1000 * zoom;
-                }
-                translation = viewport;
-            }
-        });
-
-        canvas.on('mouse:down', function(opt) {
-            const event = opt.e;
-            const canvas = fabricRef.current;
-            if (canvas && event.altKey) {
-                isDragging.current = true;
-                canvas.selection = false;
-                setLastPos({ x: event.clientX, y: event.clientY });
-            }
-        });
-
-        /*canvas.on('mouse:move', function(opt) {
-            const event = opt.e;
-            const canvas = fabricRef.current;
-            if (canvas && isDragging.current) {
-                const viewport = translation;
-
-                viewport.x += event.clientX - lastPos.x;
-                viewport.y += event.clientY - lastPos.y;
-
-                setLastPos({ x: event.clientX, y: event.clientY });
-                translation = viewport;
-            }
-        });*/
-
-        canvas.on('mouse:up', function(opt) {
-            const canvas = fabricRef.current;
-            if (canvas) {
-                isDragging.current = false;
-                canvas.selection = true;
-            }
-        });
-
         fabricRef.current = canvas;
+
+        canvas.on('mouse:wheel', onMouseWheel);
+        canvas.on('mouse:down', onMouseDown);
+        canvas.on('mouse:move', onMouseMove);
+        canvas.on('mouse:up', onMouseUp);
 
         const text = new fabric.Textbox('Hello, World!',
             {
@@ -219,6 +252,7 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
                 width: 300, // TODO Change initial width,
             }
         );
+
         const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
             left: 100,
             top: 100,
@@ -233,8 +267,8 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
 
         const preventDefaultHandler = (e: Event) => e.preventDefault();
 
-        //document.addEventListener('gesturestart', preventDefaultHandler)
-        //document.addEventListener('gesturechange', preventDefaultHandler)
+        document.addEventListener('gesturestart', preventDefaultHandler)
+        document.addEventListener('gesturechange', preventDefaultHandler)
 
         function handleResize() {
             const canvas = canvasRef.current;
@@ -255,63 +289,17 @@ const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
         window.addEventListener('resize', handleResize);
 
         return () => {
-            //document.removeEventListener('gesturestart', preventDefaultHandler);
-            //document.removeEventListener('gesturechange', preventDefaultHandler);
+            document.removeEventListener('gesturestart', preventDefaultHandler);
+            document.removeEventListener('gesturechange', preventDefaultHandler);
             window.removeEventListener('resize', handleResize);
         };
 
     }, []);
 
-    // Drawing function
-    useEffect(() => {
-        const canvas = fabricRef.current;
-        if (canvas) {
-            canvas.absolutePan(translation);
-            canvas.zoomToPoint(translation, scale); // TODO: Fix
-        }
-
-        requestAnimationFrame(draw);
-    });
-
-    /*useGesture(
-        {
-            onDrag: ({ down, offset: [sx, sy] }) => {
-                if (down) {
-                    setTranslation({x: sx, y: sy});
-                }
-            },
-            onPinch: ({ offset: [scale], last }) => {
-                if (!last) {
-                    setScale(scale);
-                }
-            },
-        },
-        {
-            target: canvasRef,
-            eventOptions: { passive: false },
-            drag: {
-                bounds: {
-                    left: -Math.max(1, scale),
-                    right: Math.max(1, scale),
-                    top: -Math.max(1, scale),
-                    bottom: Math.max(1, scale)
-                },
-                from: () => [translation.x, translation.y],
-                transform: ([x, y]) => [(x / width) * 4, (y / height) * 4],
-                preventDefault: true
-            },
-            pinch: {
-                scaleBounds: { min: SCALE_MIN, max: SCALE_MAX },
-                from: () => [scale, 0],
-                preventDefault: true
-            }
-        }
-    );*/
-
     useHotkeys('0', () => {
-        fabricRef.current?.setZoom(1);
-        translation = {x: 0, y: 0};
-    }, [translation]);
+        setScale(1);
+        setTranslation({x: 0, y: 0});
+    }, [scale, translation]);
 
     useHotkeys(['=', '+'], () => {
         if (fabricRef.current) {
