@@ -37,7 +37,6 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     const pdfPageTexture = useRef<fabric.Image | null>(null);
     const pdfPageAspectRatio = useRef<{w: number, h: number} | null>({w: 0, h: 0});
 
-    const [scale, setScale] = useState(1);
     const [translation, setTranslation] = useState({ x: 0, y: 0});
 
     const [selectedTool, setSelectedTool] = useContext(ToolContext);
@@ -140,8 +139,35 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             width: width,
-            height: height,
-            backgroundColor: 'black', // TODO REMOVE BG COLOR
+            height: height
+        });
+
+        canvas.on('mouse:wheel', function(opt) {
+            var delta = opt.e.deltaY;
+            var zoom = canvas.getZoom();
+            zoom *= 0.999 ** delta;
+            if (zoom > 20) zoom = 20;
+            if (zoom < 0.01) zoom = 0.01;
+            canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+            var viewport = translation;
+            if (zoom < 400 / 1000) {
+                viewport.x = 200 - 1000 * zoom / 2;
+                viewport.y = 200 - 1000 * zoom / 2;
+            } else {
+                if (viewport.x >= 0) {
+                    viewport.x = 0;
+                } else if (viewport.x < canvas.getWidth() - 1000 * zoom) {
+                    viewport.x = canvas.getWidth() - 1000 * zoom;
+                }
+                if (viewport.y >= 0) {
+                    viewport.y = 0;
+                } else if (viewport.y < canvas.getHeight() - 1000 * zoom) {
+                    viewport.y = canvas.getHeight() - 1000 * zoom;
+                }
+                setTranslation(viewport);
+            }
         });
 
         fabricRef.current = canvas;
@@ -238,17 +264,23 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     );*/
 
     useHotkeys('0', () => {
-        setScale(1.0);
+        fabricRef.current?.setZoom(1);
         setTranslation({x: 0, y: 0});
-    }, [translation, scale]);
+    }, [translation]);
 
     useHotkeys(['=', '+'], () => {
-        setScale(scale => Math.min(SCALE_MAX, scale + SCALE_STEP));
-    }, [translation, scale]);
+        if (fabricRef.current) {
+            const scale = fabricRef.current.getZoom();
+            fabricRef.current.setZoom(Math.min(SCALE_MAX, scale + SCALE_STEP));
+        }
+    });
 
     useHotkeys('-', () => {
-        setScale(scale => Math.max(SCALE_MIN, scale - SCALE_STEP));
-    }, [translation, scale]);
+        if (fabricRef.current) {
+            const scale = fabricRef.current.getZoom();
+            fabricRef.current.setZoom(Math.max(SCALE_MIN, scale - SCALE_STEP));
+        }
+    });
 
     return <div className="touch-none w-full h-full border-4 border-red-500 bg-zinc-300">
         <canvas ref={canvasRef}/>
