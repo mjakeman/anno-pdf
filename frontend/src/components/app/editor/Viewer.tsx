@@ -232,14 +232,10 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         const canvas = gl.canvas;
         const aspectRatio = canvas.width / canvas.height;
 
-        // Create an orthographic projection matrix. Explaining this is out-of-scope
-        // however the library 'gl-matrix' does all the magic, we just provide the screen
-        // bounds (i.e.g from -1 to +1 in each of the X, Y, Z axis).
+        // Create an orthographic projection matrix.
         const projectionMatrix = mat4.create();
         mat4.ortho(projectionMatrix, -1.0, 1.0, -1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0);
 
-        // Pass the projection matrix to our shader program. This lets the shader decide
-        // where to draw.
         const projectionMatrixLocation = gl.getUniformLocation(glShaderProgram.current!, "uProjectionMatrix");
         gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
     }
