@@ -15,6 +15,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface Props {
     url: string;
     pageNumber: number;
+    scale: number;
+    translation: { x: number, y: number };
 }
 
 // Constants for scale
@@ -23,7 +25,7 @@ const SCALE_MIN = 0.1;
 const SCALE_STEP = 0.25;
 const SCALE_MULTIPLIER = 0.8;
 
-const Viewer = React.memo(({ url, pageNumber }: Props) => {
+const Viewer = React.memo(({ url, pageNumber, translation, scale }: Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
@@ -37,7 +39,8 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     const pdfPageTexture = useRef<fabric.Image | null>(null);
     const pdfPageAspectRatio = useRef<{w: number, h: number} | null>({w: 0, h: 0});
 
-    const [translation, setTranslation] = useState({ x: 0, y: 0});
+    const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
+    const isDragging = useRef(false);
 
     const [selectedTool, setSelectedTool] = useContext(ToolContext);
 
@@ -90,13 +93,17 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         image.id = "pdfPage";
         image.src = canvas.toDataURL();
 
-        const fabricImage = new fabric.Image(image, {});
-        pdfPageTexture.current = fabricImage;
+        image.onload = () => {
+            const fabricCanvas = fabricRef.current!;
+            const fabricImage = new fabric.Image(image, {});
 
-        // Logging
-        console.info("Created texture for page with size: ", canvas.width, canvas.height);
+            // Logging
+            console.info("Created texture for page with size: ", canvas.width, canvas.height);
 
-        return fabricImage;
+            // Add to Canvas
+            fabricCanvas.setBackgroundImage(fabricImage, fabricCanvas.renderAll.bind(fabric), {});
+            requestAnimationFrame(draw);
+        }
     };
 
     // Load the PDF Document.
@@ -151,7 +158,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
             canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
             opt.e.preventDefault();
             opt.e.stopPropagation();
-            var viewport = translation;
+            const viewport = translation;
             if (zoom < 400 / 1000) {
                 viewport.x = 200 - 1000 * zoom / 2;
                 viewport.y = 200 - 1000 * zoom / 2;
@@ -166,7 +173,39 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
                 } else if (viewport.y < canvas.getHeight() - 1000 * zoom) {
                     viewport.y = canvas.getHeight() - 1000 * zoom;
                 }
-                setTranslation(viewport);
+                translation = viewport;
+            }
+        });
+
+        canvas.on('mouse:down', function(opt) {
+            const event = opt.e;
+            const canvas = fabricRef.current;
+            if (canvas && event.altKey) {
+                isDragging.current = true;
+                canvas.selection = false;
+                setLastPos({ x: event.clientX, y: event.clientY });
+            }
+        });
+
+        /*canvas.on('mouse:move', function(opt) {
+            const event = opt.e;
+            const canvas = fabricRef.current;
+            if (canvas && isDragging.current) {
+                const viewport = translation;
+
+                viewport.x += event.clientX - lastPos.x;
+                viewport.y += event.clientY - lastPos.y;
+
+                setLastPos({ x: event.clientX, y: event.clientY });
+                translation = viewport;
+            }
+        });*/
+
+        canvas.on('mouse:up', function(opt) {
+            const canvas = fabricRef.current;
+            if (canvas) {
+                isDragging.current = false;
+                canvas.selection = true;
             }
         });
 
@@ -225,6 +264,12 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     // Drawing function
     useEffect(() => {
+        const canvas = fabricRef.current;
+        if (canvas) {
+            canvas.absolutePan(translation);
+            canvas.zoomToPoint(translation, scale); // TODO: Fix
+        }
+
         requestAnimationFrame(draw);
     });
 
@@ -265,7 +310,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     useHotkeys('0', () => {
         fabricRef.current?.setZoom(1);
-        setTranslation({x: 0, y: 0});
+        translation = {x: 0, y: 0};
     }, [translation]);
 
     useHotkeys(['=', '+'], () => {
