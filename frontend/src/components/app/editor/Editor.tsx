@@ -1,23 +1,25 @@
 import {ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import MeasurementToolbar from "./toolbar/MeasurementToolbar";
+import Toolbar from "./toolbar/Toolbar";
 import Viewer from "./Viewer";
 import React, {useEffect, useState} from "react";
 import EditorHeader from "./header/EditorHeader";
 import FabricJSCanvas from "./FabricJSCanvas";
+import Pan from "./toolbar/model/tools/Pan";
+import Eraser from "./toolbar/model/tools/Eraser";
+import Tool from "./toolbar/model/tools/Tool";
 export const ToolContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
     const [pageNumber, setPageNumber] = useState(1);
-    const [selectedTool, setSelectedTool] = useState("pan");
+    const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
 
-    // TODO: Remove
     useEffect(() => {
-        console.log(selectedTool);
-    }, [selectedTool]);
+        setActiveToolData(new Pan("pan"));
+    }, []);
 
     return (
-        <ToolContext.Provider value={[selectedTool, setSelectedTool]}>
+        <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
 
             <div className="h-screen flex flex-col">
 
@@ -25,16 +27,16 @@ export default function Editor() {
 
                 {/* Toolbar */}
                 <div className="absolute translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
-                    <MeasurementToolbar/>
+                    <Toolbar/>
                 </div>
 
                 {/* Document Space */}
                 <main className="grow bg-zinc-300 dark:bg-anno-space-700">
 
-                    {/* TODO: REMOVE - for testing only.*/}
-                    {/*<div className="flex justify-center">*/}
-                    {/*    <FabricJSCanvas width={1000} height={1000}/>*/}
-                    {/*</div>*/}
+                     {/*TODO: REMOVE - for testing only.*/}
+                    <div className="flex justify-center">
+                        <FabricJSCanvas width={1000} height={1000}/>
+                    </div>
 
                     <Viewer url="test.pdf" pageNumber={pageNumber}/>
 

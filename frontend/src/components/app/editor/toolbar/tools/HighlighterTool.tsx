@@ -1,49 +1,60 @@
+import {ChevronDownIcon, ChevronUpIcon} from "@heroicons/react/20/solid";
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {ChevronDownIcon, ChevronUpIcon} from "@heroicons/react/24/solid";
 import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
-import {PencilIcon} from "@heroicons/react/24/outline";
 import {ToolContext} from "../../Editor";
+import Highlighter from "../model/tools/Highlighter";
 
 interface Props {
     id: string
 }
-export default function Highlighter({id} : Props) {
+export default function HighlighterTool({ id } : Props) {
 
-    const [selectedTool, setSelectedTool] = useContext(ToolContext);
-    const [isSelected, setIsSelected] = useState(false);
+    const [highlighter, setHighlighter] = useState<Highlighter>(new Highlighter(id, 2,'#dff000'));
+
+    const [activeToolData, setActiveToolData] = useContext(ToolContext);
+    const [isActiveTool, setIsActiveTool] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
-    const [strokeWidth, setStrokeWidth] = useState(2);
     const dropdown = useRef(null);
     useDetectOutsideClick(dropdown, () => setShowOptions(false));
 
-    function handlePenClick() {
-        setSelectedTool(id);
+    function handleClick () {
+        if (!isActiveTool)
+            setActiveToolData(highlighter);
     }
 
-    const colors = [
-        '#fdff00',
-        '#ff9a00',
-        '#FF0000',
-        '#00ff04',
-        '#00c5ff',
-        '#ff00a7',
-    ]
+    function handleColorSelect(selectedColor: string) {
+        setHighlighter((prevHighlighter : Highlighter) => {
+            const newPen = new Highlighter(prevHighlighter.id, prevHighlighter.size, prevHighlighter.color);
+            // Watch for error (when we assign a color which isn't allowed)
+            try {
+                newPen.color = selectedColor;
+                return newPen;
+            } catch (e) {
+                console.log(e);
+                return prevHighlighter;
+            }
+        });
+    }
 
-    const [selectedColor, setSelectedColor] = useState(colors[0]); // TODO: change this to what you have recently selected
-    function handleColorSelected(color: string) {
-        setSelectedColor(color);
+    function setPenSize(newSize: number) {
+        setHighlighter(new Highlighter(highlighter.id, newSize, highlighter.color));
     }
 
     useEffect(() => {
-        setIsSelected(selectedTool === id);
-    }, [selectedTool]);
+        setIsActiveTool(activeToolData.id === id);
+    }, [activeToolData.id]);
+
+    useEffect(() => {
+        setActiveToolData(highlighter);
+    }, [highlighter]);
+
 
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isSelected ? 'border-2 bg-zinc-800' : 'bg-white border-2 border-transparent'} p-1 `}>
+            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'} p-1 `}>
 
-                <button onClick={handlePenClick} type="button" className={`bg-white ${isSelected ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'}  p-1 rounded-full transition-colors dark:hover:bg-anno-space-700`}>
-                    <svg className="w-7 h-7 stroke-0.5" style={{fill: selectedColor, stroke:  "black"}} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'}  p-1 rounded-full transition-colors dark:hover:bg-anno-space-700`}>
+                    <svg className="w-7 h-7 stroke-0.5" style={{fill: highlighter.color, stroke:  "black"}} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="2.5" y="17.5" width="8" height="4"/>
                             <g clipPath="url(#clip0_100_553)">
                             <path d="M22.2984 4.70163C21.5295 3.93279 20.283 3.93279 19.5141 4.70163L18.6463 5.5695L21.4305 8.35373L22.2984 7.48587C23.0672 6.71702 23.0672 5.47048 22.2984 4.70163Z" fill="currentColor"/>
@@ -58,33 +69,36 @@ export default function Highlighter({id} : Props) {
                         </defs>
                     </svg>
                 </button>
-                {isSelected &&
+                {isActiveTool &&
                     <button onClick={() => setShowOptions(!showOptions)} type="button" className="text-white">
                         {showOptions ? <ChevronUpIcon className="w-6 h-6"/> : <ChevronDownIcon className="w-6 h-6"/>}
                     </button>
                 }
             </span>
+
+            {/* Options (color / stroke) */}
             {showOptions &&
                 <div ref={dropdown} className="absolute mt-4 rounded-3xl border-2 border-stone-300 bg-zinc-800 flex flex-col gap-4 p-4 w-72">
 
+                    {/* Color Palette */}
                     <div className="grid grid-cols-6 gap-2">
-                        {colors.map((color, idx) => (
-                            <div key={idx} onClick={() => handleColorSelected(color)} className={`${selectedColor === color ? 'border-2 border-pink-300' : 'border-transparent border-2'} transition-all h-8 w-8 rounded-full`} style={{backgroundColor: color}}>
+                        {highlighter.allowedColors.map((color: string, idx: number) => (
+                            <div key={idx} onClick={() => handleColorSelect(color)} className={`${highlighter.color === color ? 'border-2 border-pink-300' : 'border-transparent border-2'} transition-all h-8 w-8 rounded-full`} style={{backgroundColor: color}}>
                             </div>
                         ))}
                     </div>
 
+                    {/* Stroke Size Range Slider + Preview */}
                     <div className="flex flex-row gap-4 items-center justify-between">
                         <span className="text-white">Stroke</span>
-                        <input onChange={(e) => setStrokeWidth(parseInt(e.target.value))} type="range" min="1" max="10" value={`${strokeWidth}`} />
+                        <input onChange={(e) => setPenSize(parseInt(e.target.value))} type="range" min="1" max="10" value={`${highlighter.size}`} />
                         <svg className="stroke-white" viewBox="0 0 23 13" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 12C9.5 0.5 13.5 1 12.5 7C11.7 11.8 20.8333 3.49996 22.5 0.5" strokeWidth={strokeWidth} />
+                            <path d="M1 12C9.5 0.5 13.5 1 12.5 7C11.7 11.8 20.8333 3.49996 22.5 0.5" strokeWidth={highlighter.size} />
                         </svg>
 
                     </div>
                 </div>
             }
         </span>
-
     )
 }

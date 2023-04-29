@@ -1,7 +1,13 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {fabric} from 'fabric';
 import MathObject from "./MathObject";
 import {ToolContext} from "./Editor";
+import Pen from "./toolbar/model/tools/Pen";
+import Highlighter from "./toolbar/model/tools/Highlighter";
+import TextModel from "./toolbar/model/tools/TextModel";
+import Pan from "./toolbar/model/tools/Pan";
+import Select from "./toolbar/model/tools/Select";
+import Maths from "./toolbar/model/tools/Maths";
 
 interface Props {
     width: number,
@@ -10,74 +16,102 @@ interface Props {
 
 export default function FabricJSCanvas( {width, height} : Props ) {
     const canvasEl = useRef<HTMLCanvasElement>(null);
+    const [canvas, setCanvas] = useState<any>(null);
 
+    const [activeToolData, setActiveToolData] = useContext(ToolContext);
 
-    const [selectedTool, setSelectedTool] = useContext(ToolContext);
-
-
+    // Setup Canvas
     useEffect(() => {
-
-        let canvas = new fabric.Canvas(canvasEl.current, {
+        let c = new fabric.Canvas(canvasEl.current, {
             width: width,
             height: height,
             backgroundColor: 'white', // TODO REMOVE BG COLOR
         });
+        setCanvas(c);
+    }, []);
 
-        function setPenDrawing() {
 
-        }
+    // Setup tool control.
+    useEffect(() => {
+        if (canvas) {
 
-        switch (selectedTool) {
-            case "pan":
-                console.log('yep, fab received pen');
-                break;
-            case "select":
-                console.log('yep, fab received pen');
-                break;
-            case "pen1":
-                console.log('yep, fab received pen');
-                break;
-            case "pen2":
-                console.log('yep, fab received pen');
-                break;
-            case "text":
-                console.log('yep, fab received pen');
-                break;
-            case "math":
-                console.log('yep, fab received pen');
-                break;
-            case "rect":
-                console.log('yep, fab received pen');
-                break;
-            case "eraser":
-                console.log('yep, fab received pen');
-                break;
-        }
-        // Examples of adding text...
-        const text = new fabric.Textbox('Hello, World!',
-            {
-                left: 50,
-                top: 50,
-                selectable: true,
-                width: 300, // TODO Change initial width,
+            reset();
+            switch (true) {
+                case activeToolData instanceof Pan:
+                    canvas.on('mouse:down', pan);
+                    break;
+                case activeToolData instanceof Select:
+                    canvas.selection = true;
+                    break;
+                case activeToolData instanceof Pen:
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = activeToolData.size;
+                    canvas.freeDrawingBrush.color = activeToolData.color;
+                    break;
+                case activeToolData instanceof Highlighter:
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = activeToolData.size;
+                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`; // TODO: see https://stackoverflow.com/questions/23201134/transparent-argb-hex-value
+                    break;
+                case activeToolData instanceof TextModel:
+                    canvas.on('mouse:down', drawText);
+                    break;
+                case activeToolData instanceof Maths:
+                    canvas.on('mouse:down', drawMath);
+                    break;
             }
-        );
-        const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
-            left: 100,
-            top: 100,
-            scaleX: 4,
-            scaleY: 4,
-            height: 10,
-            width: 30,
-        });
+        }
 
-        // // add your canvas elements here
-        canvas.add(text);
-        canvas.add(customObj);
-        console.log(canvas.toObject());
-    }, [selectedTool]);
+    }, [activeToolData]);
 
+    // TODO: Double check
+    function pan(options: any) {
+        canvas.isDragging = true;
+        canvas.selection = false;
+        canvas.lastPosX = options.e.clientX;
+        canvas.lastPosY = options.e.clientY;
+    }
 
+    function select() {
+
+    }
+
+    function drawText (options: any) {
+        if (options.target === null) {
+            let text = new fabric.IText('', { left: options.e.offsetX, top: options.e.offsetY });
+            canvas.add(text).setActiveObject(text);
+            text.on('editing:exited', () => {
+                if (text.text?.length === 0) {
+                    canvas.remove(text);
+                }
+            });
+            text.enterEditing();
+        }
+    }
+    function drawMath (options: any) {
+        if (options.target === null) {
+            let text = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+                left: options.e.offsetX,
+                top:  options.e.offsetY,
+                scaleX: 4,
+                scaleY: 4,
+                height: 10,
+                width: 30,
+            });
+            canvas.add(text).setActiveObject(text);
+        }
+    }
+
+    function reset() {
+        canvas.__eventListeners = {};
+
+        canvas.selection = false;
+        canvas.isDragging = false;
+        canvas.off('mouse:down', drawText);
+        canvas.off('mouse:down', drawMath);
+        canvas.off('mouse:down', pan);
+        canvas.isDrawingMode = false;
+    }
 
     return (
         <canvas ref={canvasEl} />
