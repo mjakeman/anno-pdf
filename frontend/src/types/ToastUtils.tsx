@@ -36,7 +36,7 @@ export const toastIconMap: Record<RequiredToastProps['type'], ReactNode> = {
 
 
 export type ToastContextType = {
-    add: (toast: Omit<ToastProps, "id">) => void;
+    addToast: (toast: Omit<ToastProps, "id">) => void;
     remove: (toastId: number, ref: RefObject<HTMLDivElement>) => void;
     position: ToastPoisition;
 }

@@ -58,10 +58,10 @@ function UserSettings(){
 
 
 function AccountContent() {
-    const {add} = useToast();
+    const {addToast} = useToast();
 
     function onSave(){
-        add({
+        addToast({
             type: 'success',
             message: 'Save success',
             position: 'top-left'
@@ -69,7 +69,7 @@ function AccountContent() {
     }
 
     function onCancel(){
-        add({
+        addToast({
             type: 'info',
             message: 'Cancelled',
             position:'top-left'

@@ -7,7 +7,7 @@ import { ToastContextType, ToastPoisition, toastPositionsMap, ToastProps } from 
 
 
 export const ToastContext = createContext<ToastContextType>({
-    add: () => {},
+    addToast: () => {},
     remove: () => {},
     position: "bottom-right"
 });
@@ -35,9 +35,9 @@ export const ToastProvider: FC <({children: ReactNode})> = ({children}) => {
 
     return (
         <div className="">
-            <ToastContext.Provider value={{add, remove, position}}>
+            <ToastContext.Provider value={{addToast: add, remove, position}}>
                 {children}
-                <div className={"fixed z-9999 w-screen max-w-xs "+toastPositionsMap[position] }>
+                <div className={"fixed z-9999 w-screen max-w-xs m-3 "+toastPositionsMap[position] }>
                     {toastList.map((toast)=> (
                         <Toast key={toast.id} {...toast}/>
                     ))}
