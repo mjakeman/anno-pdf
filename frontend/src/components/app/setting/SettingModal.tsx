@@ -2,6 +2,7 @@ import { UserCircleIcon } from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
 import { useRef } from "react"
 import { useState } from "react"
+import { useToast } from "../../../hooks/useToast"
 import DarkModeToggleTest from "../../DarkModeToggleTest"
 import Modal from "../../Modal"
 
@@ -55,7 +56,26 @@ function UserSettings(){
     )
 }
 
+
 function AccountContent() {
+    const {add} = useToast();
+
+    function onSave(){
+        add({
+            type: 'success',
+            message: 'Save success',
+            position: 'top-left'
+        })
+    }
+
+    function onCancel(){
+        add({
+            type: 'info',
+            message: 'Cancelled',
+            position:'top-left'
+        })
+    }
+
 
     return (
         <div className="flex flex-col gap-12">
@@ -79,8 +99,8 @@ function AccountContent() {
                 </div>
             </div>
             <div className="flex flex-row gap-4 ml-auto">
-                <button className="bg-gray-200 text-gray-400 rounded-md px-4 py-2">Cancel</button>
-                <button className="bg-anno-red-primary text-white rounded-md px-4 py-2">Save</button>
+                <button className="bg-gray-200 text-gray-400 rounded-md px-4 py-2" onClick={onCancel}>Cancel</button>
+                <button className="bg-anno-red-primary text-white rounded-md px-4 py-2" onClick={onSave}>Save</button>
             </div>
         </div>
         <div className="flex flex-col gap-4 ">
@@ -96,11 +116,13 @@ function AccountContent() {
                 </div>
             </div>
             <div className="flex flex-row gap-4 ml-auto">
-                <button className="bg-gray-200 text-gray-400 rounded-md px-4 py-2">Cancel</button>
-                <button className="bg-anno-red-primary text-white rounded-md px-4 py-2">Save</button>
+                <button className="bg-gray-200 text-gray-400 rounded-md px-4 py-2" onClick={onCancel}>Cancel</button>
+                <button className="bg-anno-red-primary text-white rounded-md px-4 py-2" onClick={onSave}>Save</button>
             </div>
         </div>
         </div>
 
     )
 }                
+
+
