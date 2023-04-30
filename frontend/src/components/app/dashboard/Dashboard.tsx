@@ -1,6 +1,5 @@
 import DashboardTable from "./DashboardTable";
 
-
 export default function Dashboard() {
     return (
         <div className="mx-12 flex flex-col gap-4" id="portal-destination">

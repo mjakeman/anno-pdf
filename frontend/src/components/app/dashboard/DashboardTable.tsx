@@ -6,6 +6,7 @@ import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
 import { DocumentIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "../../Tooltip";
+import FileUploadModal from "./FileUploadModal";
 const documentData = [
     {
         name: "Document 2",
@@ -42,6 +43,8 @@ type Filter = "All" | "Me" | "Shared";
 export default function DashboardTable() {
     const navigate = useNavigate();
 
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
     const [filter, setFilter] = useState<Filter>("All");
     const [sortKey, setSortKey] = useState<SortKeys>("name");
     const [sortDirection, setSortDirection] = useState<SortOrder>("Ascending");
@@ -71,6 +74,7 @@ export default function DashboardTable() {
 
     return(
         <>  
+            <FileUploadModal isVisible={isUploadModalOpen} onOutsideClick={()=>setIsUploadModalOpen(false)}/>
             <div className="flex flex-row gap-2">
                 <Tooltip text="Filter by" position="bottom">
                     <FilterButton label="All" onClick={()=> setFilter("All")}/>
@@ -79,7 +83,7 @@ export default function DashboardTable() {
                     <FilterButton label="Private" onClick={()=> setFilter("Me")}/>
                 </Tooltip>
                 <FilterButton label="Shared" onClick={()=> setFilter("Shared")}/>
-                <PrimaryButton label="Upload PDF +" onClick={()=> uploadPDF()}></PrimaryButton>
+                <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
             </div>
                 <div className="relative overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-200">
