@@ -265,7 +265,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         if (canvas) {
             canvas.__eventListeners = {};
             canvas.isDrawingMode = false;
-            canvas.off('mouse:down', drawText);
+            canvas.off('mouse:down', drawText); // TODO: Not working?
             canvas.off('mouse:down', drawMath);
         }
     }
@@ -314,13 +314,9 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         setCompleteCanvas(canvas);
         fabricRef.current = canvas;
         // canvas.on('mouse:wheel', onMouseWheel);
-        canvas.on('mouse:down', onMouseDown);
-        canvas.on('mouse:move', onMouseMove);
-        canvas.on('mouse:up', onMouseUp);
-
-        // completeCanvas.add(text);
-        // completeCanvas.add(customObj);
-
+        // canvas.on('mouse:down', onMouseDown);
+        // canvas.on('mouse:move', onMouseMove);
+        // canvas.on('mouse:up', onMouseUp);
         const preventDefaultHandler = (e: Event) => e.preventDefault();
 
         document.addEventListener('gesturestart', preventDefaultHandler)
