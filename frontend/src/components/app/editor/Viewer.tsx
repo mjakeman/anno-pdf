@@ -1,10 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import * as pdfjs from 'pdfjs-dist';
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {useGesture} from "@use-gesture/react";
 import {useHotkeys} from "react-hotkeys-hook";
-import {mat4} from 'gl-matrix';
+import {ToolContext} from "./Editor";
+import {fabric} from "fabric";
+import MathObject from "./MathObject";
+import {FabricJSCanvas, useFabricJSEditor} from "fabricjs-react";
+import {IEvent} from "fabric/fabric-impl";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -15,42 +19,16 @@ interface Props {
     pageNumber: number;
 }
 
-const vertexShaderSource = `
-  attribute vec2 aPosition;
-  uniform vec2 uTranslation;
-  uniform vec2 uScale;
-  uniform mat4 uProjectionMatrix;
-  
-  attribute vec2 aTexCoord;
-  varying vec2 vTexCoord;
-
-  void main() {
-    gl_Position = uProjectionMatrix * vec4((aPosition * uScale) + uTranslation, 0.0, 1.0);
-    vTexCoord = aTexCoord;
-  }
-`;
-
-const fragmentShaderSource = `
-  precision mediump float;
-  uniform sampler2D uTexture;
-  varying vec2 vTexCoord;
-
-  void main() {
-    gl_FragColor = texture2D(uTexture, vTexCoord);
-  }
-`;
-
 // Constants for scale
 const SCALE_MAX = 8.0;
 const SCALE_MIN = 0.1;
 const SCALE_STEP = 0.25;
-const SCALE_MULTIPLIER = 0.8;
+const SCALE_MULTIPLIER = 0.999;
 
 const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    const glContextRef = useRef<WebGLRenderingContext | null>(null);
-    const glShaderProgram = useRef<WebGLShader | null>(null);
+    const fabricRef = useRef<fabric.Canvas | null>(null);
 
     const [width, setWidth] = useState(window.innerWidth);
     const [height, setHeight] = useState(window.innerHeight);
@@ -58,95 +36,19 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPage, setPdfPage] = useState<PDFPageProxy>();
 
-    const pdfPageTexture = useRef<WebGLTexture | null>(null);
-    const pdfPageAspectRatio = useRef<{w: number, h: number} | null>({w: 0, h: 0});
+    const lastPos = useRef({ x: 0, y: 0 });
+    const isDragging = useRef(false);
 
     const [scale, setScale] = useState(1);
     const [translation, setTranslation] = useState({ x: 0, y: 0});
 
-    const initialiseWebGL = (context: WebGLRenderingContext) => {
-
-        const gl = context;
-
-        // |-------------------|-------------------|
-        // |    -1.0    1.0    |     0.0    1.0    |
-        // |    -1.0   -1.0    |     0.0    0.0    |
-        // |     1.0    1.0    |     1.0    1.0    |
-        // |     1.0,  -1.0    |     1.0    1.0    |
-        // |-------------------|-------------------|
-        // | Vertex Data (x,y) | Tex Coords (x,y)  |
-        // |-------------------|-------------------|
-        const vertices = [
-            -1.0,  1.0,  0.0, 1.0,
-            -1.0, -1.0,  0.0, 0.0,
-            1.0,  1.0,  1.0, 1.0,
-            1.0, -1.0,  1.0, 0.0
-        ];
-
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-        const vertexShader = gl.createShader(gl.VERTEX_SHADER)!;
-        gl.shaderSource(vertexShader, vertexShaderSource);
-        gl.compileShader(vertexShader);
-
-        const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)!;
-        gl.shaderSource(fragmentShader, fragmentShaderSource);
-        gl.compileShader(fragmentShader);
-
-        const program = gl.createProgram()!;
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
-        gl.linkProgram(program);
-
-        const aPosition = gl.getAttribLocation(program, 'aPosition');
-        gl.enableVertexAttribArray(aPosition);
-        gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 16, 0);
-
-        const aTexCoord = gl.getAttribLocation(program, 'aTexCoord');
-        gl.enableVertexAttribArray(aTexCoord);
-        gl.vertexAttribPointer(aTexCoord, 2, gl.FLOAT, false, 16, 8);
-
-        gl.useProgram(program);
-
-        glShaderProgram.current = program;
-
-        // Create a new orthographic projection matrix
-        reproject();
-
-        const uTexture = gl.getUniformLocation(program, 'uTexture');
-        gl.uniform1i(uTexture, gl.TEXTURE0);
-    }
+    const [selectedTool, setSelectedTool] = useContext(ToolContext);
 
     const draw = () => {
         if (!pdfPage) return;
+        if (!fabricRef.current) return;
 
-        if (!glContextRef.current) return;
-        if (!pdfPageTexture.current) return;
-
-        const gl = glContextRef.current;
-        const program = glShaderProgram.current!;
-
-        const uTranslation = gl.getUniformLocation(program, 'uTranslation');
-        gl.uniform2f(uTranslation, translation.x, -translation.y);
-
-        // Retrieve the aspect ratio of the page
-        const {w, h} = pdfPageAspectRatio!.current!;
-        const aspectRatio = h / w;
-        console.log(scale * aspectRatio, scale);
-
-        // When applying the scale, multiply the height by the aspect ratio
-        // in order to preserve the original page dimensions when drawing. This
-        // avoids the page looking stretched.
-        const uScale = gl.getUniformLocation(program, 'uScale');
-        gl.uniform2f(uScale, scale * SCALE_MULTIPLIER, scale * aspectRatio * SCALE_MULTIPLIER);
-
-        // Clear the canvas to transparent (alpha = 0).
-        gl.clearColor(0.0, 0.0, 0.0, 0.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        fabricRef.current?.renderAll();
     };
 
     const renderPageToTexture = async (page: PDFPageProxy) => {
@@ -185,60 +87,21 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         // we don't have to worry about blocking the main thread.
         await page.render(renderContext).promise;
 
-        // Now comes the fun part. Let's turn it into a WebGL texture.
+        return new Promise((resolve, _) => {
+            const image = new Image();
+            image.id = "pdfPage";
+            image.src = canvas.toDataURL();
+            image.onload = () => {
 
-        // Retrieve a WebGL context reference
-        const gl = glContextRef.current!;
+                const fabricImage = new fabric.Image(image, {});
 
-        // Create a texture object on the GPU
-        const texture = gl.createTexture();
+                // Logging
+                console.info("Created texture for page with size: ", fabricImage.width, fabricImage.height);
 
-        // Activate and bind it to the TEXTURE0 slot
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // Flip as PDF pages are rendered "upside down"
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-        // Set some sensible default texture parameters. These aren't
-        // really important.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-        // Upload the Canvas's image data to the WebGL texture.
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
-
-        // And equivalently update our stored references to point to the texture
-        // and its dimensions. Note we use references rather than state here; we do
-        // not want to re-render at this point.
-        pdfPageTexture.current = texture;
-        pdfPageAspectRatio.current = { w: canvas.width, h: canvas.height };
-
-        // Logging
-        console.info("Created texture for page with size: ", canvas.width, canvas.height);
-
-        return texture;
+                resolve(fabricImage);
+            }
+        });
     };
-
-    // Create an orthographic projection matrix to preserve aspect ratio
-    // while drawing.
-    const reproject = () => {
-
-        const gl = glContextRef.current;
-        if (!gl) return;
-
-        const canvas = gl.canvas;
-        const aspectRatio = canvas.width / canvas.height;
-
-        // Create an orthographic projection matrix.
-        const projectionMatrix = mat4.create();
-        mat4.ortho(projectionMatrix, -1.0, 1.0, -1.0 / aspectRatio, 1.0 / aspectRatio, -1.0, 1.0);
-
-        const projectionMatrixLocation = gl.getUniformLocation(glShaderProgram.current!, "uProjectionMatrix");
-        gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
-    }
 
     // Load the PDF Document.
     useEffect(() => {
@@ -263,18 +126,144 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         if (!pdfPage) return;
 
         // Render to texture and wait for the result
-        renderPageToTexture(pdfPage).then(() => {
+        renderPageToTexture(pdfPage).then((image) => {
             // Once the texture exists, queue a drawing operation when the
             // browser next repaints the page
+            const fabric = fabricRef.current!;
+            fabric.setBackgroundImage(image as fabric.Image, fabric.renderAll.bind(fabric), {});
             requestAnimationFrame(draw);
         });
 
         return;
     }, [pdfPage]);
 
+    // Set canvas translation and zoom
+    useEffect(() => {
+        const canvas = fabricRef.current;
+        if (canvas) {
+            canvas.absolutePan(translation);
+            canvas.setZoom(scale);
+        }
+        requestAnimationFrame(draw);
+    }, [translation, scale]);
+
+    // Drawing function
+    useEffect(() => {
+        requestAnimationFrame(draw);
+    });
+
+    const onMouseWheel = (opt: IEvent<WheelEvent>) => {
+        const delta = opt.e.deltaY;
+        const canvas = fabricRef.current!;
+
+        // We NEED to use setScale because the current value of 'scale'
+        // is stack captured by the owning closure. Who thought this was
+        // a good language feature... >:(
+        setScale((zoom) => {
+            zoom *= SCALE_MULTIPLIER ** delta;
+
+            if (zoom > SCALE_MAX)
+                zoom = SCALE_MAX;
+
+            if (zoom < SCALE_MIN)
+                zoom = SCALE_MIN;
+
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
+
+            if (zoom < 400 / 1000) {
+                translation.x = 200 - 1000 * zoom / 2;
+                translation.y = 200 - 1000 * zoom / 2;
+            } else {
+                if (translation.x >= 0) {
+                    translation.x = 0;
+                } else if (translation.x < canvas.getWidth() - 1000 * zoom) {
+                    translation.x = canvas.getWidth() - 1000 * zoom;
+                }
+                if (translation.y >= 0) {
+                    translation.y = 0;
+                } else if (translation.y < canvas.getHeight() - 1000 * zoom) {
+                    translation.y = canvas.getHeight() - 1000 * zoom;
+                }
+            }
+
+            return zoom;
+        });
+
+    };
+
+    const onMouseDown = (opt: IEvent<MouseEvent>) => {
+        const event = opt.e;
+        const canvas = fabricRef.current;
+        if (canvas && event.altKey) {
+            isDragging.current = true;
+            canvas.selection = false;
+            lastPos.current = { x: event.clientX, y: event.clientY };
+        }
+    };
+
+    const onMouseMove = (opt: IEvent<MouseEvent>) => {
+        const event = opt.e;
+        const canvas = fabricRef.current;
+        if (canvas && isDragging.current) {
+            setTranslation((viewport) => {
+                const x = viewport.x - (event.clientX - lastPos.current.x);
+                const y = viewport.y - (event.clientY - lastPos.current.y);
+
+                lastPos.current = { x: event.clientX, y: event.clientY };
+
+                // MUST be a new array
+                // Why? Because apparently React doesn't consider the state to
+                // have changed if it isn't a brand-new object. Yay for inefficiency.
+                return { x, y };
+            });
+        }
+    };
+
+    const onMouseUp = (_: IEvent<MouseEvent>) => {
+        const canvas = fabricRef.current;
+        if (canvas) {
+            isDragging.current = false;
+            canvas.selection = true;
+        }
+    };
+
     // Startup function
     useEffect(() => {
         const dpi = window.devicePixelRatio;
+
+        const canvas = new fabric.Canvas(canvasRef.current, {
+            width: width,
+            height: height
+        });
+
+        fabricRef.current = canvas;
+
+        canvas.on('mouse:wheel', onMouseWheel);
+        canvas.on('mouse:down', onMouseDown);
+        canvas.on('mouse:move', onMouseMove);
+        canvas.on('mouse:up', onMouseUp);
+
+        const text = new fabric.Textbox('Hello, World!',
+            {
+                left: 50,
+                top: 50,
+                selectable: true,
+                width: 300, // TODO Change initial width,
+            }
+        );
+
+        const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+            left: 100,
+            top: 100,
+            scaleX: 4,
+            scaleY: 4,
+            height: 10,
+            width: 30,
+        });
+
+        canvas.add(text);
+        canvas.add(customObj);
 
         const preventDefaultHandler = (e: Event) => e.preventDefault();
 
@@ -283,20 +272,17 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
         function handleResize() {
             const canvas = canvasRef.current;
+            const fabricElement = fabricRef.current;
             if (!canvas) return;
 
-            canvas.width = canvas.clientWidth * dpi;
-            canvas.height = canvas.clientHeight * dpi;
+            const newWidth = canvas.clientWidth * dpi;
+            const newHeight = canvas.clientHeight * dpi;
 
-            setWidth(canvas.width);
-            setHeight(canvas.height);
+            fabricElement?.setWidth(newWidth);
+            fabricElement?.setHeight(newHeight);
 
-            const gl = glContextRef.current;
-            if (!gl) return;
-
-            reproject();
-
-            gl.viewport(0, 0, canvas.width, canvas.height);
+            setWidth(newWidth);
+            setHeight(newHeight);
         }
 
         handleResize();
@@ -310,70 +296,28 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     }, []);
 
-    // Drawing function
-    useEffect(() => {
-        requestAnimationFrame(draw);
-    });
-
-    useGesture(
-        {
-            onDrag: ({ down, offset: [sx, sy] }) => {
-                if (down) {
-                    setTranslation({x: sx, y: sy});
-                }
-            },
-            onPinch: ({ offset: [scale], last }) => {
-                if (!last) {
-                    setScale(scale);
-                }
-            },
-        },
-        {
-            target: canvasRef,
-            eventOptions: { passive: false },
-            drag: {
-                bounds: {
-                    left: -Math.max(1, scale),
-                    right: Math.max(1, scale),
-                    top: -Math.max(1, scale),
-                    bottom: Math.max(1, scale)
-                },
-                from: () => [translation.x, translation.y],
-                transform: ([x, y]) => [(x / width) * 4, (y / height) * 4],
-                preventDefault: true
-            },
-            pinch: {
-                scaleBounds: { min: SCALE_MIN, max: SCALE_MAX },
-                from: () => [scale, 0],
-                preventDefault: true
-            }
-        }
-    );
-
     useHotkeys('0', () => {
-        setScale(1.0);
+        setScale(1);
         setTranslation({x: 0, y: 0});
-    }, [translation, scale]);
+    }, [scale, translation]);
 
     useHotkeys(['=', '+'], () => {
-        setScale(scale => Math.min(SCALE_MAX, scale + SCALE_STEP));
-    }, [translation, scale]);
+        if (fabricRef.current) {
+            const scale = fabricRef.current.getZoom();
+            fabricRef.current.setZoom(Math.min(SCALE_MAX, scale + SCALE_STEP));
+        }
+    });
 
     useHotkeys('-', () => {
-        setScale(scale => Math.max(SCALE_MIN, scale - SCALE_STEP));
-    }, [translation, scale]);
+        if (fabricRef.current) {
+            const scale = fabricRef.current.getZoom();
+            fabricRef.current.setZoom(Math.max(SCALE_MIN, scale - SCALE_STEP));
+        }
+    });
 
-    return <canvas
-        className="touch-none w-full h-full border-4 border-red-500 bg-zinc-300"
-        ref={(element) => {
-            if (element) {
-                const gl = element.getContext('webgl2')!;
-                glContextRef.current = gl;
-                canvasRef.current = element;
-                initialiseWebGL(gl);
-            }
-        }}
-    />;
+    return <div className="touch-none w-full h-full border-4 border-red-500 bg-zinc-300">
+        <canvas ref={canvasRef}/>
+    </div>;
 });
 
 export default Viewer;
