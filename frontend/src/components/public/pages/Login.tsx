@@ -10,20 +10,11 @@ export default function Login() {
     // TODO: Add signin with google (similar to SignUp.tsx)
     // TODO: Add signin with email and password https://github.com/CSFrequency/react-firebase-hooks/tree/master/auth#usesigninwithemailandpassword
 
-    const [loginForm, setLoginForm] = useState({
-       email: "",
-       password: ""
-    });
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
     const [signInWithGoogle] = useSignInWithGoogle(auth)
     const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
-
-    const handleLoginFormChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setLoginForm({
-            ...loginForm,
-            [event.target.name]: event.target.value,
-        });
-    };
 
     async function handleSignInWithGoogle() {
         try {
@@ -36,7 +27,7 @@ export default function Login() {
 
     async function handleSignInWithEmailandPass() {
         try {
-            const signedInUser = await signInWithEmailAndPassword(loginForm.email, loginForm.password);
+            const signedInUser = await signInWithEmailAndPassword(email, password);
         } catch (error) {
             console.error(error);
         }
@@ -49,11 +40,11 @@ export default function Login() {
                 <form className="my-8 px-24 py-12 flex flex-col gap-6 bg-white dark:bg-anno-space-900 drop-shadow-around border-2 dark:border-anno-space-100 rounded-xl">
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="email-input" >Email:</label>
-                        <input onChange={handleLoginFormChange} value={loginForm.email} type="email" id="email-input" placeholder="Enter your email address here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                        <input onChange={e => setEmail(e.target.value)} value={email} type="email" id="email-input" placeholder="Enter your email address here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="password-input" >Password:</label>
-                        <input onChange={handleLoginFormChange} value={loginForm.password} type="password" id="password-input" placeholder="Enter your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
+                        <input onChange={e => setPassword(e.target.value)} value={password} type="password" id="password-input" placeholder="Enter your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
                    <PrimaryButton onClick={handleSignInWithEmailandPass} label="Log in"/>
