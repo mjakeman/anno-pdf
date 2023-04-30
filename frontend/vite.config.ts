@@ -13,6 +13,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    threads: false,
+    threads: false, // Threads disabled to fix canvas error
+    setupFiles: './src/setupTests.ts',
   },
 });

@@ -14,6 +14,8 @@ describe('App', () => {
     it('About page renders', () => {
         render(<About />);
         expect(screen.getByText('About Us')).toBeInTheDocument();
+        // Checks CSS rules dont hide the element
+        expect(screen.getByText('About Us')).toBeVisible();
     });
 
 });
