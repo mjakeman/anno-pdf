@@ -4,12 +4,12 @@ import {ToolContext} from "../../Editor";
 
 export default function Undo() {
 
-    function handleUndoClick() {
+    function handleClick() {
 
     }
 
     return (
-        <button onClick={handleUndoClick} type="button" className="bg-white hover:bg-gray-200 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 border-2">
+        <button onClick={handleClick} type="button" className="bg-white hover:bg-gray-200 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 border-2">
             <ArrowUturnLeftIcon className={"w-6 h-6 text-zinc-500"}/>
         </button>
     )

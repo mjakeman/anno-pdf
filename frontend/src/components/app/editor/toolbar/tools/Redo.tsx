@@ -4,12 +4,12 @@ import {ToolContext} from "../../Editor";
 
 export default function Redo() {
 
-    function handleRedoClick() {
+    function handleClick() {
 
     }
 
     return (
-        <button type="button" onClick={handleRedoClick} className="bg-white hover:bg-gray-200 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 border-2">
+        <button type="button" onClick={handleClick} className="bg-white hover:bg-gray-200 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 border-2">
             <ArrowUturnRightIcon className={"w-6 h-6 text-zinc-500"}/>
         </button>
     )
