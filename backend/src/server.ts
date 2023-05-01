@@ -2,6 +2,7 @@ import * as express from "express";
 import * as http from "http";
 import * as socketio from "socket.io";
 import mongoose from "mongoose";
+import cors from "cors";
 import Config from "./util/Config";
 
 const port = Config.PORT;
@@ -13,6 +14,9 @@ app.use(express.json());
 // Setup our routes.
 import routes from './routes/appRoutes';
 app.use('/', routes);
+
+// Use cors
+app.use(cors);
 
 const server = http.createServer(app);
 const io = new socketio.Server(server);
