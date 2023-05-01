@@ -30,6 +30,3 @@ dist-ssr
 
 # Environments
 .env
-
-# Backend Secrets
-backend/src/firebase/serviceAccount.json
