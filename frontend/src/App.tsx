@@ -11,6 +11,7 @@ import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
 import {createContext, useEffect} from "react";
+import { ToastProvider } from "./hooks/useToast";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -25,20 +26,22 @@ export default function App() {
         //  TODO: add ability to change route / redirect based on if we're logged in or not.
 
         <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
-            <Routes>
-                    <Route path="project-group-fearless-foxes" element={<PublicLayout />}>
-                        <Route index element={<Home/>} />
-                        <Route path="about" element={<About/>} />
-                        <Route path="contact" element={<Contact/>} />
-                        <Route path="terms" element={<Terms/>} />
-                        <Route path="login" element={<Login/>} />
-                        <Route path="signup" element={<SignUp/>} />
-                    </Route>
-                    <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
-                        <Route index element={<Dashboard/>} />
-                    </Route>
-                    <Route path="project-group-fearless-foxes/editor" element={<Editor/>} />
-            </Routes>
+            <ToastProvider>
+                <Routes>
+                        <Route path="project-group-fearless-foxes" element={<PublicLayout />}>
+                            <Route index element={<Home/>} />
+                            <Route path="about" element={<About/>} />
+                            <Route path="contact" element={<Contact/>} />
+                            <Route path="terms" element={<Terms/>} />
+                            <Route path="login" element={<Login/>} />
+                            <Route path="signup" element={<SignUp/>} />
+                        </Route>
+                        <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
+                            <Route index element={<Dashboard/>} />
+                        </Route>
+                        <Route path="project-group-fearless-foxes/editor" element={<Editor/>} />
+                </Routes>
+            </ToastProvider>
         </DarkModeContext.Provider>
     );
 }
