@@ -2,13 +2,17 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import * as pdfjs from 'pdfjs-dist';
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
-import {useGesture} from "@use-gesture/react";
 import {useHotkeys} from "react-hotkeys-hook";
 import {ToolContext} from "./Editor";
 import {fabric} from "fabric";
 import MathObject from "./MathObject";
-import {FabricJSCanvas, useFabricJSEditor} from "fabricjs-react";
 import {IEvent} from "fabric/fabric-impl";
+import Pan from "./toolbar/model/tools/Pan";
+import Select from "./toolbar/model/tools/Select";
+import Pen from "./toolbar/model/tools/Pen";
+import Highlighter from "./toolbar/model/tools/Highlighter";
+import TextModel from "./toolbar/model/tools/TextModel";
+import Maths from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -27,8 +31,11 @@ const SCALE_MULTIPLIER = 0.999;
 
 const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
+    const [activeToolData, setActiveToolData] = useContext(ToolContext);
+
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const fabricRef = useRef<fabric.Canvas | null>(null);
+    const [completeCanvas, setCompleteCanvas] = useState<any>(null);
 
     const [width, setWidth] = useState(window.innerWidth);
     const [height, setHeight] = useState(window.innerHeight);
@@ -42,13 +49,11 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     const [scale, setScale] = useState(1);
     const [translation, setTranslation] = useState({ x: 0, y: 0});
 
-    const [selectedTool, setSelectedTool] = useContext(ToolContext);
-
     const draw = () => {
         if (!pdfPage) return;
-        if (!fabricRef.current) return;
+        if (!completeCanvas) return;
 
-        fabricRef.current?.renderAll();
+        completeCanvas.renderAll();
     };
 
     const renderPageToTexture = async (page: PDFPageProxy) => {
@@ -129,8 +134,8 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         renderPageToTexture(pdfPage).then((image) => {
             // Once the texture exists, queue a drawing operation when the
             // browser next repaints the page
-            const fabric = fabricRef.current!;
-            fabric.setBackgroundImage(image as fabric.Image, fabric.renderAll.bind(fabric), {});
+            const fabric = completeCanvas;
+            completeCanvas.setBackgroundImage(image as fabric.Image, fabric.renderAll.bind(fabric), {});
             requestAnimationFrame(draw);
         });
 
@@ -139,7 +144,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     // Set canvas translation and zoom
     useEffect(() => {
-        const canvas = fabricRef.current;
+        const canvas = completeCanvas;
         if (canvas) {
             canvas.absolutePan(translation);
             canvas.setZoom(scale);
@@ -154,7 +159,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const onMouseWheel = (opt: IEvent<WheelEvent>) => {
         const delta = opt.e.deltaY;
-        const canvas = fabricRef.current!;
+        const canvas = completeCanvas;
 
         // We NEED to use setScale because the current value of 'scale'
         // is stack captured by the owning closure. Who thought this was
@@ -194,7 +199,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const onMouseDown = (opt: IEvent<MouseEvent>) => {
         const event = opt.e;
-        const canvas = fabricRef.current;
+        const canvas = completeCanvas;
         if (canvas && event.altKey) {
             isDragging.current = true;
             canvas.selection = false;
@@ -204,7 +209,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
 
     const onMouseMove = (opt: IEvent<MouseEvent>) => {
         const event = opt.e;
-        const canvas = fabricRef.current;
+        const canvas = completeCanvas;
         if (canvas && isDragging.current) {
             setTranslation((viewport) => {
                 const x = viewport.x - (event.clientX - lastPos.current.x);
@@ -221,12 +226,82 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
     };
 
     const onMouseUp = (_: IEvent<MouseEvent>) => {
-        const canvas = fabricRef.current;
+        const canvas = completeCanvas;
         if (canvas) {
             isDragging.current = false;
             canvas.selection = true;
         }
     };
+
+    // Setup tool control.
+    useEffect(() => {
+        const canvas = completeCanvas;
+        if (canvas) {
+            reset();
+            switch (true) {
+                case activeToolData instanceof Pen:
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = activeToolData.size;
+                    canvas.freeDrawingBrush.color = activeToolData.color;
+                    break;
+                case activeToolData instanceof Highlighter:
+                    canvas.isDrawingMode = true;
+                    canvas.freeDrawingBrush.width = activeToolData.size;
+                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`; // TODO: see https://stackoverflow.com/questions/23201134/transparent-argb-hex-value
+                    break;
+                case activeToolData instanceof TextModel:
+                    canvas.on('mouse:down', drawText);
+                    break;
+                case activeToolData instanceof Maths:
+                    canvas.on('mouse:down', drawMath);
+                    break;
+            }
+        }
+
+    }, [activeToolData]);
+
+    function reset() {
+        const canvas = completeCanvas;
+        if (canvas) {
+            canvas.__eventListeners = {};
+            canvas.isDrawingMode = false;
+            canvas.off('mouse:down', drawText); // TODO: Not working?
+            canvas.off('mouse:down', drawMath);
+        }
+    }
+
+    function drawText (options: any) {
+        const canvas = completeCanvas;
+        if (canvas) {
+            if (options.target === null) {
+                let text = new fabric.IText('', { left: options.e.offsetX, top: options.e.offsetY });
+                canvas.add(text).setActiveObject(text);
+                text.on('editing:exited', () => {
+                    if (text.text?.length === 0) {
+                        canvas.remove(text);
+                    }
+                });
+                text.enterEditing();
+            }
+        }
+    }
+    function drawMath (options: any) {
+        const canvas = completeCanvas;
+        if (canvas) {
+            if (options.target === null) {
+                let text = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+                    left: options.e.offsetX,
+                    top: options.e.offsetY,
+                    scaleX: 4,
+                    scaleY: 4,
+                    height: 10,
+                    width: 30,
+                });
+                canvas.add(text).setActiveObject(text);
+            }
+        }
+    }
+
 
     // Startup function
     useEffect(() => {
@@ -236,35 +311,12 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
             width: width,
             height: height
         });
-
+        setCompleteCanvas(canvas);
         fabricRef.current = canvas;
-
-        canvas.on('mouse:wheel', onMouseWheel);
-        canvas.on('mouse:down', onMouseDown);
-        canvas.on('mouse:move', onMouseMove);
-        canvas.on('mouse:up', onMouseUp);
-
-        const text = new fabric.Textbox('Hello, World!',
-            {
-                left: 50,
-                top: 50,
-                selectable: true,
-                width: 300, // TODO Change initial width,
-            }
-        );
-
-        const customObj = new MathObject("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
-            left: 100,
-            top: 100,
-            scaleX: 4,
-            scaleY: 4,
-            height: 10,
-            width: 30,
-        });
-
-        canvas.add(text);
-        canvas.add(customObj);
-
+        // canvas.on('mouse:wheel', onMouseWheel);
+        // canvas.on('mouse:down', onMouseDown);
+        // canvas.on('mouse:move', onMouseMove);
+        // canvas.on('mouse:up', onMouseUp);
         const preventDefaultHandler = (e: Event) => e.preventDefault();
 
         document.addEventListener('gesturestart', preventDefaultHandler)
