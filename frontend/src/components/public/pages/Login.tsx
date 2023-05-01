@@ -14,7 +14,7 @@ export default function Login() {
     const [password, setPassword] = useState('')
 
     const [signInWithGoogle] = useSignInWithGoogle(auth)
-    const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+    const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth)
 
     async function handleSignInWithGoogle() {
         try {
@@ -27,7 +27,13 @@ export default function Login() {
 
     async function handleSignInWithEmailandPass() {
         try {
-            const signedInUser = await signInWithEmailAndPassword(email, password);
+            await signInWithEmailAndPassword(email, password);
+            if (loading) {
+                console.log('Loading...')
+            }
+            if (user) {
+                console.log(user.user.email)
+            }
         } catch (error) {
             console.error(error);
         }
