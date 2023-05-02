@@ -1,15 +1,21 @@
 import Toolbar from "./toolbar/Toolbar";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import EditorHeader from "./header/EditorHeader";
+import FabricJSCanvas from "./FabricJSCanvas";
 import Pan from "./toolbar/model/tools/Pan";
+import Eraser from "./toolbar/model/tools/Eraser";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
 export const ToolContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
-    // Initially, selected tool is pan (id must match in Toolbar)
-    const [activeToolData, setActiveToolData] = useState<Tool | null>(new Pan("pan"));
+    const [pageNumber, setPageNumber] = useState(1);
+    const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
+
+    useEffect(() => {
+        setActiveToolData(new Pan("pan"));
+    }, []);
 
     return (
         <ToolContext.Provider value={[activeToolData, setActiveToolData]}>

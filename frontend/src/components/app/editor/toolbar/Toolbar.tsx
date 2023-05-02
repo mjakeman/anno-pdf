@@ -21,8 +21,8 @@ export default function Toolbar() {
         <HighlighterTool id={'highlighter'} />
         <TextTool id={'text'} />
         <MathTool id={'math'} />
-        <EraserTool id={'eraser'} />
         <RectangleTool id={'rect'} />
+        <EraserTool id={'eraser'} />
         <Undo/>
         <Redo/>
     </div>
