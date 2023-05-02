@@ -1,10 +1,10 @@
-import { list } from 'postcss';
-import React, { useState } from 'react'
-import { useEffect } from 'react'
+import React from 'react'
 import { auth } from './firebaseAuth'
 import { User } from 'firebase/auth';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
-export const AuthContext = React.createContext<User | null>(null);;
+
+export const AuthContext = React.createContext<User | null | undefined>(null);;
 
 interface ContainerProps {
     children: React.ReactNode,
@@ -12,26 +12,10 @@ interface ContainerProps {
 
 
 export function AuthContextProvider({children}:ContainerProps){
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-    useEffect(()=>{
-        const listen = auth.onAuthStateChanged((user)=>{
-            if(user){
-                setCurrentUser(user);
-                console.log(user)
-            }
-            else{
-                setCurrentUser(null);
-            }
-        });
-        return (()=>{
-        listen();
-        }
-        )
-    },[])
+    const [user, loading] = useAuthState(auth);
 
     return (
-        <AuthContext.Provider value={currentUser}>
+        <AuthContext.Provider value={user}>
             {children}
         </AuthContext.Provider>
     )
