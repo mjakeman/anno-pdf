@@ -37,7 +37,6 @@ export default function useTools(canvas: any) {
     }, [activeToolData]);
     function reset() {
         if (canvas) {
-            canvas.__eventListeners = {};
             canvas.isDrawingMode = false;
             canvas.off('mouse:down', drawText); // TODO: Not working?
             canvas.off('mouse:down', drawMath);

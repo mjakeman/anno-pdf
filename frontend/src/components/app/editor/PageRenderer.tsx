@@ -3,16 +3,19 @@ import {fabric} from "fabric";
 import React, {useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
+import SocketClient from "./socket/client";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface Props {
     page: PDFPageProxy;
+    pageNumber: number;
+    socketClient: SocketClient;
 }
-const PageRenderer = React.memo(({ page } : Props) => {
+const PageRenderer = React.memo(({ page, pageNumber, socketClient } : Props) => {
 
-    const [canvas, setCanvas] = useState<any>(null);
+    const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [pageImg, setPageImg] = useState<fabric.Image | null>(null);
     useTools(canvas);
@@ -38,9 +41,42 @@ const PageRenderer = React.memo(({ page } : Props) => {
 
     // (3) Once the canvas is loaded, draw the actual image.
     useEffect(() => {
+
         if (!pageImg) return;
+        if (!canvas) return;
+
+        canvas.stateful = true;
+
+        // Setup event handlers
+        canvas.on('object:modified', (data: fabric.IEvent) => {
+            socketClient.onObjectModified(pageNumber, data);
+        });
+        canvas.on('object:rotating', (data: fabric.IEvent) => {
+            socketClient.onObjectRotating(pageNumber, data);
+        });
+        canvas.on('object:scaling', (data: fabric.IEvent) => {
+            socketClient.onObjectScaling(pageNumber, data);
+        });
+        canvas.on('object:moving', (data: fabric.IEvent) => {
+            socketClient.onObjectMoving(pageNumber, data);
+        });
+        canvas.on('object:skewing', (data: fabric.IEvent) => {
+            socketClient.onObjectSkewing(pageNumber, data);
+        });
+
         canvas.setBackgroundImage(pageImg, canvas.renderAll.bind(canvas), {});
         requestAnimationFrame(draw);
+
+        // Teardown event handlers
+        return () => {
+            // Setup event handlers
+            canvas.off('object:modified');
+            canvas.off('object:rotating');
+            canvas.off('object:scaling');
+            canvas.off('object:moving');
+            canvas.off('object:skewing');
+        }
+
     }, [canvas]);
 
     // Drawing function(s)

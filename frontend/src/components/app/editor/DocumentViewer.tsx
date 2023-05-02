@@ -1,8 +1,13 @@
 import * as pdfjs from "pdfjs-dist";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
+import socketio, {Socket} from 'socket.io-client'
+import { v4 as uuidv4 } from 'uuid';
+import SocketClient from "./socket/client";
+
+const server = "http://localhost:8080"
 
 interface Props {
     documentUuid: string,
@@ -16,6 +21,8 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+    const socketClient = new SocketClient();
 
     // (1) Startup
     useEffect(() => {
@@ -59,13 +66,21 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
     }
 
+    useEffect(() => {
+        socketClient.setup();
+
+        return () => {
+            socketClient.teardown();
+        }
+    }, []);
+
     return (
         <div className="w-full h-full bg-zinc-300 dark:bg-anno-space-700">
             {isLoaded
                 ?
                 <div className="grid gap-4 justify-items-center mt-4">
                     {pdfPages.map((page, index) => (
-                            <PageRenderer key={index} page={page} />
+                            <PageRenderer key={index} page={page} pageNumber={index} socketClient={socketClient} />
                         ))}
                 </div>
                 :
