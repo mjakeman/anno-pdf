@@ -45,9 +45,6 @@ export default function PenTool({ id } : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
-    useEffect(() => {
-        setActiveToolData(pen);
-    }, [pen]);
 
     return (
         <span className="relative">

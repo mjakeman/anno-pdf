@@ -29,10 +29,6 @@ export default function EraserTool({ id } : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
-    useEffect(() => {
-        setActiveToolData(eraser);
-    }, [eraser]);
-
     return (
         <span className="relative">
             <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'} p-1 `}>

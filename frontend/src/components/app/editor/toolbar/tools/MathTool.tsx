@@ -22,11 +22,6 @@ export default function MathTool({id} : Props) {
     }, [activeToolData.id]);
 
 
-    useEffect(() => {
-        setActiveToolData(mathTool);
-    }, [mathTool]);
-
-
     return (
         <button onClick={handleClick} type="button" className={`${isActiveTool ? 'bg-gray-200' : 'bg-white'} hover:bg-gray-200 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700`}>
             <svg className={"w-6 h-6"} viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">

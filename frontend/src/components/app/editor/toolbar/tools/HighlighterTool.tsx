@@ -44,9 +44,6 @@ export default function HighlighterTool({ id } : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
-    useEffect(() => {
-        setActiveToolData(highlighter);
-    }, [highlighter]);
 
 
     return (
