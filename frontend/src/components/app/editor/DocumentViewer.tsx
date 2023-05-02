@@ -22,7 +22,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-    const socketClient = new SocketClient();
+    const socketClient = useRef<SocketClient>(new SocketClient());
 
     // (1) Startup
     useEffect(() => {
@@ -67,10 +67,10 @@ export default function DocumentViewer({ documentUuid } : Props) {
     }
 
     useEffect(() => {
-        socketClient.setup();
+        socketClient.current?.setup();
 
         return () => {
-            socketClient.teardown();
+            socketClient.current?.teardown();
         }
     }, []);
 
@@ -80,7 +80,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
                 ?
                 <div className="grid gap-4 justify-items-center mt-4">
                     {pdfPages.map((page, index) => (
-                            <PageRenderer key={index} page={page} pageNumber={index} socketClient={socketClient} />
+                            <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
                         ))}
                 </div>
                 :

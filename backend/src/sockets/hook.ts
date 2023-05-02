@@ -15,8 +15,14 @@ const on_connect = async (socket: socketio.Socket) => {
         socketMap[socket.id] = data;
     });
 
-    socket.on("count-changed", data => {
-        console.log(socketMap[socket.id] + ": " + data);
+    socket.on("object-modified", (index: number, data: any) => {
+        console.log(socketMap[socket.id] + ": " + index + " / " + data);
+        socket.broadcast.emit('peer-modified', index, data);
+    });
+
+    socket.on('object-added', (index: number, data: any) => {
+        console.log(socketMap[socket.id] + ": " + index + " / " + data);
+        socket.broadcast.emit('peer-added', index, data);
     });
 
     socket.on('disconnect', () => {

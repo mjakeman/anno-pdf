@@ -1,9 +1,10 @@
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {fabric} from "fabric";
-import React, {useEffect, useRef, useState} from "react";
+import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
+import {Canvas} from "fabric/fabric-impl";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -11,9 +12,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface Props {
     page: PDFPageProxy;
     pageNumber: number;
-    socketClient: SocketClient;
+    socketClientRef: MutableRefObject<SocketClient>;
 }
-const PageRenderer = React.memo(({ page, pageNumber, socketClient } : Props) => {
+const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) => {
 
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -39,42 +40,64 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClient } : Props) => 
 
     }, [pageImg]);
 
+    const enableEvents = (canvas: fabric.Canvas) => {
+        // Setup event handlers
+        canvas.on('object:modified', data => {
+            const socketClient = socketClientRef.current;
+            socketClient.onObjectModified(pageNumber, data);
+        });
+        canvas.on('object:added', data => {
+            const socketClient = socketClientRef.current;
+            socketClient.onObjectAdded(pageNumber, data);
+        });
+    }
+
+    const disableEvents = (canvas: fabric.Canvas) => {
+        // Setup event handlers
+        canvas.off('object:modified');
+        canvas.off('object:added');
+    }
+
+    const runWithEventsFrozen = (canvas: Canvas, fn: () => void) => {
+        disableEvents(canvas);
+        fn();
+        enableEvents(canvas);
+    }
+
     // (3) Once the canvas is loaded, draw the actual image.
     useEffect(() => {
 
         if (!pageImg) return;
         if (!canvas) return;
 
+        const socketClient = socketClientRef.current;
+        socketClient.registerPage(pageNumber, {
+            objectAddedFunc: data => {
+                runWithEventsFrozen(canvas, () => {
+                    canvas.fire('object:added', data);
+                    canvas.renderAll();
+                });
+            },
+            objectModifiedFunc: data => {
+                runWithEventsFrozen(canvas, () => {
+                    canvas.fire('object:modified', data);
+                    canvas.renderAll();
+                });
+            },
+        });
+
         canvas.stateful = true;
 
         // Setup event handlers
-        canvas.on('object:modified', (data: fabric.IEvent) => {
-            socketClient.onObjectModified(pageNumber, data);
-        });
-        canvas.on('object:rotating', (data: fabric.IEvent) => {
-            socketClient.onObjectRotating(pageNumber, data);
-        });
-        canvas.on('object:scaling', (data: fabric.IEvent) => {
-            socketClient.onObjectScaling(pageNumber, data);
-        });
-        canvas.on('object:moving', (data: fabric.IEvent) => {
-            socketClient.onObjectMoving(pageNumber, data);
-        });
-        canvas.on('object:skewing', (data: fabric.IEvent) => {
-            socketClient.onObjectSkewing(pageNumber, data);
-        });
+        enableEvents(canvas);
 
         canvas.setBackgroundImage(pageImg, canvas.renderAll.bind(canvas), {});
         requestAnimationFrame(draw);
 
         // Teardown event handlers
         return () => {
-            // Setup event handlers
-            canvas.off('object:modified');
-            canvas.off('object:rotating');
-            canvas.off('object:scaling');
-            canvas.off('object:moving');
-            canvas.off('object:skewing');
+            disableEvents(canvas);
+            socketClient.unregisterPage(pageNumber);
         }
 
     }, [canvas]);
