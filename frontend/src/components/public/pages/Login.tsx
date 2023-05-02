@@ -3,7 +3,7 @@ import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
-import {ChangeEvent, useState} from "react";
+import {useState} from "react";
 
 export default function Login() {
 
@@ -19,21 +19,31 @@ export default function Login() {
     async function handleSignInWithGoogle() {
         try {
             const signedInUser = await signInWithGoogle();
-            // TODO: Add API call here to check for google authentication
         } catch (error) {
             console.error(error);
         }
     }
 
-    async function handleSignInWithEmailandPass() {
+    async function handleSignInWithEmailandPassword() {
         try {
             await signInWithEmailAndPassword(email, password);
             if (loading) {
                 console.log('Loading...')
             }
             if (user) {
-                console.log(user.user.email)
+                console.log(user.user.displayName)
             }
+
+            var loginJsonData = {
+                "name" : user?.user.displayName,
+                "email" : user?.user.email,
+            }
+
+            await fetch('/auth', {
+                body: JSON.stringify(loginJsonData)
+            })
+                .then(response => console.log(response.text()))
+                .catch(error => console.error(error))
         } catch (error) {
             console.error(error);
         }
@@ -53,7 +63,7 @@ export default function Login() {
                         <input onChange={e => setPassword(e.target.value)} value={password} type="password" id="password-input" placeholder="Enter your password here..." className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
-                   <PrimaryButton onClick={handleSignInWithEmailandPass} label="Log in"/>
+                   <PrimaryButton onClick={handleSignInWithEmailandPassword} label="Log in"/>
 
                     <div className="flex flex-row gap-6 items-center text-zinc-500 dark:text-white">
                         <hr className="w-full" />

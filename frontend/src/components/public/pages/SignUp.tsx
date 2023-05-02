@@ -52,8 +52,8 @@ export default function SignUp() {
             // TODO: Add API call here to create a user in our backend with returned uid
 
             var loginJsonData = {
+                "name" : signUpForm.firstName + " " + signUpForm.lastName,
                 "email" : signUpForm.email,
-                "password" : signUpForm.password
             }
 
             await fetch('/auth', {
