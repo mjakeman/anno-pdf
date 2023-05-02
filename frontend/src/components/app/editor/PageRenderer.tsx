@@ -5,6 +5,7 @@ import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
 import {Canvas, Object} from "fabric/fabric-impl";
+import {v4 as uuidv4} from "uuid";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -47,8 +48,12 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
             socketClient.onObjectModified(pageNumber, data);
         });
         canvas.on('object:added', data => {
+            const uuid = uuidv4();
+            // @ts-ignore
+            data.target['id'] = uuid;
+
             const socketClient = socketClientRef.current;
-            socketClient.onObjectAdded(pageNumber, data);
+            socketClient.onObjectAdded(pageNumber, uuid, data.target!);
         });
     }
 
@@ -74,10 +79,15 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
 
         const socketClient = socketClientRef.current;
         socketClient.registerPage(pageNumber, {
-            objectAddedFunc: data => {
+            objectAddedFunc: (uuid, data) => {
                 runWithEventsFrozen(canvas, () => {
-                    console.log("adding: " + data);
+                    console.log("Addition received from peer")
                     console.log(data);
+                    console.log(uuid);
+                    console.log('\n');
+
+                    // @ts-ignore
+                    data['id'] = uuid;
 
                     fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
                         canvas.add(enlivenedObjects[0]);
@@ -86,12 +96,37 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
                     canvas.renderAll();
                 });
             },
-            objectModifiedFunc: data => {
+            objectModifiedFunc: (uuid, data) => {
                 runWithEventsFrozen(canvas, () => {
-                    console.log("modified: " + data);
+                    console.log("Modification received from peer")
                     console.log(data);
-                    canvas.fire('object:modified', data);
-                    canvas.renderAll();
+                    console.log(uuid);
+                    console.log('\n');
+
+                    var found = false;
+
+                    canvas.forEachObject(object => {
+
+                        // @ts-ignore
+                        const cmp_uuid = object['id'];
+                        console.log(cmp_uuid);
+
+                        if (uuid === cmp_uuid) {
+                            console.log('found');
+                            object.set(data);
+
+                            // @ts-ignore
+                            object['id'] = uuid;
+
+                            object.setCoords();
+                            canvas.renderAll();
+
+                            found = true;
+                        }
+                    });
+
+                    if (!found)
+                        console.error("Did not find object to modify - lost data?");
                 });
             },
         });

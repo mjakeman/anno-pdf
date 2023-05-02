@@ -15,14 +15,14 @@ const on_connect = async (socket: socketio.Socket) => {
         socketMap[socket.id] = data;
     });
 
-    socket.on("object-modified", (index: number, data: string) => {
-        console.log(socketMap[socket.id] + ": " + index + " / " + data);
-        socket.broadcast.emit('peer-modified', index, data);
+    socket.on("object-modified", (index: number, uuid: string, data: string) => {
+        console.log(socketMap[socket.id] + ": " + index + " / " + uuid + " / " + data);
+        socket.broadcast.emit('peer-modified', index, uuid, data);
     });
 
-    socket.on('object-added', (index: number, data: string) => {
-        console.log(socketMap[socket.id] + ": " + index + " / " + data);
-        socket.broadcast.emit('peer-added', index, data);
+    socket.on('object-added', (index: number, uuid: string, data: string) => {
+        console.log(socketMap[socket.id] + ": " + index + " / " + uuid + " / " + data);
+        socket.broadcast.emit('peer-added', index, uuid, data);
     });
 
     socket.on('disconnect', () => {
