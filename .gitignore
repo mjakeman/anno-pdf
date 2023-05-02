@@ -30,4 +30,3 @@ dist-ssr
 
 # Environments
 .env
-serviceAccount.json
