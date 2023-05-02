@@ -4,7 +4,7 @@ import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
-import {Canvas} from "fabric/fabric-impl";
+import {Canvas, Object} from "fabric/fabric-impl";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -58,6 +58,8 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
         canvas.off('object:added');
     }
 
+    // Prevent loop feedback when processing events from the server (i.e. avoiding triggering
+    // an object:added event ourselves, which will recursively call the server and so on).
     const runWithEventsFrozen = (canvas: Canvas, fn: () => void) => {
         disableEvents(canvas);
         fn();
@@ -74,12 +76,20 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
         socketClient.registerPage(pageNumber, {
             objectAddedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
-                    canvas.fire('object:added', data);
+                    console.log("adding: " + data);
+                    console.log(data);
+
+                    fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
+                        canvas.add(enlivenedObjects[0]);
+                        canvas.renderAll();
+                    }, '', undefined);
                     canvas.renderAll();
                 });
             },
             objectModifiedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
+                    console.log("modified: " + data);
+                    console.log(data);
                     canvas.fire('object:modified', data);
                     canvas.renderAll();
                 });

@@ -5,8 +5,8 @@ import {fabric} from "fabric";
 const server = "http://localhost:8080";
 
 type PageCallback = {
-    objectAddedFunc: (data: fabric.IEvent) => void;
-    objectModifiedFunc: (data: fabric.IEvent) => void;
+    objectAddedFunc: (data: fabric.Object) => void;
+    objectModifiedFunc: (data: fabric.Object) => void;
 }
 
 export default class SocketClient {
@@ -18,7 +18,7 @@ export default class SocketClient {
         this.socket = socketio(server);
 
         const username = uuidv4();
-        this.socket!.emit("set-username", username);
+        this.socket.emit("set-username", username);
 
         this.socket.on('peer-added', this.peerObjectAdded);
         this.socket.on('peer-modified', this.peerObjectModified);
@@ -36,13 +36,13 @@ export default class SocketClient {
         this.map.delete(index);
     }
 
-    peerObjectAdded = (index: number, data: fabric.IEvent) => {
-        console.log("Received page " + index + " modification from peer: " + data);
+    peerObjectAdded = (index: number, data: fabric.Object) => {
+        console.log("Received page " + index + " addition from peer: " + data);
         const callbacks = this.map.get(index);
         callbacks?.objectAddedFunc(data);
     }
 
-    peerObjectModified = (index: number, data: fabric.IEvent) => {
+    peerObjectModified = (index: number, data: fabric.Object) => {
         console.log("Received page " + index + " modification from peer: " + data);
         const callbacks = this.map.get(index);
         callbacks?.objectModifiedFunc(data);
@@ -54,7 +54,7 @@ export default class SocketClient {
             console.error("Socket is null");
             return;
         }
-        this.socket.emit("object-modified", index, data);
+        this.socket.emit("object-modified", index, data.target!.toJSON());
     }
 
     onObjectAdded = (index: number, data: fabric.IEvent) => {
@@ -63,7 +63,7 @@ export default class SocketClient {
             console.error("Socket is null");
             return;
         }
-        this.socket.emit("object-added", index, data);
+        this.socket.emit("object-added", index, data.target!.toJSON());
     }
 
 };
