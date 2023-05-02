@@ -2,6 +2,7 @@ import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {fabric} from "fabric";
 import React, {useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
+import useTools from "../../../hooks/useTools";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -14,6 +15,7 @@ const PageRenderer = React.memo(({ page } : Props) => {
     const [canvas, setCanvas] = useState<any>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [pageImg, setPageImg] = useState<fabric.Image | null>(null);
+    useTools(canvas);
 
     // (1) Startup - Load the Image
     useEffect(() => {
