@@ -21,14 +21,6 @@ export default function SignUp() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        // If we're logged in, redirect to the dashboard
-        if (user) {
-            // TODO: Update this route when we're finished
-            navigate("project-group-fearless-foxes/dash")
-        }
-    }, [user]);
-
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
             ...signUpForm,
@@ -38,8 +30,7 @@ export default function SignUp() {
 
     async function handleSignInWithGoogle() {
         try {
-            const signedInUser = await signInWithGoogle();
-            // TODO: Add API call here to check for google authentication
+            await signInWithGoogle();
         } catch (error) {
             console.error(error);
         }
@@ -47,10 +38,7 @@ export default function SignUp() {
 
     async function handleDefaultSignUpSubmit(event: MouseEvent) {
         try {
-            // TODO: Add API call here for backend validation
-            const createdUser = await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
-            // TODO: Add API call here to create a user in our backend with returned uid
-
+            await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
             var loginJsonData = {
                 "name" : signUpForm.firstName + " " + signUpForm.lastName,
                 "email" : signUpForm.email,
@@ -62,7 +50,7 @@ export default function SignUp() {
                 .then(response => console.log(response.text()))
                 .catch(error => console.error(error))
 
-            console.log(createdUser);
+            navigate('/');
         } catch (error) {
             console.error(error);
         }

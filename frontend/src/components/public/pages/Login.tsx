@@ -4,11 +4,9 @@ import googleLogo from "../../../assets/glogo.svg";
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 export default function Login() {
-
-    // TODO: Add signin with google (similar to SignUp.tsx)
-    // TODO: Add signin with email and password https://github.com/CSFrequency/react-firebase-hooks/tree/master/auth#usesigninwithemailandpassword
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -16,9 +14,12 @@ export default function Login() {
     const [signInWithGoogle] = useSignInWithGoogle(auth)
     const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth)
 
+    const navigate = useNavigate();
+
     async function handleSignInWithGoogle() {
         try {
-            const signedInUser = await signInWithGoogle();
+            await signInWithGoogle();
+            navigate("/project-group-fearless-foxes/dash");
         } catch (error) {
             console.error(error);
         }
@@ -44,6 +45,8 @@ export default function Login() {
             })
                 .then(response => console.log(response.text()))
                 .catch(error => console.error(error))
+
+            navigate("project-group-fearless-foxes/dash");
         } catch (error) {
             console.error(error);
         }
