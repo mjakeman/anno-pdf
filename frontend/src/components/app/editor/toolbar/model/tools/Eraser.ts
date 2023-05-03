@@ -1,4 +1,5 @@
 import Tool from "./Tool";
+import {Canvas} from "fabric/fabric-impl";
 
 class Eraser extends Tool {
     private _size: number;
@@ -17,5 +18,7 @@ class Eraser extends Tool {
         this._size = value;
     }
 
+    draw(canvas: Canvas): void {
+    }
 }
 export default Eraser;

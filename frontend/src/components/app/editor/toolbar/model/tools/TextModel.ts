@@ -1,4 +1,6 @@
 import Tool from "./Tool";
+import {Canvas} from "fabric/fabric-impl";
+import {fabric} from "fabric";
 
 class TextModel extends Tool {
 
@@ -30,6 +32,22 @@ class TextModel extends Tool {
 
     get allowedColors(): string[] {
         return this._allowedColors;
+    }
+
+    draw(canvas: Canvas): void {
+        canvas.on('mouse:down', (event) => {
+            if (event.target === null) {
+                let text = new fabric.IText('', {left: event.e.offsetX, top: event.e.offsetY});
+                canvas.add(text);
+                canvas.setActiveObject(text);
+                text.on('editing:exited', () => {
+                    if (text.text?.length === 0) {
+                        canvas.remove(text);
+                    }
+                });
+                text.enterEditing();
+            }
+        });
     }
 
 }

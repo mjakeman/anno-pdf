@@ -1,4 +1,5 @@
 import Tool from "./Tool";
+import {Canvas} from "fabric/fabric-impl";
 
 class Pen extends Tool {
 
@@ -40,6 +41,12 @@ class Pen extends Tool {
 
     get allowedColors(): string[] {
         return this._allowedColors;
+    }
+
+    draw(canvas: Canvas): void {
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.width = this.size;
+        canvas.freeDrawingBrush.color = this.color;
     }
 
 }

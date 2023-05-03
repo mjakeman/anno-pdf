@@ -1,4 +1,5 @@
 import Tool from "./Tool";
+import {Canvas} from "fabric/fabric-impl";
 
 class Rectangle extends Tool {
 
@@ -30,6 +31,9 @@ class Rectangle extends Tool {
 
     get allowedColors(): string[] {
         return this._allowedColors;
+    }
+
+    draw(canvas: Canvas): void {
     }
 
 }

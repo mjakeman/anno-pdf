@@ -1,6 +1,7 @@
 import Tool from "./Tool";
 import {PencilIcon} from "@heroicons/react/24/outline";
 import React from "react";
+import {Canvas} from "fabric/fabric-impl";
 
 class Highlighter extends Tool {
     private _allowedColors: string[]  = [
@@ -40,6 +41,12 @@ class Highlighter extends Tool {
 
     get allowedColors(): string[] {
         return this._allowedColors;
+    }
+
+    draw(canvas: Canvas): void {
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.width = this.size;
+        canvas.freeDrawingBrush.color = `${this.color}59`; // TODO: see https://stackoverflow.com/questions/23201134/transparent-argb-hex-value
     }
 
 }
