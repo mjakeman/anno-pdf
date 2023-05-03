@@ -22,6 +22,9 @@ export default function SelectTool({ id } : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
+    useEffect(() => {
+        setActiveToolData(selectTool);
+    }, [selectTool]);
 
     return (
         <button onClick={handleClick} type="button" className={`${isActiveTool ? 'bg-gray-200 dark:bg-anno-space-900' : 'bg-white hover:bg-gray-200 dark:bg-anno-space-800 dark:hover:bg-anno-space-700'}  p-2 rounded-full transition-colors`}>

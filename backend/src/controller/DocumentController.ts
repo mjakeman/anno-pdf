@@ -3,10 +3,6 @@ import { createDocument, deleteDocument, updateDocument } from "../data/document
 
 class DocumentController {
 
-    async getDocuments(_req: Request, res: Response) {
-        res.send("Not implemented");
-    }
-
     async createDocument(req: Request, res: Response) {
         const dbDoc = await createDocument(req.body);
 
@@ -22,7 +18,7 @@ class DocumentController {
         const dbDoc = await deleteDocument(req.params.id);
 
         if (dbDoc) {
-            return res.status(200).send('Document deleted - id: ' + dbDoc._id);
+            return res.status(200).send('Document deleted - Title: ' + dbDoc.title);
         }
 
         return res.status(404).send('Document not found');

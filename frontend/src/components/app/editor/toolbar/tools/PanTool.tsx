@@ -21,6 +21,11 @@ export default function PanTool({id} : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData]);
 
+
+    useEffect(() => {
+        setActiveToolData(panTool);
+    }, [panTool]);
+
     return (
         <button onClick={handleClick} type="button" className={`${isActiveTool ? 'bg-gray-200 dark:bg-anno-space-900' : 'bg-white hover:bg-gray-200 dark:bg-anno-space-800 dark:hover:bg-anno-space-700'}  p-2 rounded-full transition-colors`}>
             <HandRaisedIcon className="w-7 h-7 text-white stroke-black stroke-[0.8]"/>

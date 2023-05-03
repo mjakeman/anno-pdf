@@ -6,7 +6,8 @@ const documentSchema = new Schema({
     createdBy: { type: String, required: true },
     title: { type: String, required: true },
     sharedWith: [String],
-    lastUpdatedBy: String
+    lastUpdatedBy: String,
+    annotations: Object,
 }, { timestamps: true });
 
 const Document = mongoose.model('Document', documentSchema);

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    uuid: { type: String, required: true, unique: true },
+    uid: { type: String, required: true, unique: true },
     firstName: String,
     lastName: String,
     email: { type: String, required: true, unique: true },
