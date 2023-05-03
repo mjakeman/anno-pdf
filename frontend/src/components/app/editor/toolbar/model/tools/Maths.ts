@@ -55,6 +55,13 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
                 top: top,
                 angle: angle,
             });
+            obj.toObject = (function(toObject) {
+                return function() {
+                    return fabric.util.object.extend(toObject.call(obj), {
+                        latex: (obj as any).latex
+                    });
+                };
+            })(fabric.Group.prototype.toObject);
             canvas.add(obj);
             canvas.setActiveObject(obj);
             canvas.remove(current);
@@ -85,7 +92,6 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
 
         // When we exit editing, remove this text and instead have the image.
         iText.on('editing:exited', () => {
-            console.log(iText.text);
             let svgString = TeXToSVG(iText.text as any);
             canvas.remove(iText);
             this._renderMath(svgString, canvas);
