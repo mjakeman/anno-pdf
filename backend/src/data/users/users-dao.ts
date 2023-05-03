@@ -4,15 +4,15 @@ async function getUsers() {
     return User.find();
 }
 
-async function getUser(id: String) {
-    return User.findOne({uuid: id});
+async function getUser(uid: String) {
+    return User.findOne({uid: uid});
 }
 
 async function createUser(user: any) {
     try {
         return await User.create(user);
     } catch (e) {
-        // User already exists
+        console.log(e.message);
         return null;
     }
 }

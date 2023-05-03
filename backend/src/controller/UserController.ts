@@ -27,7 +27,7 @@ class UserController {
     const dbUser = await createUser(req.body);
 
     if (dbUser) {
-      console.log('User created - uuid : ' + dbUser.uuid);
+      console.log('User created - firebase uid : ' + dbUser.uid);
       return res.status(201).json(dbUser);
     }
 
