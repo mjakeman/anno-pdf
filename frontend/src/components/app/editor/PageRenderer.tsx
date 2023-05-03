@@ -1,18 +1,23 @@
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {fabric} from "fabric";
-import React, {useEffect, useRef, useState} from "react";
+import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
+import SocketClient from "./socket/client";
+import {Canvas, Object} from "fabric/fabric-impl";
+import {v4 as uuidv4} from "uuid";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface Props {
     page: PDFPageProxy;
+    pageNumber: number;
+    socketClientRef: MutableRefObject<SocketClient>;
 }
-const PageRenderer = React.memo(({ page } : Props) => {
+const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) => {
 
-    const [canvas, setCanvas] = useState<any>(null);
+    const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const [pageImg, setPageImg] = useState<fabric.Image | null>(null);
     useTools(canvas);
@@ -36,11 +41,110 @@ const PageRenderer = React.memo(({ page } : Props) => {
 
     }, [pageImg]);
 
+    const enableEvents = (canvas: fabric.Canvas) => {
+        // Setup event handlers
+        canvas.on('object:modified', data => {
+            const socketClient = socketClientRef.current;
+            socketClient.onObjectModified(pageNumber, data);
+        });
+        canvas.on('object:added', data => {
+            const uuid = uuidv4();
+            // @ts-ignore
+            data.target['id'] = uuid;
+
+            const socketClient = socketClientRef.current;
+            socketClient.onObjectAdded(pageNumber, uuid, data.target!);
+        });
+    }
+
+    const disableEvents = (canvas: fabric.Canvas) => {
+        // Setup event handlers
+        canvas.off('object:modified');
+        canvas.off('object:added');
+    }
+
+    // Prevent loop feedback when processing events from the server (i.e. avoiding triggering
+    // an object:added event ourselves, which will recursively call the server and so on).
+    const runWithEventsFrozen = (canvas: Canvas, fn: () => void) => {
+        disableEvents(canvas);
+        fn();
+        enableEvents(canvas);
+    }
+
     // (3) Once the canvas is loaded, draw the actual image.
     useEffect(() => {
+
         if (!pageImg) return;
+        if (!canvas) return;
+
+        const socketClient = socketClientRef.current;
+        socketClient.registerPage(pageNumber, {
+            objectAddedFunc: (uuid, data) => {
+                runWithEventsFrozen(canvas, () => {
+                    console.log("Addition received from peer")
+                    console.log(data);
+                    console.log(uuid);
+                    console.log('\n');
+
+                    // @ts-ignore
+                    data['id'] = uuid;
+
+                    fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
+                        canvas.add(enlivenedObjects[0]);
+                        canvas.renderAll();
+                    }, '', undefined);
+                    canvas.renderAll();
+                });
+            },
+            objectModifiedFunc: (uuid, data) => {
+                runWithEventsFrozen(canvas, () => {
+                    console.log("Modification received from peer")
+                    console.log(data);
+                    console.log(uuid);
+                    console.log('\n');
+
+                    var found = false;
+
+                    canvas.forEachObject(object => {
+
+                        // @ts-ignore
+                        const cmp_uuid = object['id'];
+                        console.log(cmp_uuid);
+
+                        if (uuid === cmp_uuid) {
+                            console.log('found');
+                            object.set(data);
+
+                            // @ts-ignore
+                            object['id'] = uuid;
+
+                            object.setCoords();
+                            canvas.renderAll();
+
+                            found = true;
+                        }
+                    });
+
+                    if (!found)
+                        console.error("Did not find object to modify - lost data?");
+                });
+            },
+        });
+
+        canvas.stateful = true;
+
+        // Setup event handlers
+        enableEvents(canvas);
+
         canvas.setBackgroundImage(pageImg, canvas.renderAll.bind(canvas), {});
         requestAnimationFrame(draw);
+
+        // Teardown event handlers
+        return () => {
+            disableEvents(canvas);
+            socketClient.unregisterPage(pageNumber);
+        }
+
     }, [canvas]);
 
     // Drawing function(s)
