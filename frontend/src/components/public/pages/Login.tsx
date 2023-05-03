@@ -11,7 +11,7 @@ export default function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const [signInWithGoogle] = useSignInWithGoogle(auth)
+    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth)
     const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth)
 
     const navigate = useNavigate();
@@ -19,7 +19,10 @@ export default function Login() {
     async function handleSignInWithGoogle() {
         try {
             await signInWithGoogle();
-            navigate("/project-group-fearless-foxes/dash");
+
+            if (googleUser) {
+                navigate("/project-group-fearless-foxes/dash");
+            }
         } catch (error) {
             console.error(error);
         }
@@ -28,12 +31,6 @@ export default function Login() {
     async function handleSignInWithEmailandPassword() {
         try {
             await signInWithEmailAndPassword(email, password);
-            if (loading) {
-                console.log('Loading...')
-            }
-            if (user) {
-                console.log(user.user.displayName)
-            }
 
             var loginJsonData = {
                 "name" : user?.user.displayName,
@@ -46,7 +43,9 @@ export default function Login() {
                 .then(response => console.log(response.text()))
                 .catch(error => console.error(error))
 
-            navigate("project-group-fearless-foxes/dash");
+            if (user) {
+                navigate("project-group-fearless-foxes/dash");
+            }
         } catch (error) {
             console.error(error);
         }

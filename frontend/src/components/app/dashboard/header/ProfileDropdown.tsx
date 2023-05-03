@@ -6,6 +6,7 @@ import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
 import SettingModal from "../../setting/SettingModal";
 import Modal from "../../../Modal";
+import {AuthContext} from "../../../../AuthContextProvider";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -19,6 +20,8 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
+
+    const user = useContext(AuthContext);
 
     function turnOnDarkMode() {
         if (!isDarkMode) {
@@ -41,8 +44,8 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
                     J
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xl dark:text-white">John Doe</span>
-                    <span className="text-sm text-neutral-400 dark:text-white">johndoe@gmail.com</span>
+                    <span className="text-xl dark:text-white">{user?.displayName}</span>
+                    <span className="text-sm text-neutral-400 dark:text-white">{user?.email}</span>
                 </div>
             </div>
             <div onClick={()=>openSettingModal()} className="flex flex-row gap-4 px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-anno-space-800 rounded-xl">
