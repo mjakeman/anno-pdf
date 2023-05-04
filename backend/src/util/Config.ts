@@ -10,6 +10,7 @@ declare var process : {
         AWS_ACCESS_KEY: string
         AWS_SECRET_ACCESS_KEY: string
         AWS_BUCKET: string
+        TEST_UID: string
     }
   }
 
@@ -17,6 +18,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const AWS_BUCKET = process.env.AWS_BUCKET;
+const TEST_UID = process.env.TEST_UID || "DEFAULT UID";
 
 /*
  * The default port of the application
@@ -31,5 +33,6 @@ export default {
     ENVIRONMENT,
     AWS_ACCESS_KEY,
     AWS_SECRET_ACCESS_KEY,
-    AWS_BUCKET
+    AWS_BUCKET,
+    TEST_UID
 };
