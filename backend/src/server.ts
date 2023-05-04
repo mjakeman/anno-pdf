@@ -9,14 +9,13 @@ const app = express.default();
 
 // Setup body-parser
 app.use(express.json());
+// Use cors
+app.use(cors);
 
 // Setup our routes.
 import routes from './routes/appRoutes';
 import hook from "./sockets/hook";
 app.use('/', routes);
-
-// Use cors
-app.use(cors);
 
 const server = http.createServer(app);
 
