@@ -10,7 +10,7 @@ const app = express.default();
 // Setup body-parser
 app.use(express.json());
 // Use cors
-app.use(cors);
+app.use(cors());
 
 // Setup our routes.
 import routes from './routes/appRoutes';

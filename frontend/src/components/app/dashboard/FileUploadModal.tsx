@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Modal from "../../Modal";
 import UploadFileButton from "./UploadFileButton";
+import axios from "axios";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "../../../firebaseAuth";
 
 interface FileUploadModalProps {
     isVisible: boolean;
@@ -8,6 +11,8 @@ interface FileUploadModalProps {
 }
 
 export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadModalProps){
+
+    const [user, loading] = useAuthState(auth);
 
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -49,9 +54,21 @@ export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadM
         
     }
 
-    function importFile(file: File) {
+    async function importFile(file: File) {
         setUploadedFileName(file.name);
-        console.log(file);
+
+        let formData = new FormData();
+        formData.append("file", file);
+        let token = await user?.getIdToken();
+        axios.post('http://localhost:8080/documents/create',formData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(r => {
+                console.log(r);
+            }
+        );
     }
 }
 
