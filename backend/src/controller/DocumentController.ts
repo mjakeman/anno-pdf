@@ -82,41 +82,6 @@ class DocumentController {
         return req.pipe(busboy);
     }
 
-    /** Unused: Leaving in incase we revert **/
-    async createDocument(req: Request, res: Response) {
-        return res.status(404).send('Endpoint not used');
-
-        const dbDoc = await createDocument(req.body);
-
-        if (dbDoc) {
-            console.log('Document created - Title: ' + dbDoc.title);
-            return res.status(201).json(dbDoc);
-        }
-
-        return res.sendStatus(422);
-    }
-
-    async uploadDocument(req: Request, res: Response) {
-        return res.status(404).send('Endpoint not used');
-
-        const busboy = Busboy({ headers: req.headers});
-
-        busboy.on('file', async (_fieldname: any, file: any, info: any)=> {
-            const params = {
-                Bucket: Config.AWS_BUCKET,
-                Key: info.filename,
-                Body: file
-            };
-
-            const upload = await s3.upload(params).promise();
-            console.log('The upload: ', upload);
-
-            res.json({ message: 'Upload Complete' });
-        })
-
-        return req.pipe(busboy);
-    }
-
 }
 
 export { DocumentController };
