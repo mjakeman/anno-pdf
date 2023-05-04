@@ -1,5 +1,4 @@
 import { Document } from '../../models/Document';
-import mongoose from "mongoose";
 
 async function getDocuments(userId: String) {
     return Document.find({
@@ -14,16 +13,12 @@ async function createDocument(document: any) {
     return await Document.create(document);
 }
 
-async function deleteDocument(id: string) {
-    if(!mongoose.Types.ObjectId.isValid(id)) return null;
-
-    return Document.findByIdAndDelete(id);
+async function deleteDocument(uuid: string) {
+    return Document.findOneAndDelete({uuid: uuid});
 }
 
-async function updateDocument(id: string, document: any) {
-    if(!mongoose.Types.ObjectId.isValid(id)) return null;
-
-    return Document.findByIdAndUpdate(id, document, {
+async function updateDocument(uuid: string, document: any) {
+    return Document.findOneAndUpdate({uuid: uuid}, document, {
         new: true
     });
 }

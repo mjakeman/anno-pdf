@@ -5,16 +5,14 @@ const router = Router();
 
 const documentController = new DocumentController();
 
-// Create new document
-router.post('/', documentController.createDocument);
+// Delete document by uuid
+router.delete('/:uuid/delete', documentController.deleteDocument);
 
-// Delete document by id
-router.delete('/:id/delete', documentController.deleteDocument);
+// Update document by uuid
+router.post('/:uuid/update', documentController.updateDocument);
 
-// Update document by id
-router.post('/:id/update', documentController.updateDocument);
+// Create and upload document
+router.post('/create', documentController.createAndUploadDocument);
 
-// Upload document
-router.post('/upload', documentController.uploadDocument);
 
 export default router;

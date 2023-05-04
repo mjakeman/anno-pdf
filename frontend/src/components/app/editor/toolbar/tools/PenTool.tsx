@@ -78,9 +78,9 @@ export default function PenTool({ id } : Props) {
                     {/* Stroke Size Range Slider + Preview */}
                     <div className="flex flex-row gap-4 items-center justify-between">
                         <span className="text-white">Stroke</span>
-                        <input onChange={(e) => setPenSize(parseInt(e.target.value))} type="range" min="1" max="10" value={`${pen.size}`} />
-                        <svg className="stroke-white" viewBox="0 0 23 13" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 12C9.5 0.5 13.5 1 12.5 7C11.7 11.8 20.8333 3.49996 22.5 0.5" strokeWidth={pen.size} />
+                        <input onChange={(e) => setPenSize(parseInt(e.target.value))} type="range" min={pen.minSize} max={pen.maxSize} value={pen.size} />
+                        <svg className="w-14 w-14" viewBox={`0 0 ${pen.maxSize*2} ${pen.maxSize*2}`}>
+                            <circle cx={pen.maxSize} cy={pen.maxSize} r={pen.size} fill={pen.color}/>
                         </svg>
 
                     </div>
