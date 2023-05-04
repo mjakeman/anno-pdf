@@ -12,8 +12,16 @@ class Pen extends Tool {
         '#FFFFFF',
     ]
 
+
+    private _maxSize: number = 15;
+
+    private _minSize: number = 1;
+
+
     private _size: number;
+
     private _color: string;
+
     constructor(id: string, size: number, color: string) {
         super(id)
         this._size = size;
@@ -25,6 +33,9 @@ class Pen extends Tool {
     }
 
     set size(value: number) {
+        if (!(value >= this._minSize && value <= this._maxSize)) {
+            throw new Error("Invalid pen size - not in range.")
+        }
         this._size = value;
     }
 
@@ -41,6 +52,13 @@ class Pen extends Tool {
 
     get allowedColors(): string[] {
         return this._allowedColors;
+    }
+
+    get minSize(): number {
+        return this._minSize;
+    }
+    get maxSize(): number {
+        return this._maxSize;
     }
 
     draw(canvas: Canvas): void {
