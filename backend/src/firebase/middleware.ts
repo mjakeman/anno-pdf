@@ -1,8 +1,16 @@
 import admin from './firebaseAdminConfig';
 import { Request, Response, NextFunction } from 'express'
+import Config from "../util/Config";
 
 class Middleware {
+
+    // Authentication middleware
     async decodeToken(req: Request, res: Response, next: NextFunction) {
+        if (Config.ENVIRONMENT !== 'PROD') {
+            req.user = Config.TEST_UID;
+            return next();
+        }
+
         // Bearer token
         let token: string;
         if (req.headers.authorization) {
@@ -15,6 +23,7 @@ class Middleware {
             const decodedToken = await admin.auth().verifyIdToken(token);
 
             if (decodedToken) {
+                req.user = decodedToken.uid;
                 return next();
             }
         } catch (e) {
