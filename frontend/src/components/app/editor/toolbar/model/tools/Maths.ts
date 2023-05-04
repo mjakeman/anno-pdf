@@ -93,6 +93,7 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
         // When we exit editing, remove this text and instead have the image.
         iText.on('editing:exited', () => {
             let svgString = TeXToSVG(iText.text as any);
+            this.latex = iText.text;
             canvas.remove(iText);
             this._renderMath(svgString, canvas);
         });
