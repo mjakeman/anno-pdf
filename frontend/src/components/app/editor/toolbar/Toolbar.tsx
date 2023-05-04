@@ -2,7 +2,6 @@ import React from 'react';
 import PanTool from "./tools/PanTool";
 import SelectTool from "./tools/SelectTool";
 import PenTool from "./tools/PenTool";
-import EraserTool from "./tools/EraserTool";
 import HighlighterTool from "./tools/HighlighterTool";
 import RectangleTool from "./tools/RectangleTool";
 import TextTool from "./tools/TextTool";
@@ -22,7 +21,6 @@ export default function Toolbar() {
         <TextTool id={'text'} />
         <MathTool id={'math'} />
         <RectangleTool id={'rect'} />
-        <EraserTool id={'eraser'} />
         <Undo/>
         <Redo/>
     </div>
