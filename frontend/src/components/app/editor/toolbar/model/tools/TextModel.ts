@@ -37,7 +37,7 @@ class TextModel extends Tool {
     draw(canvas: Canvas): void {
         canvas.on('mouse:down', (event) => {
             if (event.target === null) {
-                let text = new fabric.IText('', {left: event.e.offsetX, top: event.e.offsetY});
+                let text = new fabric.IText('', {left: event.e.offsetX, top: event.e.offsetY, fill: this._color});
                 canvas.add(text);
                 canvas.setActiveObject(text);
                 text.on('editing:exited', () => {

@@ -1,5 +1,6 @@
 import Tool from "./Tool";
 import {Canvas} from "fabric/fabric-impl";
+import {fabric} from "fabric";
 
 class Rectangle extends Tool {
 
@@ -34,6 +35,13 @@ class Rectangle extends Tool {
     }
 
     draw(canvas: Canvas): void {
+        canvas.on('mouse:down', (event) => {
+            if (event.target === null) {
+                let text = new fabric.Rect({left: event.e.offsetX, top: event.e.offsetY, fill: this._color, width: 100, height: 100});
+                canvas.add(text);
+                canvas.setActiveObject(text);
+            }
+        });
     }
 
 }
