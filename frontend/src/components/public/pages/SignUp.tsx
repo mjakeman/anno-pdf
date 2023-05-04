@@ -8,9 +8,8 @@ import {useNavigate} from "react-router-dom";
 
 export default function SignUp() {
 
-    const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, defaultUser, defaultLoading, defaultError ] = useCreateUserWithEmailAndPassword(auth);
-    const [user, loading, error] = useAuthState(auth);
+    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
 
     const [signUpForm, setSignUpForm] = useState({
         firstName: "",
@@ -31,6 +30,10 @@ export default function SignUp() {
     async function handleSignInWithGoogle() {
         try {
             await signInWithGoogle();
+
+            if (googleUser) {
+                navigate("/project-group-fearless-foxes/dash");
+            }
         } catch (error) {
             console.error(error);
         }
@@ -50,7 +53,9 @@ export default function SignUp() {
                 .then(response => console.log(response.text()))
                 .catch(error => console.error(error))
 
-            navigate('/');
+            if (user) {
+                navigate("/project-group-fearless-foxes/dash");
+            }
         } catch (error) {
             console.error(error);
         }
