@@ -29,7 +29,7 @@ export default function App() {
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <ToastProvider>
                     <Routes>
-                            <Route path="project-group-fearless-foxes" element={<PublicLayout />}>
+                            <Route path="/" element={<PublicLayout />}>
                                 <Route index element={<Home/>} />
                                 <Route path="about" element={<About/>} />
                                 <Route path="contact" element={<Contact/>} />
@@ -37,10 +37,10 @@ export default function App() {
                                 <Route path="login" element={<Login/>} />
                                 <Route path="signup" element={<SignUp/>} />
                             </Route>
-                            <Route path="project-group-fearless-foxes/dash" element={<DashboardLayout />}>
+                            <Route path="/dash" element={<DashboardLayout />}>
                                 <Route index element={<Dashboard/>} />
                             </Route>
-                            <Route path="project-group-fearless-foxes/editor" element={<Editor/>} />
+                            <Route path="/editor" element={<Editor/>} />
                     </Routes>
                 </ToastProvider>
             </DarkModeContext.Provider>

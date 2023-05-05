@@ -12,7 +12,7 @@ export default function PublicHeader() {
       <header className="bg-white dark:bg-anno-space-900 py-4">
           <Container>
               <div className="flex flex-row justify-between items-center">
-                  <Link to={"/project-group-fearless-foxes/"} className="flex flex-row  gap-2">
+                  <Link to={"/"} className="flex flex-row  gap-2">
                         <span className="font-halant text-3xl font-medium text-anno-red-primary dark:text-anno-pink-500">Anno</span>
                         <Logo className="w-8 h-8" />
                   </Link>
@@ -23,7 +23,7 @@ export default function PublicHeader() {
                   </div>
                   <div className="flex flex-row gap-4 items-center">
                       <PublicHeaderNavLink to={"/login"} label={"Log in"} />
-                      <PrimaryButton onClick={() => navigate("/project-group-fearless-foxes/signup")} label={"Sign up"}/>
+                      <PrimaryButton onClick={() => navigate("/signup")} label={"Sign up"}/>
                   </div>
               </div>
           </Container>

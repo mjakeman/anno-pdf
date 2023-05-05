@@ -24,8 +24,7 @@ export default function SignUp() {
     useEffect(() => {
         // If we're logged in, redirect to the dashboard
         if (user) {
-            // TODO: Update this route when we're finished
-            navigate("project-group-fearless-foxes/dash")
+            navigate("/dash")
         }
     }, [user]);
 
