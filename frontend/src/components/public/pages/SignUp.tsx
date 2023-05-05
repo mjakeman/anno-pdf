@@ -27,11 +27,24 @@ export default function SignUp() {
         });
     };
 
-    async function handleSignInWithGoogle() {
+    async function handleSignUpWithGoogle() {
         try {
             await signInWithGoogle();
 
             if (googleUser) {
+
+                var loginJsonData = {
+                    "uid" : googleUser.user.uid,
+                    "name" : googleUser.user.displayName?.replaceAll(" ", ""),
+                    "email" : googleUser.user.email,
+                }
+
+                await fetch('/auth', {
+                    method: 'POST',
+                    body: JSON.stringify(loginJsonData)
+                })
+                    .then(response => console.log(response.text()))
+                    .catch(error => console.error(error))
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
@@ -42,18 +55,22 @@ export default function SignUp() {
     async function handleDefaultSignUpSubmit(event: MouseEvent) {
         try {
             await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
-            var loginJsonData = {
-                "name" : signUpForm.firstName + " " + signUpForm.lastName,
-                "email" : signUpForm.email,
-            }
-
-            await fetch('/auth', {
-                body: JSON.stringify(loginJsonData)
-            })
-                .then(response => console.log(response.text()))
-                .catch(error => console.error(error))
 
             if (user) {
+
+                var loginJsonData = {
+                    "uid" : user.user.uid,
+                    "name" : signUpForm.firstName + signUpForm.lastName,
+                    "email" : signUpForm.email,
+                }
+
+                await fetch('/auth', {
+                    method: 'POST',
+                    body: JSON.stringify(loginJsonData)
+                })
+                    .then(response => console.log(response.text()))
+                    .catch(error => console.error(error))
+
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
@@ -93,7 +110,7 @@ export default function SignUp() {
                         <hr className="w-full" />
                     </div>
 
-                    <button onClick={()=>handleSignInWithGoogle()} type="button" className="flex flex-row items-center justify-center gap-4 bg-white border-2 p-2 rounded transition-colors hover:bg-zinc-200">
+                    <button onClick={()=>handleSignUpWithGoogle()} type="button" className="flex flex-row items-center justify-center gap-4 bg-white border-2 p-2 rounded transition-colors hover:bg-zinc-200">
                         <img className="w-6 h-6" src={googleLogo} alt="Google logo" />
                         <span className="text-lg font-light">Continue with Google</span>
                     </button>

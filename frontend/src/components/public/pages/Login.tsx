@@ -5,6 +5,8 @@ import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase
 import {auth} from "../../../firebaseAuth";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import firebase from "firebase/compat";
+import UserCredential = firebase.auth.UserCredential;
 
 export default function Login() {
 
@@ -21,6 +23,18 @@ export default function Login() {
             await signInWithGoogle();
 
             if (googleUser) {
+                var loginJsonData = {
+                    "uid" : googleUser.user.uid,
+                    "name" : googleUser.user.displayName?.replaceAll(" ", ""),
+                    "email" : googleUser.user.email,
+                }
+
+                await fetch('/auth', {
+                    method: 'POST',
+                    body: JSON.stringify(loginJsonData)
+                })
+                    .then(response => console.log(response.text()))
+                    .catch(error => console.error(error))
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
@@ -32,23 +46,40 @@ export default function Login() {
         try {
             await signInWithEmailAndPassword(email, password);
 
-            var loginJsonData = {
-                "name" : user?.user.displayName,
-                "email" : user?.user.email,
-            }
-
-            await fetch('/auth', {
-                body: JSON.stringify(loginJsonData)
-            })
-                .then(response => console.log(response.text()))
-                .catch(error => console.error(error))
-
             if (user) {
+                var loginJsonData = {
+                    "uid" : user.user.uid,
+                    "name" : user.user.displayName?.replaceAll(" ", ""),
+                    "email" : user.user.email,
+                }
+
+                await fetch('/auth', {
+                    method: 'POST',
+                    body: JSON.stringify(loginJsonData)
+                })
+                    .then(response => console.log(response.text()))
+                    .catch(error => console.error(error))
                 navigate("project-group-fearless-foxes/dash");
             }
         } catch (error) {
             console.error(error);
+            setEmail(' ');
+            setPassword(' ');
         }
+    }
+
+    async function authCall(name: String, email: String) {
+        var loginJsonData = {
+            "name" : name,
+            "email" : email,
+        }
+
+        await fetch('/auth', {
+            method: 'POST',
+            body: JSON.stringify(loginJsonData)
+        })
+            .then(response => console.log(response.text()))
+            .catch(error => console.error(error))
     }
 
     return (
