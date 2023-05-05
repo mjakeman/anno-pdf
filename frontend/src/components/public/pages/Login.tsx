@@ -70,7 +70,7 @@ export default function Login() {
                     .catch(function (error) {
                         setError(error);
                     });
-                navigate("project-group-fearless-foxes/dash");
+                navigate("/project-group-fearless-foxes/dash");
             }
 
         } catch (error) {

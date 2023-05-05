@@ -7,7 +7,6 @@ import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import { updateProfile } from "firebase/auth";
-import { createPromiseCapability } from "pdfjs-dist";
 
 export default function SignUp() {
 
