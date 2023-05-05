@@ -2,9 +2,10 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import { useSignInWithGoogle, useCreateUserWithEmailAndPassword, useAuthState } from 'react-firebase-hooks/auth';
-import {ChangeEvent, useEffect, useState} from "react";
+import { useSignInWithGoogle, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 export default function SignUp() {
 
@@ -41,12 +42,18 @@ export default function SignUp() {
                     "email" : googleUser.user.email,
                 }
 
-                await fetch('/auth', {
-                    method: 'POST',
-                    body: JSON.stringify(loginJsonData)
+                let token = await googleUser?.user.getIdToken();
+                axios.post('http://localhost:8080/user',loginJsonData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(function (response) {
+                    console.log(response);
                 })
-                    .then(response => console.log(response.text()))
-                    .catch(error => setError(error))
+                    .catch(function (error) {
+                        setError(error);
+                    });
+
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
@@ -66,12 +73,17 @@ export default function SignUp() {
                     "email" : signUpForm.email,
                 }
 
-                await fetch('/auth', {
-                    method: 'POST',
-                    body: JSON.stringify(loginJsonData)
+                let token = await googleUser?.user.getIdToken();
+                axios.post('http://localhost:8080/user',loginJsonData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(function (response) {
+                    console.log(response);
                 })
-                    .then(response => console.log(response.text()))
-                    .catch(error => console.error(error))
+                    .catch(function (error) {
+                        setError(error);
+                    });
 
                 navigate("/project-group-fearless-foxes/dash");
             }

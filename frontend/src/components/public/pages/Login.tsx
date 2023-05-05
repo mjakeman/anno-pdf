@@ -5,6 +5,7 @@ import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase
 import {auth} from "../../../firebaseAuth";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
 
@@ -28,12 +29,18 @@ export default function Login() {
                     "email" : googleUser.user.email,
                 }
 
-                await fetch('/auth', {
-                    method: 'POST',
-                    body: JSON.stringify(loginJsonData)
+                let token = await googleUser?.user.getIdToken();
+                axios.post('http://localhost:8080/user',loginJsonData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(function (response) {
+                    console.log(response);
                 })
-                    .then(response => console.log(response.text()))
-                    .catch(error => console.error(error))
+                    .catch(function (error) {
+                        setError(error);
+                    });
+
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
@@ -52,12 +59,17 @@ export default function Login() {
                     "email" : user.user.email,
                 }
 
-                await fetch('/auth', {
-                    method: 'POST',
-                    body: JSON.stringify(loginJsonData)
+                let token = await user?.user.getIdToken();
+                axios.post('http://localhost:8080/user',loginJsonData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(function (response) {
+                    console.log(response);
                 })
-                    .then(response => console.log(response.text()))
-                    .catch(error => setError(error))
+                    .catch(function (error) {
+                        setError(error);
+                    });
                 navigate("project-group-fearless-foxes/dash");
             }
 
