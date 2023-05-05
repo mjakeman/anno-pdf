@@ -27,7 +27,7 @@ export default function Editor() {
                 </div>
 
                 {/* Document Space */}
-                <main className="grow bg-zinc-300 dark:bg-anno-space-700">
+                <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-hidden">
 
                     <DocumentViewer documentUuid={"test"}/>
 
