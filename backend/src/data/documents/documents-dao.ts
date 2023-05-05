@@ -9,6 +9,10 @@ async function getDocuments(userId: String) {
     });
 }
 
+async function getDocument(uuid: string) {
+    return Document.findOne({uuid: uuid});
+}
+
 async function createDocument(document: any) {
     return await Document.create(document);
 }
@@ -23,4 +27,4 @@ async function updateDocument(uuid: string, document: any) {
     });
 }
 
-export { createDocument, getDocuments, deleteDocument, updateDocument }
+export { createDocument, getDocuments, deleteDocument, updateDocument, getDocument }
