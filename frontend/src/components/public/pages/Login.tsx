@@ -66,7 +66,7 @@ export default function Login() {
                     body: JSON.stringify(loginJsonData)
                 })
                     .then(response => console.log(response.text()))
-                    .catch(error => console.error(error))
+                    .catch(error => setError(error))
                 navigate("project-group-fearless-foxes/dash");
             }
 
