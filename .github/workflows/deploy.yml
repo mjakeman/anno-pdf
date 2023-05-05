@@ -36,32 +36,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - uses: akhileshns/heroku-deploy@v3.12.13
         with:
-          node-version: 18.x
-          cache: 'npm'
-          cache-dependency-path: './frontend/package-lock.json'
-      - run: npm ci
-      - run: npm run build
-        env:
-          VITE_FB_AUTH_API_KEY: ${{ secrets.VITE_FB_AUTH_API_KEY }}
-          VITE_FB_AUTH_AUTH_DOMAIN: ${{ secrets.VITE_FB_AUTH_AUTH_DOMAIN }}
-          VITE_FB_AUTH_PROJECT_ID: ${{ secrets.VITE_FB_AUTH_PROJECT_ID }}
-          VITE_FB_AUTH_STORAGE_BUCKET: ${{ secrets.VITE_FB_AUTH_STORAGE_BUCKET }}
-          VITE_FB_AUTH_MESSAGING_SENDER_ID: ${{ secrets.VITE_FB_AUTH_MESSAGING_SENDER_ID }}
-          VITE_FB_AUTH_APP_ID: ${{ secrets.VITE_FB_AUTH_APP_ID }}
-          VITE_BACKEND_URL: 'https://anno-pdf.herokuapp.com/'
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload public subdir
-          path: './frontend/dist/'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "anno-pdf"
+          heroku_email: "mjakeman26@outlook.co.nz"
+          appdir: "frontend"
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
@@ -69,6 +49,6 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.13
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "anno-pdf"
+          heroku_app_name: "anno-pdf-backend"
           heroku_email: "mjakeman26@outlook.co.nz"
           appdir: "backend"
