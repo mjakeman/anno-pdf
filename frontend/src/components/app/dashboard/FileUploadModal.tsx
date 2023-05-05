@@ -60,7 +60,7 @@ export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadM
         let formData = new FormData();
         formData.append("file", file);
         let token = await user?.getIdToken();
-        axios.post('http://localhost:8080/documents/create',formData, {
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/create',formData, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
