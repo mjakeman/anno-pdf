@@ -5,8 +5,6 @@ import {auth} from "../../../firebaseAuth";
 import { useSignInWithGoogle, useCreateUserWithEmailAndPassword, useAuthState } from 'react-firebase-hooks/auth';
 import {ChangeEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import firebase from "firebase/compat";
-import FirebaseError = firebase.FirebaseError;
 
 export default function SignUp() {
 
@@ -52,14 +50,7 @@ export default function SignUp() {
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
-            const { code } = error as FirebaseError;
-            if (code === 'auth/invalid-credential') {
-                setError('Invalid credentials. Please try again.');
-            } else if (parseInt(code) === 400) {
-                setError('Bad request. Please try again later.');
-            } else {
-                setError('An unexpected error occurred. Please try again later.');
-            }
+            setError('Error whilst logging in. Please check Google Account is correct and try again');
         }
     }
 
@@ -85,18 +76,7 @@ export default function SignUp() {
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
-            const { code } = error as FirebaseError;
-            if (code === 'auth/invalid-email') {
-                setError('Invalid email address');
-            } else if (code === 'auth/wrong-password') {
-                setError('Invalid password');
-            } else if (code === 'auth/user-not-found') {
-                setError('User not found');
-            } else if (code.startsWith('auth/')) {
-                setError('Authentication error');
-            } else {
-                setError('Unknown error');
-            }
+            setError('Error whilst logging in. Please check email and password are correct and try again');
         }
     }
 
