@@ -2,7 +2,7 @@ import socketio, {Socket} from "socket.io-client";
 import {v4 as uuidv4} from "uuid";
 import {fabric} from "fabric";
 
-const server = "http://localhost:8080";
+const server = import.meta.env.VITE_BACKEND_URL;
 
 type PageCallback = {
     objectAddedFunc: (uuid: string, data: fabric.Object) => void;

@@ -100,7 +100,7 @@ export default function DashboardTable() {
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
                                     <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
-                                    <button type="button" className="hover:underline" onClick={()=>navigate("/project-group-fearless-foxes/editor")}>{document.name}</button>
+                                    <button type="button" className="hover:underline" onClick={()=>navigate("/editor")}>{document.name}</button>
                                 </td>
                                 <td className="py-3">{document.owner}</td>
                                 <td className="py-3">{document.lastupdated}</td>

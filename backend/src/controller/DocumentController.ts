@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Busboy from 'busboy';
-import { createDocument, deleteDocument, updateDocument } from "../data/documents/documents-dao";
+import { createDocument, deleteDocument, updateDocument, getDocument } from "../data/documents/documents-dao";
 import s3 from "../s3/s3Config";
 import Config from "../util/Config";
 import { v4 as uuidv4 } from 'uuid';
@@ -8,14 +8,48 @@ import { v4 as uuidv4 } from 'uuid';
 class DocumentController {
 
     async deleteDocument(req: Request, res: Response) {
-        // TODO: delete from S3
         const dbDoc = await deleteDocument(req.params.uuid);
-
-        if (dbDoc) {
-            return res.status(200).send('Document deleted from mongo - Title: ' + dbDoc.title);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
         }
 
-        return res.status(404).send('Document not found');
+        // Delete object from s3 bucket
+        const s3Key = toS3Key(dbDoc.uuid);
+        const params = {
+            Bucket: Config.AWS_BUCKET,
+            Key: s3Key,
+        };
+
+        try {
+            await s3.deleteObject(params).promise();
+        } catch (e) {
+            console.log(e.message);
+            return res.status(500).send("Error deleting document from s3");
+        }
+
+        return res.status(200).send('Document deleted from mongo and s3 - Title: ' + dbDoc.title);
+    }
+
+    async getDocument(req: Request, res: Response) {
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
+        // Retrieve object from s3 bucket
+        const s3Key = toS3Key(dbDoc.uuid);
+        const params = {
+            Bucket: Config.AWS_BUCKET,
+            Key: s3Key,
+        };
+
+        try {
+            const s3Document = await s3.getObject(params).promise();
+            return res.set("Content-Type", "application/pdf").send(s3Document.Body);
+        } catch (e) {
+            console.log(e.message);
+            return res.status(500).send("Error fetching document from s3");
+        }
     }
 
     async updateDocument(req: Request, res: Response) {
@@ -53,9 +87,10 @@ class DocumentController {
             }
 
             const id = uuidv4();
+            const s3Key = toS3Key(id);
             const params = {
                 Bucket: Config.AWS_BUCKET,
-                Key: `${id}.pdf`,
+                Key: s3Key,
                 Body: file
             };
 
@@ -68,7 +103,7 @@ class DocumentController {
                 uuid: id,
                 sharedWith: [],
                 annotations: {},
-                url: upload.Location
+                url: upload.Location,
             });
 
             if (dbDoc) {
@@ -82,6 +117,10 @@ class DocumentController {
         return req.pipe(busboy);
     }
 
+}
+
+function toS3Key(uuid: string) : string {
+    return `${uuid}.pdf`
 }
 
 export { DocumentController };

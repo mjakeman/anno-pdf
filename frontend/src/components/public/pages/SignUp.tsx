@@ -3,7 +3,7 @@ import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
 import { useSignInWithGoogle, useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import { updateProfile } from "firebase/auth";
@@ -23,6 +23,13 @@ export default function SignUp() {
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // If we're logged in, redirect to the dashboard
+        if (user) {
+            navigate("/dash")
+        }
+    }, [user]);
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({

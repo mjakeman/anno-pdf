@@ -31,7 +31,12 @@ const on_connect = async (socket: socketio.Socket) => {
 }
 
 export default (server: http.Server) => {
-    const io = new socketio.Server(server);
+    const io = new socketio.Server(server, {
+        cors: {
+            // TODO: https://anno-pdf.herokuapp.com/
+            origin: '*'
+        }
+    });
 
     io.on("connection", on_connect);
 }

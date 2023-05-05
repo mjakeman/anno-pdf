@@ -44,7 +44,7 @@ export default function EditorHeader() {
             <div className="flex flex-row items-center justify-between gap-4">
 
                 {/* Logo */}
-                <Logo className="w-8 h-8 hover:cursor-pointer" onClick={()=>navigate("/project-group-fearless-foxes/dash")}/>
+                <Logo className="w-8 h-8 hover:cursor-pointer" onClick={()=>navigate("/dash")}/>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">

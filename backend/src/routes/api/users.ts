@@ -5,16 +5,17 @@ const router = Router();
 
 const userController = new UserController();
 
+// Create new user in database (if they don't already exist)
+router.post('/', userController.createUser);
+
 // Get all users
 router.get('/', userController.getUsers);
 
-// Get user by uuid
-router.get('/:uuid', userController.getUser);
-
 // Get all documents for user
-router.get('/:uuid/documents', userController.getDocuments);
+router.get('/documents', userController.getDocuments);
 
-// Create new user in database (if they don't already exist)
-router.post('/auth', userController.createUser);
+// Get user by uid
+router.get('/:uid', userController.getUser);
+
 
 export default router;
