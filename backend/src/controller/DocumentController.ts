@@ -16,6 +16,26 @@ class DocumentController {
         }
 
         return res.status(404).send('Document not found');
+    async getDocument(req: Request, res: Response) {
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
+        // Retrieve object from s3 bucket
+        const s3Key = toS3Key(dbDoc.uuid);
+        const params = {
+            Bucket: Config.AWS_BUCKET,
+            Key: s3Key,
+        };
+
+        try {
+            const s3Document = await s3.getObject(params).promise();
+            return res.set("Content-Type", "application/pdf").send(s3Document.Body);
+        } catch (e) {
+            console.log(e.message);
+            return res.status(500).send("Error fetching document from s3");
+        }
     }
 
     async updateDocument(req: Request, res: Response) {
