@@ -25,7 +25,7 @@ export default function Home() {
                             <p>But it doesn’t have to be.</p>
                        </span>
                         <span>
-                            <PrimaryButton onClick={() => navigate("/project-group-fearless-foxes/signup")} label="Get started"/>
+                            <PrimaryButton onClick={() => navigate("/signup")} label="Get started"/>
                         </span>
                     </div>
                     <img className="w-full sm:w-1/2 h-64 sm:h-112 object-cover rounded-xl" src={heroImg} alt="Laptop and coffee"/>
@@ -85,7 +85,7 @@ export default function Home() {
                         <h1 className="text-5xl font-bold text-anno-red-primary dark:text-anno-pink-500">Time to Anno</h1>
                         <p className="text-xl text-neutral-400 dark:text-white ">It's completely free.</p>
                     </span>
-                    <PrimaryButton onClick={() => navigate("/project-group-fearless-foxes/signup")} label="Get started"/>
+                    <PrimaryButton onClick={() => navigate("/signup")} label="Get started"/>
 
                 </div>
             </Container>
