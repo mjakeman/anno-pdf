@@ -89,9 +89,9 @@ export default function SignUp() {
 
                 navigate("/project-group-fearless-foxes/dash");
             }
-            console.log(createdUser);
-            if(createdUser){
-                await updateProfile(createdUser.user, {
+            console.log(user);
+            if(user){
+                await updateProfile(user.user, {
                     displayName: signUpForm.firstName+signUpForm.lastName
                 })
             }    
