@@ -6,15 +6,16 @@ import {auth} from "../../../firebaseAuth";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import firebase from "firebase/compat";
-import UserCredential = firebase.auth.UserCredential;
+import FirebaseError = firebase.FirebaseError;
 
 export default function Login() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
 
     const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth)
-    const [signInWithEmailAndPassword, user, loading, error] = useSignInWithEmailAndPassword(auth)
+    const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(auth)
 
     const navigate = useNavigate();
 
@@ -38,7 +39,14 @@ export default function Login() {
                 navigate("/project-group-fearless-foxes/dash");
             }
         } catch (error) {
-            console.error(error);
+            const { code } = error as FirebaseError;
+            if (code === 'auth/invalid-credential') {
+                setError('Invalid credentials. Please try again.');
+            } else if (parseInt(code) === 400) {
+                setError('Bad request. Please try again later.');
+            } else {
+                setError('An unexpected error occurred. Please try again later.');
+            }
         }
     }
 
@@ -61,25 +69,21 @@ export default function Login() {
                     .catch(error => console.error(error))
                 navigate("project-group-fearless-foxes/dash");
             }
+
         } catch (error) {
-            console.error(error);
-            setEmail(' ');
-            setPassword(' ');
+            const { code } = error as FirebaseError;
+            if (code === 'auth/invalid-email') {
+                setError('Invalid email address');
+            } else if (code === 'auth/wrong-password') {
+                setError('Invalid password');
+            } else if (code === 'auth/user-not-found') {
+                setError('User not found');
+            } else if (code.startsWith('auth/')) {
+                setError('Authentication error');
+            } else {
+                setError('Unknown error');
+            }
         }
-    }
-
-    async function authCall(name: String, email: String) {
-        var loginJsonData = {
-            "name" : name,
-            "email" : email,
-        }
-
-        await fetch('/auth', {
-            method: 'POST',
-            body: JSON.stringify(loginJsonData)
-        })
-            .then(response => console.log(response.text()))
-            .catch(error => console.error(error))
     }
 
     return (
@@ -97,6 +101,10 @@ export default function Login() {
                     </div>
 
                    <PrimaryButton onClick={handleSignInWithEmailandPassword} label="Log in"/>
+
+                    {error && <div className="bg-anno-red-secondary bg-opacity-70 py-3 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-sm transition-colors">
+                        {error}
+                    </div>}
 
                     <div className="flex flex-row gap-6 items-center text-zinc-500 dark:text-white">
                         <hr className="w-full" />
