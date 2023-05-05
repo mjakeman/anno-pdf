@@ -107,8 +107,6 @@ export default function DocumentViewer({ documentUuid } : Props) {
                         <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
                     ))}
                 </div>
-
-
                 :
                 <div className="grid place-items-center h-full">
                     <svg className="animate-spin h-32 w-32 text-white" xmlns="http://www.w3.org/2000/svg"
