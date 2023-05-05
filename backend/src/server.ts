@@ -9,14 +9,16 @@ const app = express.default();
 
 // Setup body-parser
 app.use(express.json());
+// Use cors
+app.use(cors());
 
 // Setup our routes.
 import routes from './routes/appRoutes';
 import hook from "./sockets/hook";
 app.use('/', routes);
-
-// Use cors
-app.use(cors);
+app.get('/', function(_req, res){
+    res.send("Anno Backend API - Did you want <a href='https://anno-pdf.herokuapp.com/'>anno-pdf.herokuapp.com/</a>?");
+});
 
 const server = http.createServer(app);
 

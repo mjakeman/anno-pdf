@@ -40,6 +40,10 @@ export default function RectangleTool({id} : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
+    useEffect(() => {
+        setActiveToolData(rectTool);
+    }, [rectTool]);
+
 
     return (
         <span className="relative">

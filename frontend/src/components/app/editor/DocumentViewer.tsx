@@ -7,7 +7,7 @@ import socketio, {Socket} from 'socket.io-client'
 import { v4 as uuidv4 } from 'uuid';
 import SocketClient from "./socket/client";
 
-const server = "http://localhost:8080"
+const server = import.meta.env.VITE_BACKEND_URL;
 
 interface Props {
     documentUuid: string,

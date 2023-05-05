@@ -9,7 +9,7 @@ interface Props {
 }
 export default function HighlighterTool({ id } : Props) {
 
-    const [highlighter, setHighlighter] = useState<Highlighter>(new Highlighter(id, 2,'#dff000'));
+    const [highlighter, setHighlighter] = useState<Highlighter>(new Highlighter(id, 12,'#dff000'));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
     const [isActiveTool, setIsActiveTool] = useState(false);
@@ -44,6 +44,9 @@ export default function HighlighterTool({ id } : Props) {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
+    useEffect(() => {
+        setActiveToolData(highlighter);
+    }, [highlighter]);
 
 
     return (
@@ -88,9 +91,9 @@ export default function HighlighterTool({ id } : Props) {
                     {/* Stroke Size Range Slider + Preview */}
                     <div className="flex flex-row gap-4 items-center justify-between">
                         <span className="text-white">Stroke</span>
-                        <input onChange={(e) => setPenSize(parseInt(e.target.value))} type="range" min="1" max="10" value={`${highlighter.size}`} />
-                        <svg className="stroke-white" viewBox="0 0 23 13" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 12C9.5 0.5 13.5 1 12.5 7C11.7 11.8 20.8333 3.49996 22.5 0.5" strokeWidth={highlighter.size} />
+                        <input onChange={(e) => setPenSize(parseInt(e.target.value))} type="range" min={highlighter.minSize} max={highlighter.maxSize} value={`${highlighter.size}`} />
+                        <svg className="w-16 w-16" viewBox={`0 0 ${highlighter.maxSize*2} ${highlighter.maxSize*2}`}>
+                            <circle cx={highlighter.maxSize} cy={highlighter.maxSize} r={highlighter.size} fill={highlighter.color}/>
                         </svg>
 
                     </div>

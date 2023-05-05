@@ -1,5 +1,5 @@
 import Toolbar from "./toolbar/Toolbar";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import EditorHeader from "./header/EditorHeader";
 import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
@@ -8,8 +8,11 @@ export const ToolContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
-    // Initially, selected tool is pan (id must match in Toolbar)
-    const [activeToolData, setActiveToolData] = useState<Tool | null>(new Pan("pan"));
+    const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
+
+    useEffect(() => {
+        setActiveToolData(new Pan("pan"));
+    }, []);
 
     return (
         <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
