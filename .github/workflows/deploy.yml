@@ -53,6 +53,7 @@ jobs:
           VITE_FB_AUTH_STORAGE_BUCKET: ${{ secrets.VITE_FB_AUTH_STORAGE_BUCKET }}
           VITE_FB_AUTH_MESSAGING_SENDER_ID: ${{ secrets.VITE_FB_AUTH_MESSAGING_SENDER_ID }}
           VITE_FB_AUTH_APP_ID: ${{ secrets.VITE_FB_AUTH_APP_ID }}
+          VITE_BACKEND_URL: 'https://anno-pdf.herokuapp.com/'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
