@@ -6,6 +6,8 @@ import { useSignInWithGoogle, useCreateUserWithEmailAndPassword } from 'react-fi
 import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import { updateProfile } from "firebase/auth";
+import { createPromiseCapability } from "pdfjs-dist";
 
 export default function SignUp() {
 
@@ -87,6 +89,12 @@ export default function SignUp() {
 
                 navigate("/project-group-fearless-foxes/dash");
             }
+            console.log(createdUser);
+            if(createdUser){
+                await updateProfile(createdUser.user, {
+                    displayName: signUpForm.firstName+signUpForm.lastName
+                })
+            }    
         } catch (error) {
             setError('Error whilst logging in. Please check email and password are correct and try again');
         }
