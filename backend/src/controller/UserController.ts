@@ -9,7 +9,7 @@ class UserController {
   }
 
   async getUser(req: Request, res: Response) {
-    const dbUser = await getUser(req.params.uuid);
+    const dbUser = await getUser(req.params.uid);
 
     if (dbUser) {
       return res.status(200).json(dbUser);
@@ -19,8 +19,34 @@ class UserController {
   }
 
   async getDocuments(req: Request, res: Response) {
-    const documents = await getDocuments(req.params.uuid);
-    return res.json(documents);
+    let currentUser: string;
+    if (req.user) {
+      currentUser = req.user;
+    } else {
+      return res.status(400).send('User not found in request object.');
+    }
+
+    const documents = await getDocuments(currentUser);
+    const result: Object[] = [];
+
+    // Add document owner information.
+    for (let doc of documents) {
+      const data = JSON.parse(JSON.stringify(doc));
+
+      const createdByUid = data.createdBy;
+      const userObject = await getUser(createdByUid);
+      if (userObject) {
+        data['owner'] = {
+          uid: createdByUid,
+          email: userObject.email,
+          name: userObject.name
+        }
+      }
+
+      result.push(data);
+    }
+
+    return res.json(result);
   }
 
   async createUser(req: Request, res: Response) {
