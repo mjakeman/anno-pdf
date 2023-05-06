@@ -9,7 +9,7 @@ import Panzoom, {PanzoomObject} from '@panzoom/panzoom'
 import {ZoomContext} from "./Editor";
 
 
-const server = "http://localhost:8080"
+const server = import.meta.env.VITE_BACKEND_URL;
 
 interface Props {
     documentUuid: string,

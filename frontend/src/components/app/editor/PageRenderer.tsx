@@ -100,7 +100,15 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
                     data['id'] = uuid;
 
                     fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
-                        canvas.add(enlivenedObjects[0]);
+                        const newObj = enlivenedObjects[0];
+                        newObj.opacity = 0;
+                        newObj.animate('opacity', 1, {
+                            duration: 500,
+                            onChange: canvas.renderAll.bind(canvas),
+                            easing: fabric.util.ease['easeInQuad']
+                        });
+
+                        canvas.add(newObj);
                         canvas.renderAll();
                     }, '', undefined);
                     canvas.renderAll();
@@ -122,8 +130,25 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
                         console.log(cmp_uuid);
 
                         if (uuid === cmp_uuid) {
-                            console.log('found');
+
+                            const dummyFadeOut = fabric.util.object.clone(object);
                             object.set(data);
+
+                            dummyFadeOut.opacity = 1;
+                            object.opacity = 0;
+
+                            dummyFadeOut.animate('opacity', 0, {
+                                duration: 500,
+                                onChange: canvas.renderAll.bind(canvas),
+                                onComplete: canvas.remove.bind(dummyFadeOut),
+                                easing: fabric.util.ease['easeInQuad']
+                            });
+
+                            object.animate('opacity', 1, {
+                                duration: 300,
+                                onChange: canvas.renderAll.bind(canvas),
+                                easing: fabric.util.ease['easeInQuad']
+                            });
 
                             // @ts-ignore
                             object['id'] = uuid;
