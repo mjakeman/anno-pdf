@@ -29,7 +29,8 @@ class UserController {
       return res.status(400).send('User not found in request object.');
     }
 
-    const documents = await getDocuments(currentUser);
+    const currentUserObj = await getUser(currentUser);
+    const documents = await getDocuments(currentUserObj);
     const result: Object[] = [];
 
     // Add document owner information.

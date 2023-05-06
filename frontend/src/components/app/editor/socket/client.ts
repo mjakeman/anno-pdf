@@ -1,5 +1,4 @@
 import socketio, {Socket} from "socket.io-client";
-import {v4 as uuidv4} from "uuid";
 import {fabric} from "fabric";
 
 const server = import.meta.env.VITE_BACKEND_URL;
@@ -13,19 +12,27 @@ export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
+    peers: Array<string> = new Array<string>();
 
-    setup = () => {
+    setup = (userId: string, documentId: string) => {
         this.socket = socketio(server);
-
-        const username = uuidv4();
-        this.socket.emit("set-username", username);
 
         this.socket.on('peer-added', this.peerObjectAdded);
         this.socket.on('peer-modified', this.peerObjectModified);
+        this.socket.on('peer-connected', this.peerConnected);
+        this.socket.on('peer-disconnected', this.peerDisconnected);
+
+        this.socket.on('connect', () => this.sendInitialData(userId, documentId));
+        this.socket.on('reconnect', () => this.sendInitialData(userId, documentId));
+        this.socket.on('disconnect', () => alert("Backend server terminated the connection"));
     }
 
     teardown = () => {
         this.socket?.disconnect();
+    }
+
+    sendInitialData = (userId: string, documentId: string) => {
+        this.socket?.emit('initial-data', userId, documentId);
     }
 
     registerPage = (index: number, callback: PageCallback) => {
@@ -34,6 +41,15 @@ export default class SocketClient {
 
     unregisterPage = (index: number) => {
         this.map.delete(index);
+    }
+
+    peerConnected = (userId: string) => {
+        this.peers.push(userId);
+    }
+
+    peerDisconnected = (userId: string) => {
+        const index = this.peers.indexOf(userId);
+        delete this.peers[index];
     }
 
     peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {
