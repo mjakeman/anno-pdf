@@ -2,12 +2,13 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 // import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
 import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
 import {signOut} from "firebase/auth";
+import {AuthContext, AuthContextProvider} from "../../../contexts/AuthContextProvider";
 
 export default function SignUp() {
 
@@ -22,6 +23,8 @@ export default function SignUp() {
 
     const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
     const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+
+    const [currentUser, setCurrentUser] = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -45,7 +48,12 @@ export default function SignUp() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                // TODO: Set auth context/display name!
+                setCurrentUser({
+                    uid: response.data.uid,
+                    name: response.data.name,
+                    email: response.data.email,
+                    firebaseUserRef: auth.currentUser
+                });
                 navigate("/dash");
             }
         }).catch(async function (error) {

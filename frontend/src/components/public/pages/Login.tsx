@@ -3,10 +3,11 @@ import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {signOut} from "firebase/auth";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 export default function Login() {
 
@@ -21,6 +22,8 @@ export default function Login() {
 
     const errorMessage = 'Error whilst logging in. Please try again';
 
+    const [currentUser, setCurrentUser] = useContext(AuthContext);
+
     async function validateWithBackend(token: string) {
         console.log("Performing common sign up method");
 
@@ -30,7 +33,12 @@ export default function Login() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                // TODO: Set auth context/display name!
+                setCurrentUser({
+                    uid: response.data.uid,
+                    name: response.data.name,
+                    email: response.data.email,
+                    firebaseUserRef: auth.currentUser
+                });
                 navigate("/dash");
             }
         }).catch(async function (error) {

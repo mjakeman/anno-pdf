@@ -10,8 +10,9 @@ import Terms from "./components/public/pages/Terms";
 import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
-import {createContext, useEffect} from "react";
+import React, {createContext, useEffect} from "react";
 import { ToastProvider } from "./hooks/useToast";
+import {AuthContextProvider} from "./contexts/AuthContextProvider";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -23,24 +24,25 @@ export default function App() {
     }, [isDarkMode]);
 
     return (
-        //  TODO: add ability to change route / redirect based on if we're logged in or not.
-        <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
-            <ToastProvider>
-                <Routes>
-                        <Route path="/" element={<PublicLayout />}>
-                            <Route index element={<Home/>} />
-                            <Route path="about" element={<About/>} />
-                            <Route path="contact" element={<Contact/>} />
-                            <Route path="terms" element={<Terms/>} />
-                            <Route path="login" element={<Login/>} />
-                            <Route path="signup" element={<SignUp/>} />
-                        </Route>
-                        <Route path="/dash" element={<DashboardLayout />}>
-                            <Route index element={<Dashboard/>} />
-                        </Route>
-                        <Route path="/document/:documentUuid" element={<Editor/>} />
-                </Routes>
-            </ToastProvider>
-        </DarkModeContext.Provider>
-    );
+        <AuthContextProvider>
+            <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
+                <ToastProvider>
+                    <Routes>
+                            <Route path="/" element={<PublicLayout />}>
+                                <Route index element={<Home/>} />
+                                <Route path="about" element={<About/>} />
+                                <Route path="contact" element={<Contact/>} />
+                                <Route path="terms" element={<Terms/>} />
+                                <Route path="login" element={<Login/>} />
+                                <Route path="signup" element={<SignUp/>} />
+                            </Route>
+                            <Route path="/dash" element={<DashboardLayout />}>
+                                <Route index element={<Dashboard/>} />
+                            </Route>
+                            <Route path="/document/:documentUuid" element={<Editor/>} />
+                    </Routes>
+                </ToastProvider>
+            </DarkModeContext.Provider>
+        </AuthContextProvider>
+        );
 }

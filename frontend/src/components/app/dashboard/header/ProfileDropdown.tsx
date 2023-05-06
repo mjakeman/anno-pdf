@@ -18,7 +18,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
 
-    const [user] = useAuthState(auth);
+    const user = auth.currentUser;
 
     function turnOnDarkMode() {
         if (!isDarkMode) {

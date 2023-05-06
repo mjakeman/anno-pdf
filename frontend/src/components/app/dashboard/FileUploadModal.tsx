@@ -13,7 +13,7 @@ interface FileUploadModalProps {
 
 export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadModalProps){
 
-    const [user, loading] = useAuthState(auth);
+    const user = auth.currentUser;
 
     const [isDragOver, setIsDragOver] = useState(false);
 

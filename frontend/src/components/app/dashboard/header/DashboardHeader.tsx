@@ -19,7 +19,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
     const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
-    const [user] = useAuthState(auth);
+    const user = auth.currentUser;
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
