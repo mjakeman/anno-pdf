@@ -8,7 +8,7 @@ import middleware from "../firebase/middleware";
  */
 const router = Router();
 
-router.use(['/users', '/user'], middleware.decodeToken, userRouter);
-router.use('/documents', middleware.decodeToken, documentRouter);
+router.use(['/users', '/user'], middleware.validateToken, userRouter);
+router.use('/documents', middleware.validateToken, documentRouter);
 
 export default router;

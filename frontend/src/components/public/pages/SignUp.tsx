@@ -2,16 +2,14 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from 'react-firebase-hooks/auth';
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import {updateProfile} from "firebase/auth";
+import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
+import {signOut} from "firebase/auth";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 export default function SignUp() {
-
-    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
 
     const [signUpForm, setSignUpForm] = useState({
         firstName: "",
@@ -22,16 +20,12 @@ export default function SignUp() {
 
     const [error, setError] = useState('');
 
-    const errorMessage = 'Error whilst signing up. Please try again';
+    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // If we're logged in, redirect to the dashboard
-        if (user) {
-            navigate("/dash")
-        }
-    }, [user]);
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
@@ -40,75 +34,54 @@ export default function SignUp() {
         });
     };
 
-    async function handleSignUpWithGoogle() {
-        await signInWithGoogle();
+    async function createBackendRecord(token: string, displayName: string) {
+        console.log("Performing common sign up method");
 
-        if (googleUser) {
+        const bodyParams = {
+            "name": displayName
+        };
 
-            var loginJsonData = {
-                "uid": googleUser.user.uid,
-                "name": googleUser.user.displayName?.replaceAll(" ", ""),
-                "email": googleUser.user.email,
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', bodyParams, {
+            headers: {
+                Authorization: `Bearer ${token}`
             }
-
-            let token = await googleUser?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-                if (response.status == 200) {
-                    navigate("/dash");
-                }
-            }).catch(function (error) {
-                if (error.response.status == 422) {
-                    setError('User already exists. Please login instead.');
-                } else {
-                    setError(errorMessage);
-                }
-            });
-        } else {
-            setError(errorMessage);
-        }
+        }).then(function (response) {
+            if (response.status == 200 || response.status == 201) {
+                setCurrentUser({
+                    uid: response.data.uid,
+                    name: response.data.name,
+                    email: response.data.email,
+                    firebaseUserRef: auth.currentUser!
+                });
+                navigate("/dash");
+            }
+        }).catch(async function (error) {
+            setError(`Error: ${error.name} (${error.code})`);
+            await signOut(auth);
+        });
     }
 
-    async function handleDefaultSignUpSubmit(event: MouseEvent) {
+    async function handleSignUpWithGoogle() {
+        signInWithGoogle()
+        .then(async (emailUser) => {
+            const user = emailUser?.user!;
+            const token = await user.getIdToken();
+            await createBackendRecord(token, user.displayName!);
+        }).catch(error => {
+            setError(`Error signing up: ${error.message}`);
+        });
+    }
 
-        await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
-
-        if (user) {
-
-            var loginJsonData = {
-                "uid": user.user.uid,
-                "name": signUpForm.firstName + signUpForm.lastName,
-                "email": signUpForm.email,
+    async function handleDefaultSignUpSubmit() {
+        createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
+            async (emailUser) => {
+                const user = emailUser?.user!;
+                const token = await user.getIdToken();
+                await createBackendRecord(token, `${signUpForm.firstName} ${signUpForm.lastName}`);
             }
-
-            let token = await googleUser?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-                if (response.status == 200) {
-
-                    updateProfile(user.user, {
-                        displayName: signUpForm.firstName + ' ' + signUpForm.lastName
-                    });
-
-                    navigate("/dash");
-                }
-            }).catch(function (error) {
-                if (error.code == 422) {
-                    setError('User already exists. Please login instead.')
-                } else {
-                    setError(errorMessage);
-                }
-            });
-
-        } else {
-            setError(errorMessage);
-        }
+        ).catch(error => {
+            setError(`Error signing up: ${error.message}`);
+        });
     }
 
     return (

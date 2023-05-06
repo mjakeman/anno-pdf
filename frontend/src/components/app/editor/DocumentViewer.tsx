@@ -8,6 +8,7 @@ import SocketClient from "./socket/client";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
 import {useNavigate} from "react-router-dom";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
@@ -24,21 +25,21 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
-    const [user, loading, error] = useAuthState(auth);
+    const {currentUser} = useContext(AuthContext);
     const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
 
     // (1) Startup
     useEffect(() => {
-        if (!user) return;
+        if (!currentUser) return;
         loadDocument();
-    }, [user]);
+    }, [currentUser]);
 
     // Load entire PDF
     function loadDocument() {
         if (!documentUuid) return; // if documentUuid isn't set
-        if (!user) return; // not logged in
-        user.getIdToken()
+        if (!currentUser) return; // not logged in
+        currentUser.firebaseUserRef.getIdToken()
             .then((token) => {
 
                 const loadingTask = pdfjs.getDocument({

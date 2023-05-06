@@ -1,23 +1,38 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { auth } from '../firebaseAuth';
 import { User } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
+export interface CurrentUser {
+    name: string,
+    email: string,
+    uid: string,
+    firebaseUserRef: User
+}
 
-export const AuthContext = React.createContext<User | null | undefined>(null);;
+interface AuthContext {
+    currentUser: CurrentUser | null;
+    setCurrentUser: (user: CurrentUser | null) => void;
+}
+
+export const AuthContext = React.createContext<AuthContext>({
+    currentUser: null,
+    setCurrentUser: () => {},
+});
 
 interface ContainerProps {
     children: React.ReactNode,
 }
 
 
-export function AuthContextProvider({children}:ContainerProps){
-    const [user, loading] = useAuthState(auth);
+/*export function AuthContextProvider({children}:ContainerProps){
+
+    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
     return (
-        <AuthContext.Provider value={user}>
+        <AuthContext.Provider value={[currentUser, setCurrentUser]}>
             {children}
         </AuthContext.Provider>
     )
 
-}
+}*/
