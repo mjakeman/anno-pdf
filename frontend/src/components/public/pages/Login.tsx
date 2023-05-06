@@ -3,9 +3,11 @@ import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
-import {useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import {signOut} from "firebase/auth";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 export default function Login() {
 
@@ -20,66 +22,58 @@ export default function Login() {
 
     const errorMessage = 'Error whilst logging in. Please try again';
 
-    async function handleSignInWithGoogle() {
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
 
-        signInWithGoogle();
-
-        if (googleUser) {
-            var loginJsonData = {
-                "uid": googleUser.user.uid,
-                "name": googleUser.user.displayName?.replaceAll(" ", ""),
-                "email": googleUser.user.email,
-            }
-
-            let token = await googleUser?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-            }).catch(function (error) {
-                if (error.response.status == 422) {
-                    navigate("/dash");
-                } else {
-                    setError(error);
-                }
-            });
-        } else if (googleLoading) {
-            setError('Loading ...');
-        } else if (googleError) {
-            setError(errorMessage);
+    useEffect(() => {
+        if (currentUser) {
+            navigate('/dash');
         }
+    }, []);
+
+    async function validateWithBackend(token: string) {
+        console.log("Performing common sign up method");
+
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(function (response) {
+            if (response.status == 200 || response.status == 201) {
+                setCurrentUser({
+                    uid: response.data.uid,
+                    name: response.data.name,
+                    email: response.data.email,
+                    firebaseUserRef: auth.currentUser!
+                });
+                navigate("/dash");
+            }
+        }).catch(async function (error) {
+            setError(`Error: ${error.name} (${error.code})`);
+            await signOut(auth);
+        });
     }
 
-    async function handleSignInWithEmailandPassword() {
+    async function handleSignInWithGoogle() {
+        signInWithGoogle()
+            .then(async (emailUser) => {
+                const user = emailUser?.user!;
+                const token = await user.getIdToken();
+                await validateWithBackend(token);
+            }).catch(error => {
+            setError(`Error signing in: ${error.message}`);
+        });
+    }
 
-        signInWithEmailAndPassword(email, password);
-
-        if (user) {
-            var loginJsonData = {
-                "uid": user.user.uid,
-                "name": user.user.displayName?.replaceAll(" ", ""),
-                "email": user.user.email,
+    async function handleSignInWithEmailAndPassword() {
+        signInWithEmailAndPassword(email, password).then(
+            async (emailUser) => {
+                const user = emailUser?.user!;
+                const token = await user.getIdToken();
+                await validateWithBackend(token);
             }
-
-            let token = await user?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-            }).catch(function (error) {
-                if (error.response.status == 422) {
-                    navigate('/dash');
-                } else {
-                    setError(errorMessage);
-                }
-            });
-        } else if (loading) {
-            setError('Loading ...');
-        } else if (emailError) {
-            setError(errorMessage);
-        }
+        ).catch(error => {
+            setError(`Error signing in: ${error.message}`);
+        });
     }
 
     return (
@@ -102,7 +96,7 @@ export default function Login() {
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
-                    <PrimaryButton onClick={handleSignInWithEmailandPassword} label="Log in"/>
+                    <PrimaryButton onClick={handleSignInWithEmailAndPassword} label="Log in"/>
 
                     {error !== '' && <div
                         className="bg-anno-red-secondary bg-opacity-70 py-3 px-4 text-white flex flex-row items-center justify-center gap-1 text-sm">

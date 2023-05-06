@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
+import middleware from "../firebase/middleware";
+import {User} from "../models/User";
 
 class UserController {
 
@@ -51,14 +53,40 @@ class UserController {
   }
 
   async createUser(req: Request, res: Response) {
-    const dbUser = await createUser(req.body);
+
+    // TODO: This could be simplified to just req.user if we remove
+    //  the displayName and email fields from mongo and keep firebase
+    //  as the one source of truth for auth.
+    const token = (await middleware.decodeToken(req.headers.authorization))!;
+
+    let displayName;
+    if (req.body.name) {
+      displayName = req.body.name;
+    } else {
+      displayName = "User";
+    }
+
+    // Check for existing user
+    const existingUser = await User.findOne({ uid: token.uid });
+
+    if (existingUser) {
+      return res.status(200).json(existingUser);
+    }
+
+    // Create new user
+    const dbUser = await createUser({
+      uid: token.uid,
+      name: displayName,
+      email: token.email
+    });
 
     if (dbUser) {
       console.log('User created - firebase uid : ' + dbUser.uid);
       return res.status(201).json(dbUser);
     }
 
-    return res.status(422).send('User already exists');
+    // Didn't work - give up
+    return res.status(500).send('Could not create user');
   }
 }
 
