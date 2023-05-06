@@ -33,11 +33,21 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
     // (2) Once the image is loaded, load the canvas
     useEffect(() => {
         if (!pageImg) return;
-        const canvas = new fabric.Canvas(canvasRef.current, {
+
+        // If we've already set canvas when a pageImg loads, then we are zooming.
+        if (canvas) {
+            canvas.setBackgroundImage(pageImg, canvas.renderAll.bind(canvas), {});
+            requestAnimationFrame(draw);
+            return;
+        }
+
+        // Otherwise, if the canvas is NOT already set, then we need to create a new canvas
+        // TODO: Here we add the API call to get the canvas object from backend.
+        const newCanvas = new fabric.Canvas(canvasRef.current, {
             width: pageImg.width,
             height: pageImg.height,
         });
-        setCanvas(canvas);
+        setCanvas(newCanvas);
 
     }, [pageImg]);
 
@@ -232,9 +242,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
     };
 
     return (
-        <div className="drop-shadow-around">
-            <canvas ref={canvasRef} />
-        </div>
+            <canvas className="drop-shadow-around" ref={canvasRef} />
     )
 });
 
