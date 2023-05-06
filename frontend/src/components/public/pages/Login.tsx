@@ -13,8 +13,8 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth)
-    const [signInWithEmailAndPassword, user] = useSignInWithEmailAndPassword(auth)
+    const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth)
+    const [signInWithEmailAndPassword, user, loading, emailError] = useSignInWithEmailAndPassword(auth)
 
     const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ export default function Login() {
 
     async function handleSignInWithGoogle() {
 
-        await signInWithGoogle();
+        signInWithGoogle();
 
         if (googleUser) {
             var loginJsonData = {
@@ -44,14 +44,14 @@ export default function Login() {
                     setError(error);
                 }
             });
-        } else {
+        } else if (googleError) {
             setError(errorMessage);
         }
     }
 
     async function handleSignInWithEmailandPassword() {
 
-        await signInWithEmailAndPassword(email, password);
+        signInWithEmailAndPassword(email, password);
 
         if (user) {
             var loginJsonData = {
@@ -73,7 +73,7 @@ export default function Login() {
                     setError(errorMessage);
                 }
             });
-        } else {
+        } else if (emailError) {
             setError(errorMessage);
         }
     }

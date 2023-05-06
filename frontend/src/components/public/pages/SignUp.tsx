@@ -91,6 +91,11 @@ export default function SignUp() {
                 }
             }).then(function (response) {
                 if (response.status == 200) {
+
+                    updateProfile(user.user, {
+                        displayName: signUpForm.firstName + ' ' + signUpForm.lastName
+                    });
+
                     navigate("/dash");
                 }
             }).catch(function (error) {
@@ -101,9 +106,6 @@ export default function SignUp() {
                 }
             });
 
-            await updateProfile(user.user, {
-                displayName: signUpForm.firstName + signUpForm.lastName
-            });
         } else {
             setError(errorMessage);
         }
