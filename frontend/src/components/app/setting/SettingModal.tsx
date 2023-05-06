@@ -1,6 +1,5 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
-import { signOut } from "firebase/auth"
 import { useRef } from "react"
 import { useState } from "react"
 import { useSignOut } from "react-firebase-hooks/auth"
@@ -8,6 +7,7 @@ import { auth } from "../../../firebaseAuth"
 import { useToast } from "../../../hooks/useToast"
 import DarkModeToggleTest from "../../DarkModeToggleTest"
 import Modal from "../../Modal"
+import {useNavigate} from "react-router-dom";
 
 type SettingTabs = "account" | "settings"
 
@@ -23,7 +23,6 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
     const isAccountActive = activeTab === "account" ? "bg-gray-300 dark:bg-anno-space-800" : ""
     const isSettingsActive = activeTab === "settings" ? "bg-gray-300 dark:bg-anno-space-800" : ""
 
-
     return(
         <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
         <div ref={settingModal} className="grid grid-cols-10 bg-white h-[90vh] rounded-md dark:bg-anno-space-100">
@@ -37,7 +36,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
                         <Cog6ToothIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
                         <span className="text-zinc-500 dark:text-white">Settings</span>
                     </span>
-                    </div>
+                </div>
             </div>
             <div className="col-span-7 p-5 rounded-md ">
                 {activeTab === "account" && <AccountContent/>}
@@ -48,22 +47,38 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
     )
 }
 
-function UserSettings(){
-    return(
+function UserSettings() {
+
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [signOut, loading, error] = useSignOut(auth);
+
+    async function handleSignOut(){
+        await signOut();
+
+        if (error) {
+            console.log(error);
+            setErrorMessage('Error logging out. Please try again later.');
+        } else {
+            navigate('/');
+        }
+    }
+
+    return (
         <div className="flex flex-col gap-4 h-800">
             <h1 className="text-2xl font-bold text-anno-red-primary">My Account</h1>
             <div className="flex flex-col gap-4 ">
                 <DarkModeToggleTest/>
             </div>
-            <button onClick={handleSignOut}>
-                sign out
+            <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
+                Sign Out
             </button>
+            {errorMessage != '' && <div
+                className="bg-anno-red-secondary bg-opacity-70 py-3 px-4 text-white flex flex-row items-center justify-center gap-1 text-sm">
+                {errorMessage}
+            </div>}
         </div>
     )
-}
-
-function handleSignOut(){
-    void signOut(auth);
 }
 
 
