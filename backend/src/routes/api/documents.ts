@@ -14,8 +14,15 @@ router.delete('/:uuid/delete', documentController.deleteDocument);
 // Update document by uuid
 router.post('/:uuid/update', documentController.updateDocument);
 
+// Share document
+router.post('/:uuid/share', documentController.shareDocument);
+
+// Remove user from document
+router.post('/:uuid/removeUser', documentController.removeUserFromDocument);
+
 // Create and upload document
 router.post('/create', documentController.createAndUploadDocument);
+
 
 
 export default router;
