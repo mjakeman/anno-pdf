@@ -2,7 +2,7 @@ import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import React, {useState} from "react";
 
 interface ActiveUserBubbleProps {
-    user: {id: number, fullName: string, email: string };
+    user: {id: string, fullName: string, email: string };
 }
 
 export default function ActiveUserBubble({user} : ActiveUserBubbleProps) {

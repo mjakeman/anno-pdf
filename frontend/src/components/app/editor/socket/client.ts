@@ -8,11 +8,18 @@ type PageCallback = {
     objectModifiedFunc: (uuid: string, data: fabric.Object) => void;
 }
 
+// Match controller.ts in backend
+interface UserData {
+    id: string,
+    fullName: string,
+    email: string,
+}
+
 export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
-    peers: Array<string> = new Array<string>();
+    peers: Array<UserData> = new Array<UserData>();
 
     setup = (userId: string, documentId: string) => {
         this.socket = socketio(server);
@@ -32,6 +39,7 @@ export default class SocketClient {
     }
 
     sendInitialData = (userId: string, documentId: string) => {
+        this.peers = [];
         this.socket?.emit('initial-data', userId, documentId);
     }
 
@@ -43,13 +51,16 @@ export default class SocketClient {
         this.map.delete(index);
     }
 
-    peerConnected = (userId: string) => {
-        this.peers.push(userId);
+    peerConnected = (userData: UserData) => {
+        this.peers.push(userData);
+        console.log(this.peers);
     }
 
     peerDisconnected = (userId: string) => {
-        const index = this.peers.indexOf(userId);
+        const obj = this.peers.find(obj => obj.id == userId)!;
+        const index = this.peers.indexOf(obj);
         delete this.peers[index];
+        console.log(this.peers);
     }
 
     peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {

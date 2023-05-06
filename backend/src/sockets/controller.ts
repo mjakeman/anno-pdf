@@ -1,5 +1,13 @@
 import * as socketio from "socket.io";
 import * as http from "http";
+import {User} from "../models/User";
+
+// Match client.ts in frontend
+interface UserData {
+    id: string,
+    fullName: string,
+    email: string,
+}
 
 // Maps socketIds to documents
 type SocketMap = {
@@ -13,7 +21,7 @@ type DocumentMap = {
 
 // Maps socketIds to userIds
 type UserMap = {
-    [socketId: string]: string;
+    [socketId: string]: UserData;
 }
 
 const socketMap: SocketMap = {};
@@ -31,20 +39,25 @@ const on_connect = async (socket: socketio.Socket) => {
 
     socket.on('initial-data', (userId: string, documentId: string) => {
         try {
+            // Join room
+            const user = User.findOne({uid: userId}, 'id name email');
+            userMap[socket.id] = { id: userId, fullName: user.get('name'), email: user.get('email') };
+
+            socket.join(documentId);
+            socket.to(documentId).emit('peer-connected', userMap[socket.id]);
+
             // Fetch users in target room
-            const peers = socket.in(documentId).fetchSockets().then(() => {
-                for (const peerSocketId in peers) {
-                    const peerUserId = userMap[peerSocketId];
-                    socket.emit('peer-connected', peerUserId);
+            socket.in(documentId).fetchSockets().then((peers) => {
+                for (const peerSocket of peers) {
+                    const peerUserData = userMap[peerSocket.id];
+                    socket.emit('peer-connected', peerUserData);
                 }
             });
 
-            // Join room
-            socket.join(documentId);
-            socket.to(documentId).emit('peer-connected', userId);
-
+            // Set up socket map
             socketMap[socket.id] = documentId;
-            userMap[socket.id] = userId;
+
+            // Set up document map
             if (documentMap[documentId] == undefined) {
                 documentMap[documentId] = Array(socket.id);
             }
@@ -94,12 +107,11 @@ const on_connect = async (socket: socketio.Socket) => {
             const documentId = socketMap[socket.id];
             delete socketMap[socket.id];
 
-            const userId = userMap[socket.id];
+            const userId = userMap[socket.id].id;
             delete userMap[socket.id];
 
             socket.to(documentId).emit('peer-disconnected', userId);
 
-            console.log(JSON.stringify(documentMap));
             const index = documentMap[documentId].indexOf(socket.id);
             delete documentMap[documentId][index];
 

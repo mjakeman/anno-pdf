@@ -15,7 +15,7 @@ app.use(cors());
 
 // Setup our routes.
 import routes from './routes/appRoutes';
-import hook from "./sockets/hook";
+import hook from "./sockets/controller";
 app.use('/', routes);
 app.get('/', function(_req, res){
     res.send("Anno Backend API - Did you want <a href='https://anno-pdf.herokuapp.com/'>anno-pdf.herokuapp.com/</a>?");
