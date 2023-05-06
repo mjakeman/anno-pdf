@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Busboy from 'busboy';
-import { createDocument, deleteDocument, updateDocument, getDocument } from "../data/documents/documents-dao";
+import { createDocument, deleteDocument, updateDocument, getDocument, addSharedUser, removeSharedUser } from "../data/documents/documents-dao";
 import s3 from "../s3/s3Config";
 import Config from "../util/Config";
 import { v4 as uuidv4 } from 'uuid';
@@ -115,6 +115,59 @@ class DocumentController {
         })
 
         return req.pipe(busboy);
+    }
+
+    async shareDocument(req: Request, res: Response) {
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
+        let user: string;
+        if (req.user) {
+            user = req.user;
+        } else {
+            return res.status(500).send('User not found in request object. Internal server error');
+        }
+
+        if (dbDoc.createdBy !== user) {
+            return res.status(403).send('Only document owners have sharing permissions');
+        }
+
+        if (!req.body.email) {
+            return res.status(400).send('"email" field is required in the request body');
+        }
+
+
+        const updatedDoc = await addSharedUser(req.params.uuid, req.body.email);
+        // TODO: send user email
+        return res.json(updatedDoc);
+    }
+
+    async removeUserFromDocument(req: Request, res: Response) {
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
+        let user: string;
+        if (req.user) {
+            user = req.user;
+        } else {
+            return res.status(500).send('User not found in request object. Internal server error');
+        }
+
+        if (dbDoc.createdBy !== user) {
+            return res.status(403).send('Only document owners have sharing permissions');
+        }
+
+        if (!req.body.email) {
+            return res.status(400).send('"email" field is required in the request body');
+        }
+
+
+        const updatedDoc = await removeSharedUser(req.params.uuid, req.body.email);
+        return res.json(updatedDoc);
     }
 
 }
