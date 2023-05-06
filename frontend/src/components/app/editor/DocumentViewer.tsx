@@ -1,11 +1,12 @@
 import * as pdfjs from "pdfjs-dist";
-import React, {useEffect, useRef, useState} from "react";
-import {WheelEvent} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
+import {UIEvent} from "react";
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
 import Panzoom, {PanzoomObject} from '@panzoom/panzoom'
+import {ZoomContext} from "./Editor";
 
 
 const server = "http://localhost:8080"
@@ -25,7 +26,6 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
     const socketClient = useRef<SocketClient>(new SocketClient());
 
-    const [panzoom, setPanzoom] = useState<PanzoomObject | null>(null);
 
     // (1) Startup
     useEffect(() => {
@@ -69,25 +69,6 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
     }
 
-    // Setup Scrolling and zoom
-    useEffect(() => {
-        if (!isLoaded) return;
-        const elem = document.getElementById('panzoom-element')
-        if (!elem) return;
-        const pz = Panzoom(elem, {
-            maxScale: 5,
-            minScale: 0.25,
-            contain: 'outside',
-            animate: true,
-        })
-        pz.zoom(1.5, { animate: true})
-        setPanzoom(pz);
-    }, [isLoaded]);
-
-    function handleScroll(event: WheelEvent) {
-        let currentPan = panzoom?.getPan();
-        if (currentPan) panzoom?.pan(currentPan.x, currentPan.y + event.deltaY);
-    }
 
     useEffect(() => {
         socketClient.current?.setup();
@@ -97,16 +78,15 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
     }, []);
 
-
     return (
-        <div onWheel={(event) => handleScroll(event)} className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 py-24">
+        <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">
             {isLoaded
                 ?
-                <div id="panzoom-element" className="grid gap-4 justify-items-center">
-                    {pdfPages.map((page, index) => (
-                        <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
-                    ))}
-                </div>
+                    <div className="grid gap-4 py-12 place-items-center">
+                        {pdfPages.map((page, index) => (
+                            <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
+                        ))}
+                    </div>
                 :
                 <div className="grid place-items-center h-full">
                     <svg className="animate-spin h-32 w-32 text-white" xmlns="http://www.w3.org/2000/svg"

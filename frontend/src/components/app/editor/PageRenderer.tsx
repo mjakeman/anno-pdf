@@ -217,9 +217,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
     };
 
     return (
-        <div className="drop-shadow-around">
-            <canvas ref={canvasRef} />
-        </div>
+            <canvas className="drop-shadow-around" ref={canvasRef} />
     )
 });
 
