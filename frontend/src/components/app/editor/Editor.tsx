@@ -17,7 +17,6 @@ export default function Editor() {
 
     useEffect(() => {
         setActiveToolData(new Pan("pan"));
-        console.log(documentUuid);
     }, []);
 
     return (

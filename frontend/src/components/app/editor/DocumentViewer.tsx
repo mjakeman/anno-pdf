@@ -95,7 +95,9 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
 
     useEffect(() => {
-        socketClient.current?.setup(uuidv4(), documentUuid);
+        if (documentUuid) {
+            socketClient.current?.setup(uuidv4(), documentUuid);
+        }
 
         return () => {
             socketClient.current?.teardown();
