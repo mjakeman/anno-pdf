@@ -1,6 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
+import mongoose from "mongoose";
 
 // Match client.ts in frontend
 interface UserData {
@@ -42,6 +43,11 @@ const on_connect = async (socket: socketio.Socket) => {
             // Join room
             const user = User.findOne({uid: userId}, 'id name email');
             userMap[socket.id] = { id: userId, fullName: user.get('name'), email: user.get('email') };
+
+            if (!mongoose.Types.ObjectId.isValid(userId)) {
+                console.error(`ERROR ${socket.id}: Invalid userId '${userId}'`);
+                socket.disconnect();
+            }
 
             socket.join(documentId);
             socket.to(documentId).emit('peer-connected', userMap[socket.id]);

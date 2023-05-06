@@ -98,14 +98,14 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
 
     useEffect(() => {
-        if (documentUuid) {
-            socketClient.current?.setup(uuidv4(), documentUuid);
+        if (documentUuid && user) {
+            socketClient.current?.setup(user.uid, documentUuid);
         }
 
         return () => {
             socketClient.current?.teardown();
         }
-    }, []);
+    }, [user]);
 
     return (
         <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">
