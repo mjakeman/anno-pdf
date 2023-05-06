@@ -1,11 +1,12 @@
 import CommandMenuButton from "./commandmenu/CommandMenuButton";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Logo from "../../../Logo";
 import {ChevronDownIcon, Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import {Link} from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import SettingModal from "../../setting/SettingModal";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -16,6 +17,8 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
     const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
+
+    const user = useContext(AuthContext);
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
@@ -36,7 +39,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                     <div className="grid place-items-center rounded text-white font-bold w-6 h-6 bg-blue-800">
                         J
                     </div>
-                    <span className="text-lg text-black dark:text-white">John Doe</span>
+                    <span className="text-lg text-black dark:text-white">{user?.displayName}</span>
                     <ChevronDownIcon className="text-slate-500 dark:text-white w-6 h-6" />
                 </button>
                 {showProfileDropdown &&

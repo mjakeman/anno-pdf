@@ -1,7 +1,10 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
+import { signOut } from "firebase/auth"
 import { useRef } from "react"
 import { useState } from "react"
+import { useSignOut } from "react-firebase-hooks/auth"
+import { auth } from "../../../firebaseAuth"
 import { useToast } from "../../../hooks/useToast"
 import DarkModeToggleTest from "../../DarkModeToggleTest"
 import Modal from "../../Modal"
@@ -52,8 +55,15 @@ function UserSettings(){
             <div className="flex flex-col gap-4 ">
                 <DarkModeToggleTest/>
             </div>
+            <button onClick={handleSignOut}>
+                sign out
+            </button>
         </div>
     )
+}
+
+function handleSignOut(){
+    void signOut(auth);
 }
 
 
