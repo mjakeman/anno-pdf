@@ -5,8 +5,6 @@ import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
-import Panzoom, {PanzoomObject} from '@panzoom/panzoom'
-import {ZoomContext} from "./Editor";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
