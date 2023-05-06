@@ -1,16 +1,18 @@
 import * as pdfjs from "pdfjs-dist";
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {UIEvent} from "react";
-import {PDFDocumentProxy} from "pdfjs-dist";
+import {MissingPDFException, PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "../../../firebaseAuth";
+import {useNavigate} from "react-router-dom";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
 
 interface Props {
-    documentUuid: string,
+    documentUuid: string | undefined,
 }
 
 // Required configuration option for PDF.js
@@ -21,22 +23,45 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
-
+    const [user, loading, error] = useAuthState(auth);
+    const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
-
 
     // (1) Startup
     useEffect(() => {
+        if (!user) return;
         loadDocument();
-    }, []);
+    }, [user]);
 
     // Load entire PDF
     function loadDocument() {
-        let filePath = "test.pdf"; // TODO: Make this an API call using documentUuid
-        const loadingTask = pdfjs.getDocument(filePath);
-        loadingTask.promise.then(function(pdf) {
-            setPdfDocument(pdf);
-        });
+        if (!documentUuid) return; // if documentUuid isn't set
+        if (!user) return; // not logged in
+        user.getIdToken()
+            .then((token) => {
+
+                const loadingTask = pdfjs.getDocument({
+                    url: `${import.meta.env.VITE_BACKEND_URL}/documents/${documentUuid}`,
+                    httpHeaders: {
+                        Authorization: `Bearer ${token}`
+                    },
+                });
+
+                loadingTask.promise.then(function(pdf) {
+                    setPdfDocument(pdf);
+                }).catch(error => {
+                    switch (true) {
+                        case error instanceof MissingPDFException:
+                            // TODO: add navigation to notfound
+                        default:
+                            console.log(error);
+                    }
+                });
+
+            })
+            .catch((e) => {
+                console.log(e)
+            });
     }
 
     let currentPage = 1;
