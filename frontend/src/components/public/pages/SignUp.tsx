@@ -2,16 +2,20 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from 'react-firebase-hooks/auth';
+import {useSignInWithGoogle, useCreateUserWithEmailAndPassword, useAuthState} from 'react-firebase-hooks/auth';
 import {ChangeEvent, useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {updateProfile} from "firebase/auth";
+import firebase from "firebase/compat";
+import FirebaseIdToken = firebase.FirebaseIdToken;
 
 export default function SignUp() {
 
-    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+    const [signInWithGoogle, googleUser, _googleLoading, googleError] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, emailUser, _emailLoading, emailError] = useCreateUserWithEmailAndPassword(auth);
+
+    const [user] = useAuthState(auth);
 
     const [signUpForm, setSignUpForm] = useState({
         firstName: "",
@@ -40,72 +44,56 @@ export default function SignUp() {
         });
     };
 
+    async function doSignUp(token: FirebaseIdToken) {
+        axios.post(import.meta.env.BASE_URL + '/user', null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(function (response) {
+            if (response.status == 200) {
+                navigate("/dash");
+            }
+        }).catch(function (error) {
+            if (error.response.status == 422) {
+                setError('User already exists. Please login instead.');
+            } else {
+                setError(errorMessage);
+            }
+        });
+    }
+
     async function handleSignUpWithGoogle() {
         await signInWithGoogle();
 
+        if (googleError) {
+            setError("Error signing in: " + googleError.name);
+            return;
+        }
+
         if (googleUser) {
-
-            var loginJsonData = {
-                "uid": googleUser.user.uid,
-                "name": googleUser.user.displayName?.replaceAll(" ", ""),
-                "email": googleUser.user.email,
-            }
-
-            let token = await googleUser?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-                if (response.status == 200) {
-                    navigate("/dash");
-                }
-            }).catch(function (error) {
-                if (error.response.status == 422) {
-                    setError('User already exists. Please login instead.');
-                } else {
-                    setError(errorMessage);
-                }
-            });
+            let token = await googleUser.user.getIdToken();
+            await doSignUp(token);
         } else {
             setError(errorMessage);
         }
     }
 
-    async function handleDefaultSignUpSubmit(event: MouseEvent) {
+    async function handleDefaultSignUpSubmit() {
 
         await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
 
-        if (user) {
+        if (emailError) {
+            setError("Error signing in: " + emailError.name);
+            return;
+        }
 
-            var loginJsonData = {
-                "uid": user.user.uid,
-                "name": signUpForm.firstName + signUpForm.lastName,
-                "email": signUpForm.email,
-            }
-
-            let token = await googleUser?.user.getIdToken();
-            axios.post('http://localhost:8080/user', loginJsonData, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }).then(function (response) {
-                if (response.status == 200) {
-
-                    updateProfile(user.user, {
-                        displayName: signUpForm.firstName + ' ' + signUpForm.lastName
-                    });
-
-                    navigate("/dash");
-                }
-            }).catch(function (error) {
-                if (error.code == 422) {
-                    setError('User already exists. Please login instead.')
-                } else {
-                    setError(errorMessage);
-                }
+        if (emailUser) {
+            await updateProfile(token, {
+                displayName: signUpForm.firstName + ' ' + signUpForm.lastName
             });
 
+            let token = await emailUser.user.getIdToken();
+            await doSignUp(token);
         } else {
             setError(errorMessage);
         }
