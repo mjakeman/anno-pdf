@@ -7,7 +7,7 @@ const documentSchema = new Schema({
     title: { type: String, required: true },
     sharedWith: [String],
     lastUpdatedBy: String,
-    annotations: Object,
+    annotations: [Object],
     uuid: { type: String, required: true, unique: true },
     url: { type: String, required: true }
 }, { timestamps: true });
