@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
 import middleware from "../firebase/middleware";
+import {User} from "../models/User";
 
 class UserController {
 
@@ -58,9 +59,19 @@ class UserController {
     //  as the one source of truth for auth.
     const token = (await middleware.decodeToken(req.headers.authorization))!;
 
+    const displayName = req.body.name;
+
+    // Check for existing user
+    const existingUser = await User.findOne({ uid: token.uid });
+
+    if (existingUser) {
+      return res.status(200).json(existingUser);
+    }
+
+    // Create new user
     const dbUser = await createUser({
       uid: token.uid,
-      name: token['name'],
+      name: displayName,
       email: token.email
     });
 
@@ -69,7 +80,8 @@ class UserController {
       return res.status(201).json(dbUser);
     }
 
-    return res.status(422).send('User already exists');
+    // Didn't work - give up
+    return res.status(500).send('Could not create user');
   }
 }
 

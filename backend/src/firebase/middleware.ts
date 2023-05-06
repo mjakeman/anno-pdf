@@ -5,7 +5,7 @@ import {DecodedIdToken} from "firebase-admin/lib/auth";
 
 class Middleware {
 
-    async decodeToken(authHeader: string|undefined): Promise<DecodedIdToken|null> {
+    decodeToken = async (authHeader: string|undefined): Promise<DecodedIdToken|null> => {
 
         if (!authHeader) {
             console.error("Auth header not found");
@@ -28,7 +28,7 @@ class Middleware {
     }
 
     // Authentication middleware
-    async validateToken(req: Request, res: Response, next: NextFunction) {
+    validateToken = async (req: Request, res: Response, next: NextFunction) => {
         if (Config.ENVIRONMENT !== 'PROD') {
             req.user = Config.TEST_UID;
             return next();

@@ -2,20 +2,12 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import {useSignInWithGoogle, useCreateUserWithEmailAndPassword, useAuthState} from 'react-firebase-hooks/auth';
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import {updateProfile} from "firebase/auth";
-import firebase from "firebase/compat";
-import FirebaseIdToken = firebase.FirebaseIdToken;
+import {updateProfile, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
 
 export default function SignUp() {
-
-    const [signInWithGoogle, googleUser, _googleLoading, googleError] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, emailUser, _emailLoading, emailError] = useCreateUserWithEmailAndPassword(auth);
-
-    const [user] = useAuthState(auth);
 
     const [signUpForm, setSignUpForm] = useState({
         firstName: "",
@@ -23,8 +15,6 @@ export default function SignUp() {
         email: "",
         password: ""
     });
-
-    const errorMessage = 'Error whilst signing up. Please try again';
 
     const [error, setError] = useState('');
 
@@ -37,68 +27,47 @@ export default function SignUp() {
         });
     };
 
-    async function doSignUp(token: FirebaseIdToken) {
+    async function createBackendRecord(token: string, displayName: string) {
         console.log("Performing common sign up method");
-        axios.post(import.meta.env.BASE_URL + '/user', null, {
+
+        const bodyParams = {
+            "name": displayName
+        };
+
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', bodyParams, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         }).then(function (response) {
-            if (response.status == 200) {
+            if (response.status == 200 || response.status == 201) {
                 navigate("/dash");
             }
         }).catch(function (error) {
-            if (error.response.status == 422) {
-                setError('User already exists. Please login instead.');
-            } else {
-                setError(`Error: ${error.name} (${error.code})`);
-            }
+            setError(`Error: ${error.name} (${error.code})`);
         });
     }
 
     async function handleSignUpWithGoogle() {
-        await signInWithGoogle();
-
-        if (googleError) {
-            setError(`Error signing in: ${googleError.name} (${googleError.code})`);
-            return;
-        }
-
-        if (googleUser) {
-            console.log('hi');
-            let token = await googleUser.user.getIdToken();
-            await doSignUp(token);
-        } else if (user) {
-            navigate('/dash');
-        } else {
-            console.log('bye');
-            setError(errorMessage);
-        }
+        signInWithPopup(auth, new GoogleAuthProvider())
+        .then(async (emailUser) => {
+            const user = emailUser?.user;
+            const token = await user.getIdToken()!;
+            await createBackendRecord(token, user.displayName!);
+        }).catch(error => {
+            setError(`Error signing up: ${error.message}`);
+        });
     }
 
     async function handleDefaultSignUpSubmit() {
-
-        createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
-            emailUser => {
-
+        createUserWithEmailAndPassword(auth, signUpForm.email, signUpForm.password).then(
+            async (emailUser) => {
+                const user = emailUser?.user!;
+                const token = await user.getIdToken();
+                await createBackendRecord(token, `${signUpForm.firstName} ${signUpForm.lastName}`);
             }
-        );
-
-        if (emailError) {
-            setError(`Error signing in: ${emailError.name} (${emailError.code})`);
-            return;
-        }
-
-        if (emailUser) {
-            await updateProfile(emailUser.user, {
-                displayName: signUpForm.firstName + ' ' + signUpForm.lastName
-            });
-
-            let token = await emailUser.user.getIdToken();
-            await doSignUp(token);
-        } else {
-            setError(errorMessage);
-        }
+        ).catch(error => {
+            setError(`Error signing up: ${error.message}`);
+        });
     }
 
     return (
