@@ -5,7 +5,9 @@ import {auth} from "../../../firebaseAuth";
 import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import {updateProfile, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
+// import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
+import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
+import {signOut} from "firebase/auth";
 
 export default function SignUp() {
 
@@ -17,6 +19,9 @@ export default function SignUp() {
     });
 
     const [error, setError] = useState('');
+
+    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
 
     const navigate = useNavigate();
 
@@ -40,18 +45,20 @@ export default function SignUp() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
+                // TODO: Set auth context/display name!
                 navigate("/dash");
             }
-        }).catch(function (error) {
+        }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
+            await signOut(auth);
         });
     }
 
     async function handleSignUpWithGoogle() {
-        signInWithPopup(auth, new GoogleAuthProvider())
+        signInWithGoogle()
         .then(async (emailUser) => {
-            const user = emailUser?.user;
-            const token = await user.getIdToken()!;
+            const user = emailUser?.user!;
+            const token = await user.getIdToken();
             await createBackendRecord(token, user.displayName!);
         }).catch(error => {
             setError(`Error signing up: ${error.message}`);
@@ -59,7 +66,7 @@ export default function SignUp() {
     }
 
     async function handleDefaultSignUpSubmit() {
-        createUserWithEmailAndPassword(auth, signUpForm.email, signUpForm.password).then(
+        createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
             async (emailUser) => {
                 const user = emailUser?.user!;
                 const token = await user.getIdToken();

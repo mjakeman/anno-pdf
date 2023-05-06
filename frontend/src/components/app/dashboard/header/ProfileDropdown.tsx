@@ -1,11 +1,7 @@
 import {Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
-import {Link} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
-import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
-import SettingModal from "../../setting/SettingModal";
-import Modal from "../../../Modal";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../../firebaseAuth";
 

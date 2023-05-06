@@ -59,7 +59,12 @@ class UserController {
     //  as the one source of truth for auth.
     const token = (await middleware.decodeToken(req.headers.authorization))!;
 
-    const displayName = req.body.name;
+    let displayName;
+    if (req.body.name) {
+      displayName = req.body.name;
+    } else {
+      displayName = "User";
+    }
 
     // Check for existing user
     const existingUser = await User.findOne({ uid: token.uid });
