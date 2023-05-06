@@ -1,11 +1,11 @@
 import * as pdfjs from "pdfjs-dist";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
+import {UIEvent} from "react";
 import {PDFDocumentProxy} from "pdfjs-dist";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
-import socketio, {Socket} from 'socket.io-client'
-import { v4 as uuidv4 } from 'uuid';
 import SocketClient from "./socket/client";
+
 
 const server = import.meta.env.VITE_BACKEND_URL;
 
@@ -23,6 +23,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const socketClient = useRef<SocketClient>(new SocketClient());
+
 
     // (1) Startup
     useEffect(() => {
@@ -66,6 +67,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
     }
 
+
     useEffect(() => {
         socketClient.current?.setup();
 
@@ -75,14 +77,14 @@ export default function DocumentViewer({ documentUuid } : Props) {
     }, []);
 
     return (
-        <div className="w-full h-full bg-zinc-300 dark:bg-anno-space-700">
+        <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">
             {isLoaded
                 ?
-                <div className="grid gap-4 justify-items-center mt-4">
-                    {pdfPages.map((page, index) => (
+                    <div className="grid gap-4 py-12 place-items-center">
+                        {pdfPages.map((page, index) => (
                             <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
                         ))}
-                </div>
+                    </div>
                 :
                 <div className="grid place-items-center h-full">
                     <svg className="animate-spin h-32 w-32 text-white" xmlns="http://www.w3.org/2000/svg"
