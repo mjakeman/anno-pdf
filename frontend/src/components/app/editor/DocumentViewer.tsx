@@ -1,6 +1,7 @@
 import * as pdfjs from "pdfjs-dist";
 import React, {useContext, useEffect, useRef, useState} from "react";
 import {MissingPDFException, PDFDocumentProxy} from "pdfjs-dist";
+import {v4 as uuidv4} from "uuid";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
@@ -94,7 +95,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
 
     useEffect(() => {
-        socketClient.current?.setup();
+        socketClient.current?.setup(uuidv4(), documentUuid);
 
         return () => {
             socketClient.current?.teardown();

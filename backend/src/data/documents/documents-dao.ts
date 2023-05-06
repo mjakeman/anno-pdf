@@ -1,10 +1,10 @@
 import { Document } from '../../models/Document';
 
-async function getDocuments(userId: String) {
+async function getDocuments(user: any) {
     return Document.find({
         $or: [
-            {createdBy: userId},
-            {sharedWith: userId}
+            {createdBy: user.uid},
+            {sharedWith: user.email}
         ]
     });
 }
@@ -22,9 +22,15 @@ async function deleteDocument(uuid: string) {
 }
 
 async function updateDocument(uuid: string, document: any) {
-    return Document.findOneAndUpdate({uuid: uuid}, document, {
-        new: true
-    });
+    return Document.findOneAndUpdate({uuid: uuid}, document, {new: true});
 }
 
-export { createDocument, getDocuments, deleteDocument, updateDocument, getDocument }
+async function addSharedUser(uuid: string, email: String) {
+    return Document.findOneAndUpdate({uuid: uuid}, { $push: { sharedWith: email } }, {new: true});
+}
+
+async function removeSharedUser(uuid: string, email: String) {
+    return Document.findOneAndUpdate({uuid: uuid}, { $pull: { sharedWith: email } }, {new: true});
+}
+
+export { createDocument, getDocuments, deleteDocument, updateDocument, getDocument, addSharedUser, removeSharedUser }
