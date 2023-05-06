@@ -44,6 +44,8 @@ export default function Login() {
                     setError(error);
                 }
             });
+        } else if (googleLoading) {
+            setError('Loading ...');
         } else if (googleError) {
             setError(errorMessage);
         }
@@ -73,6 +75,8 @@ export default function Login() {
                     setError(errorMessage);
                 }
             });
+        } else if (loading) {
+            setError('Loading ...');
         } else if (emailError) {
             setError(errorMessage);
         }

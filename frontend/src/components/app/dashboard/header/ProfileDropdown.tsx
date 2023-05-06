@@ -1,11 +1,12 @@
 import {Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
+import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
+import SettingModal from "../../setting/SettingModal";
+import Modal from "../../../Modal";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
-import {auth} from "../../../../firebaseAuth";
-import {useSignOut} from "react-firebase-hooks/auth";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -22,11 +23,6 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     const user = useContext(AuthContext);
 
-    const navigate = useNavigate();
-    const [signOut, loading, error] = useSignOut(auth);
-
-    const [errorMessage, setErrorMessage] = useState('');
-
     function turnOnDarkMode() {
         if (!isDarkMode) {
             setIsDarkMode(true);
@@ -36,17 +32,6 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
     function turnOffDarkMode() {
         if (isDarkMode) {
             setIsDarkMode(false);
-        }
-    }
-
-    async function handleSignOut(){
-        await signOut();
-
-        if (error) {
-            console.log(error);
-            setErrorMessage('Error logging out. Please try again later.');
-        } else {
-            navigate('/');
         }
     }
 
@@ -81,19 +66,9 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
             </div>
 
-            <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
-                Sign Out
-            </button>
-
-            {errorMessage != '' && <div
-                className="bg-anno-red-secondary bg-opacity-70 py-3 px-4 text-white flex flex-row items-center justify-center gap-1 text-sm">
-                {errorMessage}
-            </div>}
-
         </div>
     );
     function openSettingModal(){
         onAccountSettingsClicked();
     }
 }
-
