@@ -12,7 +12,7 @@ import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
 import {createContext, useEffect} from "react";
 import { ToastProvider } from "./hooks/useToast";
-import { AuthContextProvider } from "./AuthContextProvider";
+import { AuthContextProvider } from "./contexts/AuthContextProvider";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -40,7 +40,7 @@ export default function App() {
                             <Route path="/dash" element={<DashboardLayout />}>
                                 <Route index element={<Dashboard/>} />
                             </Route>
-                            <Route path="/editor" element={<Editor/>} />
+                            <Route path="/document/:documentUuid" element={<Editor/>} />
                     </Routes>
                 </ToastProvider>
             </DarkModeContext.Provider>
