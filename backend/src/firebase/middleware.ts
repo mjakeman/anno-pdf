@@ -1,35 +1,49 @@
 import admin from './firebaseAdminConfig';
 import { Request, Response, NextFunction } from 'express'
 import Config from "../util/Config";
+import {DecodedIdToken} from "firebase-admin/lib/auth";
 
 class Middleware {
 
+    async decodeToken(authHeader: string|undefined): Promise<DecodedIdToken|null> {
+
+        if (!authHeader) {
+            console.error("Auth header not found");
+            return null;
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        try {
+            const decodedToken = await admin.auth().verifyIdToken(token);
+
+            if (decodedToken) {
+                return decodedToken;
+            }
+        } catch (e) {
+            console.log(e.message);
+        }
+
+        return null;
+    }
+
     // Authentication middleware
-    async decodeToken(req: Request, res: Response, next: NextFunction) {
+    async validateToken(req: Request, res: Response, next: NextFunction) {
         if (Config.ENVIRONMENT !== 'PROD') {
             req.user = Config.TEST_UID;
             return next();
         }
 
         // Bearer token
-        let token: string;
-        if (req.headers.authorization) {
-            token = req.headers.authorization.split(' ')[1];
-        } else {
-            return res.status(400).send('Auth header not found');
+        let token = await this.decodeToken(req.headers.authorization);
+
+        // Pass to REST handlers
+        if (token) {
+            req.user = token.uid;
+            return next();
         }
 
-        try {
-            const decodedToken = await admin.auth().verifyIdToken(token);
-
-            if (decodedToken) {
-                req.user = decodedToken.uid;
-                return next();
-            }
-        } catch (e) {
-            console.log(e.message);
-        }
-
+        // Auth failed -> deny
         return res.status(401).send('Unauthorized user');
     }
 

@@ -24,7 +24,7 @@ export default function DocumentViewer({ documentUuid } : Props) {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
-    const [user, loading, error] = useAuthState(auth);
+    const [user] = useAuthState(auth);
     const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
 

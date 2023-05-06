@@ -24,18 +24,11 @@ export default function SignUp() {
         password: ""
     });
 
-    const [error, setError] = useState('');
-
     const errorMessage = 'Error whilst signing up. Please try again';
 
-    const navigate = useNavigate();
+    const [error, setError] = useState('');
 
-    useEffect(() => {
-        // If we're logged in, redirect to the dashboard
-        if (user) {
-            navigate("/dash")
-        }
-    }, [user]);
+    const navigate = useNavigate();
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
@@ -45,6 +38,7 @@ export default function SignUp() {
     };
 
     async function doSignUp(token: FirebaseIdToken) {
+        console.log("Performing common sign up method");
         axios.post(import.meta.env.BASE_URL + '/user', null, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -57,7 +51,7 @@ export default function SignUp() {
             if (error.response.status == 422) {
                 setError('User already exists. Please login instead.');
             } else {
-                setError(errorMessage);
+                setError(`Error: ${error.name} (${error.code})`);
             }
         });
     }
@@ -66,29 +60,37 @@ export default function SignUp() {
         await signInWithGoogle();
 
         if (googleError) {
-            setError("Error signing in: " + googleError.name);
+            setError(`Error signing in: ${googleError.name} (${googleError.code})`);
             return;
         }
 
         if (googleUser) {
+            console.log('hi');
             let token = await googleUser.user.getIdToken();
             await doSignUp(token);
+        } else if (user) {
+            navigate('/dash');
         } else {
+            console.log('bye');
             setError(errorMessage);
         }
     }
 
     async function handleDefaultSignUpSubmit() {
 
-        await createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
+        createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
+            emailUser => {
+
+            }
+        );
 
         if (emailError) {
-            setError("Error signing in: " + emailError.name);
+            setError(`Error signing in: ${emailError.name} (${emailError.code})`);
             return;
         }
 
         if (emailUser) {
-            await updateProfile(token, {
+            await updateProfile(emailUser.user, {
                 displayName: signUpForm.firstName + ' ' + signUpForm.lastName
             });
 

@@ -6,7 +6,8 @@ import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import {Link} from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import SettingModal from "../../setting/SettingModal";
-import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "../../../../firebaseAuth";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -18,7 +19,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
     const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
-    const user = useContext(AuthContext);
+    const [user] = useAuthState(auth);
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">

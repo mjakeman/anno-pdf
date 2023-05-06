@@ -6,7 +6,8 @@ import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
 import SettingModal from "../../setting/SettingModal";
 import Modal from "../../../Modal";
-import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "../../../../firebaseAuth";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -21,7 +22,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
 
-    const user = useContext(AuthContext);
+    const [user] = useAuthState(auth);
 
     function turnOnDarkMode() {
         if (!isDarkMode) {
