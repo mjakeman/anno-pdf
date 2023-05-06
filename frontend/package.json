@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.16",
-    "@panzoom/panzoom": "^4.5.1",
     "@types/uuid": "^9.0.1",
     "@use-gesture/react": "^10.2.26",
     "axios": "^1.4.0",
