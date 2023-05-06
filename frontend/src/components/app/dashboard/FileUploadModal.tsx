@@ -4,6 +4,7 @@ import UploadFileButton from "./UploadFileButton";
 import axios from "axios";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
+import {useNavigate} from "react-router-dom";
 
 interface FileUploadModalProps {
     isVisible: boolean;
@@ -19,6 +20,8 @@ export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadM
     const [uploadedFileName, setUploadedFileName] = useState<string>("No file selected");
 
     const borderStyle = isDragOver ? "border-2 border-dashed border-blue" : "border-2 border-dotted";
+
+    let navigate = useNavigate();
 
     return (
         <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
@@ -64,11 +67,13 @@ export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadM
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        })
-            .then(r => {
-                console.log(r);
-            }
-        );
+        }).then(response => {
+                // Success
+                navigate(`/document/${response.data.uuid}`)
+        }).catch(error => {
+            console.log(error);
+        });
+
     }
 }
 
