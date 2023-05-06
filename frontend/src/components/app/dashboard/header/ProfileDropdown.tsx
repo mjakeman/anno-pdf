@@ -6,7 +6,7 @@ import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
 import SettingModal from "../../setting/SettingModal";
 import Modal from "../../../Modal";
-import {AuthContext} from "../../../../AuthContextProvider";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,

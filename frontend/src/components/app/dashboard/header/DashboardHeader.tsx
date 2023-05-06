@@ -6,7 +6,7 @@ import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import {Link} from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 import SettingModal from "../../setting/SettingModal";
-import {AuthContext} from "../../../../AuthContextProvider";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
