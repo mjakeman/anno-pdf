@@ -10,21 +10,22 @@ import Terms from "./components/public/pages/Terms";
 import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
-import React, {createContext, useEffect} from "react";
+import React, {createContext, useEffect, useState} from "react";
 import { ToastProvider } from "./hooks/useToast";
-import {AuthContextProvider} from "./contexts/AuthContextProvider";
+import {AuthContext, CurrentUser} from "./contexts/AuthContextProvider";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
 
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
+    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
     useEffect(() => {
         isDarkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark')
     }, [isDarkMode]);
 
     return (
-        <AuthContextProvider>
+        <AuthContext.Provider value={{currentUser, setCurrentUser}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <ToastProvider>
                     <Routes>
@@ -43,6 +44,6 @@ export default function App() {
                     </Routes>
                 </ToastProvider>
             </DarkModeContext.Provider>
-        </AuthContextProvider>
+        </AuthContext.Provider>
         );
 }

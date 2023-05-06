@@ -5,10 +5,9 @@ import {auth} from "../../../firebaseAuth";
 import {ChangeEvent, useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-// import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
 import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
 import {signOut} from "firebase/auth";
-import {AuthContext, AuthContextProvider} from "../../../contexts/AuthContextProvider";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 export default function SignUp() {
 
@@ -24,7 +23,7 @@ export default function SignUp() {
     const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
     const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
 
-    const [currentUser, setCurrentUser] = useContext(AuthContext);
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -52,7 +51,7 @@ export default function SignUp() {
                     uid: response.data.uid,
                     name: response.data.name,
                     email: response.data.email,
-                    firebaseUserRef: auth.currentUser
+                    firebaseUserRef: auth.currentUser!
                 });
                 navigate("/dash");
             }

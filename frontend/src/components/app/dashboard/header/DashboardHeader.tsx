@@ -8,6 +8,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import SettingModal from "../../setting/SettingModal";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../../firebaseAuth";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -19,7 +20,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
     const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
-    const user = auth.currentUser;
+    const {currentUser} = useContext(AuthContext);
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
@@ -40,7 +41,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                     <div className="grid place-items-center rounded text-white font-bold w-6 h-6 bg-blue-800">
                         J
                     </div>
-                    <span className="text-lg text-black dark:text-white">{user?.displayName}</span>
+                    <span className="text-lg text-black dark:text-white">{currentUser?.name}</span>
                     <ChevronDownIcon className="text-slate-500 dark:text-white w-6 h-6" />
                 </button>
                 {showProfileDropdown &&
