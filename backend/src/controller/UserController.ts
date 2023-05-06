@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
+import { transporter } from "../server"
+import Config from '../util/Config';
 
 class UserController {
+  
 
   async getUsers(_req: Request, res: Response) {
     return res.json(await getUsers());
@@ -58,6 +61,28 @@ class UserController {
     }
 
     return res.status(422).send('User already exists');
+  }
+
+  async sendEmail(req: Request, res: Response){
+    const { email } = req.body; 
+    console.log(email)
+    const html = `<h1>Invite to Anno</h1>
+                    <p>You have been invited to: </p>
+                  `;
+    const emailOptions = {
+      from: Config.GMAIL,
+      to: email,
+      subject: "Invite to Anno",
+      html
+    }
+    transporter.sendMail(emailOptions, function(error,info){
+      if(error){
+        res.status(400).send(error.message);
+      }else{
+        res.status(200).send("Email Sent");
+      }
+      console.log(info);
+    })
   }
 }
 
