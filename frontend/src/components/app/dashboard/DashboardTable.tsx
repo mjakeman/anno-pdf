@@ -39,11 +39,6 @@ type SortKeys = keyof Data;
 type SortOrder = "Ascending" | "Descending";
 type Filter = "All" | "Private" | "Shared";
 
-const selectedStyles = {
-
-}
-
-
 export default function DashboardTable() {
     const navigate = useNavigate();
 
