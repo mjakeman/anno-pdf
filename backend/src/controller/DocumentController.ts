@@ -48,7 +48,12 @@ class DocumentController {
 
         try {
             const s3Document = await s3.getObject(params).promise();
-            return res.set("Content-Type", "application/pdf").send(s3Document.Body);
+            if (!s3Document.Body) throw Error("s3 document 'Data' was null");
+
+            const base64pdf = s3Document.Body.toString('base64');
+            const documentInfo = JSON.parse(JSON.stringify(dbDoc));
+            documentInfo['base64file'] = base64pdf;
+            return res.send(documentInfo);
         } catch (e) {
             console.log(e.message);
             return res.status(500).send("Error fetching document from s3");
