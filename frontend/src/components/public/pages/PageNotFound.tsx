@@ -1,6 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import Container from "../../Container";
+import PrimaryButton from "../../PrimaryButton";
 
 export default function PageNotFound(){
+    const navigate = useNavigate();
+
     return(
         <Container>
           <section className="mt-12">
@@ -8,8 +12,13 @@ export default function PageNotFound(){
               <div className="text-lg dark:text-white mt-6">
                   <p>Page not found</p>
               </div>
+              <PrimaryButton label="Return to home" onClick={navigateToHome}></PrimaryButton>
             </section>
 
         </Container>
     )
+    function navigateToHome(){
+        navigate("/");
+    }
 }
+
