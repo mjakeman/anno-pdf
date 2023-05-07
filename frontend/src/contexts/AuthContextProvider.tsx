@@ -13,11 +13,13 @@ export interface CurrentUser {
 interface AuthContext {
     currentUser: CurrentUser | null;
     setCurrentUser: (user: CurrentUser | null) => void;
+    firebaseUserRef: User | null,
 }
 
 export const AuthContext = React.createContext<AuthContext>({
     currentUser: null,
     setCurrentUser: () => {},
+    firebaseUserRef: null,
 });
 
 interface ContainerProps {
