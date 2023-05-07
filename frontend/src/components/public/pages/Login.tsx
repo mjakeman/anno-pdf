@@ -29,7 +29,11 @@ export default function Login() {
     useEffect(() => {
         if (currentUser) {
             console.log(location)
-            navigate(location.state?.redirect ? location.state.redirect : "/dash");
+            if(location.state){
+                navigate(location.state.redirect ? location.state.redirect : "/dash");
+            }else{
+                navigate("/dash");
+            }
         }
     }, []);
 
