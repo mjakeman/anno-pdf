@@ -8,6 +8,9 @@ const documentController = new DocumentController();
 // Get document by uuid
 router.get('/:uuid', documentController.getDocument);
 
+// Get document pdf and info by uuid
+router.get('/:uuid/allData', documentController.getDocumentPDFandInfo);
+
 // Delete document by uuid
 router.delete('/:uuid/delete', documentController.deleteDocument);
 
