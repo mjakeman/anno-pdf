@@ -82,7 +82,7 @@ export default function DashboardTable({documentData} : Props) {
                         </tr>
                     </thead>
                     <tbody>
-                    {sortedData().filter((document) => filter === "All" || document.owner === "Me" || filter === "Shared" && document.owner !== "Me")
+                    {sortedData().filter((document) => filter === "All" || document.owner === filter || filter === "Shared" && document.owner !== "Me")
                     .map((document, index) => (
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
