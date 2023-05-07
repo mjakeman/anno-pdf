@@ -16,6 +16,7 @@ import {AuthContext, } from "./contexts/AuthContextProvider";
 import {auth} from "./firebaseAuth";
 import {signOut, User,} from "firebase/auth";
 import axios from "axios";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -90,10 +91,12 @@ export default function App() {
                                 <Route path="login" element={<Login/>} />
                                 <Route path="signup" element={<SignUp/>} />
                             </Route>
-                            <Route path="/dash" element={<DashboardLayout />}>
+                            <Route path="/dash" element={
+                                <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
+                            }>
                                 <Route index element={<Dashboard/>} />
                             </Route>
-                            <Route path="/document/:documentUuid" element={<Editor/>} />
+                            <Route path="/document/:documentUuid" element={<ProtectedRoute outlet={<Editor/>}></ProtectedRoute>} />
                     </Routes>
                 </ToastProvider>
             </DarkModeContext.Provider>

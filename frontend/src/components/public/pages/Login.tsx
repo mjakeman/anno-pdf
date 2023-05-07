@@ -4,7 +4,7 @@ import googleLogo from "../../../assets/glogo.svg";
 import {useSignInWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
 import {useContext, useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {signOut} from "firebase/auth";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
@@ -20,13 +20,15 @@ export default function Login() {
 
     const navigate = useNavigate();
 
+    const location = useLocation();
+
     const errorMessage = 'Error whilst logging in. Please try again';
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     useEffect(() => {
         if (currentUser) {
-            navigate('/dash');
+            navigate(location.state.redirect ? location.state.redirect:"/dash");
         }
     }, []);
 
@@ -52,7 +54,7 @@ export default function Login() {
                     email: response.data.email,
                     firebaseUserRef: auth.currentUser!
                 });
-                navigate("/dash");
+                navigate(location.state.redirect ? location.state.redirect:"/dash");
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
