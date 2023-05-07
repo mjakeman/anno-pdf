@@ -54,8 +54,10 @@ function UserSettings() {
     const [errorMessage, setErrorMessage] = useState('');
 
     async function handleSignOut(){
+        const currentUser = useContext(AuthContext);
         try {
             await signOut(auth);
+            currentUser.setCurrentUser(null);
             navigate('/');
         } catch(error) {
             console.log(error);
