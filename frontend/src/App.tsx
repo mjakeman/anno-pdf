@@ -71,6 +71,7 @@ export default function App() {
                     });
             } else {
                 setCurrentUser(null);
+                setFirebaseUserRef(null);
             }
         });
         return unsubscribe;
