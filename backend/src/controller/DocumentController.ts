@@ -1,9 +1,12 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import Busboy from 'busboy';
 import { createDocument, deleteDocument, updateDocument, getDocument, addSharedUser, removeSharedUser } from "../data/documents/documents-dao";
 import s3 from "../s3/s3Config";
 import Config from "../util/Config";
 import { v4 as uuidv4 } from 'uuid';
+import {EmailService} from "../service/EmailService";
+
+const emailService = new EmailService();
 
 class DocumentController {
 
@@ -79,7 +82,12 @@ class DocumentController {
             return res.status(400).send('User not found in request object.');
         }
 
-        const busboy = Busboy({ headers: req.headers});
+        let busboy;
+        try {
+            busboy = Busboy({ headers: req.headers});
+        } catch (e) {
+            return res.status(500).send(e.message);
+        }
 
         busboy.on('file', async (_fieldname: any, file: any, info: any)=> {
             if (info.mimeType !== 'application/pdf') {
@@ -118,33 +126,25 @@ class DocumentController {
     }
 
     async shareDocument(req: Request, res: Response) {
-        const dbDoc = await getDocument(req.params.uuid);
-        if (!dbDoc) {
-            return res.status(404).send('Document not found');
-        }
-
-        let user: string;
-        if (req.user) {
-            user = req.user;
-        } else {
-            return res.status(500).send('User not found in request object. Internal server error');
-        }
-
-        if (dbDoc.createdBy !== user) {
-            return res.status(403).send('Only document owners have sharing permissions');
-        }
-
-        if (!req.body.email) {
-            return res.status(400).send('"email" field is required in the request body');
-        }
-
-
         const updatedDoc = await addSharedUser(req.params.uuid, req.body.email);
-        // TODO: send user email
+
+        // send invite email
+        const emailSent = await emailService.sendEmail(req.params.uuid, req.body.email)
+        if (emailSent) {
+            console.log(`Document shared: email sent to ${req.body.email}`);
+        } else {
+            console.log(`Error sending invite email to ${req.body.email}`);
+        }
+
         return res.json(updatedDoc);
     }
 
     async removeUserFromDocument(req: Request, res: Response) {
+        const updatedDoc = await removeSharedUser(req.params.uuid, req.body.email);
+        return res.json(updatedDoc);
+    }
+
+    async validateShareRequest(req: Request, res: Response, next: NextFunction) {
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
@@ -165,9 +165,7 @@ class DocumentController {
             return res.status(400).send('"email" field is required in the request body');
         }
 
-
-        const updatedDoc = await removeSharedUser(req.params.uuid, req.body.email);
-        return res.json(updatedDoc);
+        return next();
     }
 
 }
