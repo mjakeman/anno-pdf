@@ -1,4 +1,4 @@
-import {useCallback, useState} from "react";
+import {useCallback, useContext, useState} from "react";
 import PrimaryButton from "../../PrimaryButton";
 import FilterButton from "./FilterButton";
 import {ArrowsUpDownIcon} from "@heroicons/react/24/outline";
@@ -6,6 +6,7 @@ import {DocumentIcon} from "@heroicons/react/24/solid";
 import {useNavigate} from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import FileUploadModal from "./FileUploadModal";
+import { AuthContext } from "../../../contexts/AuthContextProvider";
 
 
 export interface DocumentRecord {
@@ -21,9 +22,12 @@ interface Props {
 
 type SortKeys = "name" | "owner" | "lastupdated";
 type SortOrder = "Ascending" | "Descending";
-type Filter = "All" | "Private" | "Shared";
+type Filter = "All" | "Me" | "Shared";
+
 
 export default function DashboardTable({documentData} : Props) {
+    const {currentUser} = useContext(AuthContext);
+
     const navigate = useNavigate();
 
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -63,7 +67,7 @@ export default function DashboardTable({documentData} : Props) {
                     <FilterButton label="All" onClick={()=> setFilter("All")} isSelected={filter==="All"}/>
                 </Tooltip>
                 <Tooltip text="Filter by" position="top">
-                    <FilterButton label="Private" onClick={()=> setFilter("Private")} isSelected={filter==="Private"}/>
+                    <FilterButton label="Private" onClick={()=> setFilter("Me")} isSelected={filter==="Me"}/>
                 </Tooltip>
                 <FilterButton label="Shared" onClick={()=> setFilter("Shared")} isSelected={filter==="Shared"}/>
                 <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
@@ -78,7 +82,7 @@ export default function DashboardTable({documentData} : Props) {
                         </tr>
                     </thead>
                     <tbody>
-                    {sortedData().filter((document) => filter === "All" || document.owner === filter || filter === "Shared" && document.owner !== "Me")
+                    {sortedData().filter((document) => filter === "All" || document.owner === "Me" || filter === "Shared" && document.owner !== "Me")
                     .map((document, index) => (
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
