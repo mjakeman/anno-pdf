@@ -33,7 +33,8 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
                         Documents
                     </h1>
                     <div className={"flex flex-col"}>
-                        {searchResults.documents.map((command, index) => (
+                        {searchResults.documents.filter(document => document.text.toLowerCase().includes(searchInput.toLowerCase()))
+                            .map((command, index) => (
                             <CommandMenuDialogRow text={command.text} iconType={command.iconType}
                                                   newTab={command.newTab} href={command.href}
                                                   key={index}/>
@@ -47,7 +48,8 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
                         Settings
                     </h1>
                     <div className={"flex flex-col"}>
-                        {searchResults.settings.map((command, index) => (
+                        {searchResults.settings.filter(settings => settings.text.toLowerCase().includes(searchInput.toLowerCase()))
+                            .map((command, index) => (
                             <CommandMenuDialogRow text={command.text} iconType={command.iconType}
                                                   newTab={command.newTab} href={command.href}
                                                   key={index}/>
