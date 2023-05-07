@@ -4,6 +4,7 @@ import EditorHeader from "./header/EditorHeader";
 import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
+import {useParams} from "react-router-dom";
 export const ToolContext = React.createContext<any[]>([]);
 export const ZoomContext = React.createContext<any[]>([]);
 
@@ -11,6 +12,7 @@ export default function Editor() {
 
     const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
     const [zoom, setZoom] = useState(100); // Initial Zoom
+    let  { documentUuid } = useParams();
 
 
     useEffect(() => {
@@ -32,7 +34,7 @@ export default function Editor() {
                     {/* Document Space */}
                     <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-hidden">
 
-                        <DocumentViewer documentUuid={"test"}/>
+                        <DocumentViewer documentUuid={documentUuid}/>
 
                     </main>
                 </div>

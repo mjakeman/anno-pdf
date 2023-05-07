@@ -1,11 +1,10 @@
 import {Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
-import {Link} from "react-router-dom";
 import React, {useContext, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
-import useLocalStorage from "../../../../hooks/useLocalStorage";
 import {DarkModeContext} from "../../../../App";
-import SettingModal from "../../setting/SettingModal";
-import Modal from "../../../Modal";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "../../../../firebaseAuth";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -19,6 +18,8 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
+
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     function turnOnDarkMode() {
         if (!isDarkMode) {
@@ -41,8 +42,8 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
                     J
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xl dark:text-white">John Doe</span>
-                    <span className="text-sm text-neutral-400 dark:text-white">johndoe@gmail.com</span>
+                    <span className="text-xl dark:text-white">{currentUser?.name}</span>
+                    <span className="text-sm text-neutral-400 dark:text-white">{currentUser?.email}</span>
                 </div>
             </div>
             <div onClick={()=>openSettingModal()} className="flex flex-row gap-4 px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-anno-space-800 rounded-xl">
