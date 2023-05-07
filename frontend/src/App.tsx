@@ -1,4 +1,4 @@
-import {Route, Routes} from "react-router-dom";
+import {Route, Routes, useNavigate} from "react-router-dom";
 import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
@@ -13,16 +13,68 @@ import useLocalStorage from "./hooks/useLocalStorage";
 import React, {createContext, useEffect, useState} from "react";
 import { ToastProvider } from "./hooks/useToast";
 import {AuthContext, CurrentUser} from "./contexts/AuthContextProvider";
+import {auth} from "./firebaseAuth";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {signOut, User} from "firebase/auth";
+import axios from "axios";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
 
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
-    const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+    const [currentUser, setCurrentUser] = useLocalStorage('user', null);
+
+    async function validateWithBackend(token: string) {
+        console.log("Performing common user fetch ");
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then(function (response) {
+            if (response.status == 200 || response.status == 201) {
+                setCurrentUser({
+                    uid: response.data.uid,
+                    name: response.data.name,
+                    email: response.data.email,
+                    firebaseUserRef: auth.currentUser!
+                });
+            }
+        }).catch(async function (error) {
+            console.log(`Error: ${error.name} (${error.code})`);
+            await signOut(auth);
+        });
+    }
 
     useEffect(() => {
         isDarkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark')
     }, [isDarkMode]);
+
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(async user => {
+            if (user) {
+                if (currentUser) {
+                    setCurrentUser({
+                        uid: currentUser.uid,
+                        name: currentUser.name,
+                        email: currentUser.email,
+                        firebaseUserRef: user
+                    });
+                    return;
+                }
+                await user.getIdToken()
+                    .then((token) => {
+                        validateWithBackend(token);
+                    })
+                    .catch(async error => {
+                        await signOut(auth);
+                    });
+            } else {
+                setCurrentUser(null);
+            }
+        });
+        return unsubscribe;
+    }, []);
 
     return (
         <AuthContext.Provider value={{currentUser, setCurrentUser}}>

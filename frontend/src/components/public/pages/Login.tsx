@@ -30,10 +30,17 @@ export default function Login() {
         }
     }, []);
 
-    async function validateWithBackend(token: string) {
+    async function validateWithBackend(token: string, displayName: string|null = null) {
         console.log("Performing common sign up method");
 
-        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', null, {
+        let bodyParams = null;
+        if (displayName) {
+            // Only occurs for Google Sign in, otherwise should be null
+            bodyParams = {
+                "name": displayName
+            }
+        }
+        axios.post(import.meta.env.VITE_BACKEND_URL + '/user', bodyParams, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -57,9 +64,10 @@ export default function Login() {
         signInWithGoogle()
             .then(async (emailUser) => {
                 const user = emailUser?.user!;
-                const token = await user.getIdToken();
-                await validateWithBackend(token);
+                const token = await user?.getIdToken();
+                await validateWithBackend(token, user.displayName!);
             }).catch(error => {
+                console.log(error)
             setError(`Error signing in: ${error.message}`);
         });
     }
