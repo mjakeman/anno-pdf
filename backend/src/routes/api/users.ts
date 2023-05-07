@@ -17,5 +17,4 @@ router.get('/documents', userController.getDocuments);
 // Get user by uid
 router.get('/:uid', userController.getUser);
 
-router.post('/invite', userController.sendEmail);
 export default router;

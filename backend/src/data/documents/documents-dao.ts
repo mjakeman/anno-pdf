@@ -26,7 +26,7 @@ async function updateDocument(uuid: string, document: any) {
 }
 
 async function addSharedUser(uuid: string, email: String) {
-    return Document.findOneAndUpdate({uuid: uuid}, { $push: { sharedWith: email } }, {new: true});
+    return Document.findOneAndUpdate({uuid: uuid}, { $addToSet: { sharedWith: email } }, {new: true});
 }
 
 async function removeSharedUser(uuid: string, email: String) {

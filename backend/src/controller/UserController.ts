@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
-import { transporter } from "../server"
-import Config from '../util/Config';
 import middleware from "../firebase/middleware";
 import {User} from "../models/User";
 
@@ -91,28 +89,6 @@ class UserController {
 
     // Didn't work - give up
     return res.status(500).send('Could not create user');
-  }
-
-  async sendEmail(req: Request, res: Response){
-    const { email } = req.body; 
-    console.log(email)
-    const html = `<h1>Invite to Anno</h1>
-                    <p>You have been invited to: </p>
-                  `;
-    const emailOptions = {
-      from: Config.GMAIL,
-      to: email,
-      subject: "Invite to Anno",
-      html
-    }
-    transporter.sendMail(emailOptions, function(error,info){
-      if(error){
-        res.status(400).send(error.message);
-      }else{
-        res.status(200).send("Email Sent");
-      }
-      console.log(info);
-    })
   }
 }
 
