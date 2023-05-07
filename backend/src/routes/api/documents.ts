@@ -15,10 +15,10 @@ router.delete('/:uuid/delete', documentController.deleteDocument);
 router.post('/:uuid/update', documentController.updateDocument);
 
 // Share document
-router.post('/:uuid/share', documentController.shareDocument);
+router.post('/:uuid/share', documentController.validateShareRequest, documentController.shareDocument);
 
 // Remove user from document
-router.post('/:uuid/removeUser', documentController.removeUserFromDocument);
+router.post('/:uuid/removeUser', documentController.validateShareRequest, documentController.removeUserFromDocument);
 
 // Create and upload document
 router.post('/create', documentController.createAndUploadDocument);
