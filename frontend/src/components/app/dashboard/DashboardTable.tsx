@@ -37,7 +37,11 @@ const documentData = [
 type Data = typeof documentData[0];
 type SortKeys = keyof Data;
 type SortOrder = "Ascending" | "Descending";
-type Filter = "All" | "Me" | "Shared";
+type Filter = "All" | "Private" | "Shared";
+
+const selectedStyles = {
+
+}
 
 
 export default function DashboardTable() {
@@ -77,12 +81,12 @@ export default function DashboardTable() {
             <FileUploadModal isVisible={isUploadModalOpen} onOutsideClick={()=>setIsUploadModalOpen(false)}/>
             <div className="flex flex-row gap-2">
                 <Tooltip text="Filter by" position="bottom">
-                    <FilterButton label="All" onClick={()=> setFilter("All")}/>
+                    <FilterButton label="All" onClick={()=> setFilter("All")} isSelected={filter==="All"}/>
                 </Tooltip>
                 <Tooltip text="Filter by" position="top">
-                    <FilterButton label="Private" onClick={()=> setFilter("Me")}/>
+                    <FilterButton label="Private" onClick={()=> setFilter("Private")} isSelected={filter==="Private"}/>
                 </Tooltip>
-                <FilterButton label="Shared" onClick={()=> setFilter("Shared")}/>
+                <FilterButton label="Shared" onClick={()=> setFilter("Shared")} isSelected={filter==="Shared"}/>
                 <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
             </div>
                 <div className="relative overflow-x-auto">
