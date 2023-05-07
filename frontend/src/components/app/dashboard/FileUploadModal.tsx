@@ -14,7 +14,7 @@ interface FileUploadModalProps {
 
 export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadModalProps){
 
-    const {currentUser} = useContext(AuthContext);
+    const {firebaseUserRef} = useContext(AuthContext);
 
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -63,7 +63,7 @@ export default function FileUploadModal({isVisible, onOutsideClick}: FileUploadM
 
         let formData = new FormData();
         formData.append("file", file);
-        let token = await currentUser?.firebaseUserRef.getIdToken();
+        let token = await firebaseUserRef!.getIdToken();
         axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/create',formData, {
             headers: {
                 Authorization: `Bearer ${token}`

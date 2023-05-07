@@ -10,12 +10,11 @@ import Terms from "./components/public/pages/Terms";
 import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
-import React, {createContext, useEffect, useState} from "react";
+import React, {createContext, useEffect, useState,} from "react";
 import { ToastProvider } from "./hooks/useToast";
-import {AuthContext, CurrentUser} from "./contexts/AuthContextProvider";
+import {AuthContext, } from "./contexts/AuthContextProvider";
 import {auth} from "./firebaseAuth";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {signOut, User} from "firebase/auth";
+import {signOut, User,} from "firebase/auth";
 import axios from "axios";
 
 export const DarkModeContext = createContext<any[]>([]);
@@ -23,6 +22,7 @@ export default function App() {
 
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
     const [currentUser, setCurrentUser] = useLocalStorage('user', null);
+    const [firebaseUserRef, setFirebaseUserRef] = useState<User | null>(null);
 
     async function validateWithBackend(token: string) {
         console.log("Performing common user fetch ");
@@ -36,8 +36,8 @@ export default function App() {
                     uid: response.data.uid,
                     name: response.data.name,
                     email: response.data.email,
-                    firebaseUserRef: auth.currentUser!
                 });
+                setFirebaseUserRef(auth.currentUser!);
             }
         }).catch(async function (error) {
             console.log(`Error: ${error.name} (${error.code})`);
@@ -58,8 +58,8 @@ export default function App() {
                         uid: currentUser.uid,
                         name: currentUser.name,
                         email: currentUser.email,
-                        firebaseUserRef: user
                     });
+                    setFirebaseUserRef(user)
                     return;
                 }
                 await user.getIdToken()
@@ -77,7 +77,7 @@ export default function App() {
     }, []);
 
     return (
-        <AuthContext.Provider value={{currentUser, setCurrentUser}}>
+        <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <ToastProvider>
                     <Routes>
