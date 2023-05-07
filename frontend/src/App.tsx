@@ -1,4 +1,4 @@
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
@@ -16,6 +16,7 @@ import {AuthContext, } from "./contexts/AuthContextProvider";
 import {auth} from "./firebaseAuth";
 import {signOut, User,} from "firebase/auth";
 import axios from "axios";
+import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const DarkModeContext = createContext<any[]>([]);
@@ -83,6 +84,7 @@ export default function App() {
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <ToastProvider>
                     <Routes>
+                            <Route path='*' element={<Navigate to="/notfound"></Navigate>} ></Route>
                             <Route path="/" element={<PublicLayout />}>
                                 <Route index element={<Home/>} />
                                 <Route path="about" element={<About/>} />
@@ -90,6 +92,7 @@ export default function App() {
                                 <Route path="terms" element={<Terms/>} />
                                 <Route path="login" element={<Login/>} />
                                 <Route path="signup" element={<SignUp/>} />
+                                <Route path="notfound" element={<PageNotFound/>}/>
                             </Route>
                             <Route path="/dash" element={
                                 <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
