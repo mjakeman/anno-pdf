@@ -3,8 +3,18 @@ import * as http from "http";
 import mongoose from "mongoose";
 import cors from "cors";
 import Config from "./util/Config";
+import nodeMailer from "nodemailer"
 
 const port = Config.PORT;
+
+export const transporter = nodeMailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: Config.GMAIL,
+        pass: Config.GMAIL_PASSWORD
+    }
+})
+
 const app = express.default();
 
 // Setup body-parser
