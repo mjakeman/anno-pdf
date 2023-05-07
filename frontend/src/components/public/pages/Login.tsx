@@ -28,7 +28,8 @@ export default function Login() {
 
     useEffect(() => {
         if (currentUser) {
-            navigate(location.state.redirect ? location.state.redirect:"/dash");
+            console.log(location)
+            navigate(location.state?.redirect ? location.state.redirect : "/dash");
         }
     }, []);
 
