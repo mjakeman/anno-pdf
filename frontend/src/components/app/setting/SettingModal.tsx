@@ -1,13 +1,14 @@
 import { UserCircleIcon } from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
-import { useRef } from "react"
+import {useContext, useRef} from "react"
 import { useState } from "react"
-import { useSignOut } from "react-firebase-hooks/auth"
 import { auth } from "../../../firebaseAuth"
 import { useToast } from "../../../hooks/useToast"
 import DarkModeToggleTest from "../../DarkModeToggleTest"
 import Modal from "../../Modal"
 import {useNavigate} from "react-router-dom";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {signOut} from "firebase/auth";
 
 type SettingTabs = "account" | "settings"
 
@@ -51,17 +52,15 @@ function UserSettings() {
 
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
-    const [signOut, loading, error] = useSignOut(auth);
 
     async function handleSignOut(){
-        await signOut();
-
-        if (error) {
+        try {
+            await signOut(auth);
+            navigate('/');
+        } catch(error) {
             console.log(error);
             setErrorMessage('Error logging out. Please try again later.');
-        } else {
-            navigate('/');
-        }
+        };
     }
 
     return (
