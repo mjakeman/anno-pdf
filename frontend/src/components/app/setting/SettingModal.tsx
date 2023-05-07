@@ -53,8 +53,9 @@ function UserSettings() {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
 
+    const currentUser = useContext(AuthContext);
+
     async function handleSignOut(){
-        const currentUser = useContext(AuthContext);
         try {
             await signOut(auth);
             currentUser.setCurrentUser(null);
