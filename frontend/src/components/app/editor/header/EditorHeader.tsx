@@ -37,6 +37,19 @@ export default function EditorHeader() {
 
     const [showSharePopup, setShowSharePopup] = useState(false);
 
+    const [fullScreen, setFullScreen] = useState(false);
+
+    function fullScreenClick() {
+        const elem = document.documentElement;
+        if (fullScreen) {
+            document.exitFullscreen();
+            setFullScreen(false);
+        } else {
+            elem.requestFullscreen();
+            setFullScreen(true);
+        }
+    }
+
     return (
         <header className="bg-white dark:bg-anno-space-900 border-b-[1px] border-zinc-400 dark:border-anno-space-100 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
 
@@ -66,7 +79,7 @@ export default function EditorHeader() {
             {/* Right Side */}
             <div className="flex flex-row items-center justify-between gap-2">
 
-                <Fullscreen onClick={() => console.log('Clicked!')}/>
+                <Fullscreen onClick={() => fullScreenClick()}/>
 
                 <Zoom />
 

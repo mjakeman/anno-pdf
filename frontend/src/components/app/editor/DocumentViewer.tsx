@@ -7,6 +7,9 @@ import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {auth} from "../../../firebaseAuth";
+import {signOut} from "firebase/auth";
+import axios from "axios";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
@@ -41,22 +44,22 @@ export default function DocumentViewer({ documentUuid } : Props) {
         firebaseUserRef!.getIdToken()
             .then((token) => {
 
-                const loadingTask = pdfjs.getDocument({
-                    url: `${import.meta.env.VITE_BACKEND_URL}/documents/${documentUuid}`,
-                    httpHeaders: {
+                axios.get(`${import.meta.env.VITE_BACKEND_URL}/documents/${documentUuid}/`, {
+                    headers: {
                         Authorization: `Bearer ${token}`
-                    },
-                });
-
-                loadingTask.promise.then(function(pdf) {
-                    setPdfDocument(pdf);
-                }).catch(error => {
-                    switch (true) {
-                        case error instanceof MissingPDFException:
-                            // TODO: add navigation to notfound
-                        default:
-                            console.log(error);
                     }
+                }).then(function (response) {
+                    let raw  = window.atob(response.data.base64file);
+                    const loadingTask = pdfjs.getDocument({data: raw});
+                    loadingTask.promise.then(function(pdf) {
+                        setPdfDocument(pdf);
+                    }).catch(error => {
+                        console.log(error)
+                        console.log(`couldn't load document`)
+                    });
+                }).catch(function (error) {
+                    console.log(error)
+                    console.log(`couldn't fetch document`)
                 });
 
             })
