@@ -8,9 +8,17 @@ import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
 import DarkModeToggleTest from "../../../DarkModeToggleTest";
 import Logo from "../../../Logo";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { useContext } from "react";
+import { AuthContext } from "../../../../contexts/AuthContextProvider";
+import { useToast } from "../../../../hooks/useToast";
 
 export default function EditorHeader() {
+    const {firebaseUserRef} = useContext(AuthContext);
+    let  { documentUuid } = useParams();
+    const {addToast} = useToast();
+
     const navigate = useNavigate();
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testPeople = [
@@ -38,6 +46,35 @@ export default function EditorHeader() {
     const [showSharePopup, setShowSharePopup] = useState(false);
 
     const [fullScreen, setFullScreen] = useState(false);
+
+    async function inviteUser(email: string){
+        let token = await firebaseUserRef!.getIdToken();
+        const bodyParams = {
+            "email": email}
+        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' +documentUuid + '/share', bodyParams, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+            if(response.status==200){
+                addToast({
+                    position: 'top-left',
+                    message: 'User invited successfully',
+                    type: 'success'
+                })
+            }
+        }
+        ).catch((error) => {
+            console.log(error);
+            addToast({
+                position: 'top-left',
+                message: 'User invite failed',
+                type: 'error'
+            })
+        });
+        
+    }
+
 
     function fullScreenClick() {
         const elem = document.documentElement;
@@ -92,7 +129,7 @@ export default function EditorHeader() {
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={() => console.log('Shared button inside popup was pressed!')} peopleSharedWith={testPeople}/>
+                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={testPeople}/>
                     </span>
 
                 </div>
