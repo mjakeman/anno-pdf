@@ -4,17 +4,20 @@ interface FilterButtonProps {
     onClick:  (params: any) => any;
     label: string,
     icon?: React.ReactNode,
-
+    isSelected: boolean
 }
 
-export default function FilterButton({onClick, label, icon} : FilterButtonProps) {
+const selectedStyle = "bg-violet-200 border-indigo-400 text-indigo-700 hover:bg-violet-200 dark:bg-anno-pink-100 dark:border-anno-red-secondary dark:text-anno-red-secondary dark:hover:bg-anno-pink-100"
+
+export default function FilterButton({onClick, label, icon,isSelected} : FilterButtonProps) {
     return (
         <button type="button"
                 onClick={onClick}
-                className={"py-1.5 px-4 text-gray-500 flex flex-row items-center content-center rounded-lg gap-1 text-lg transition-colors hover:bg-gray-100 border border-gray-300 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-300"}
+                className={`py-1 px-4 text-gray-500 flex flex-row gap-1 items-center content-center rounded-2xl bg-white font-bold text-lg transition-colors hover:bg-gray-200 border-2 border-gray-300 ${isSelected ? selectedStyle : ''}` }
         >
-            <span>{label}</span>
             {icon}
+            <span>{label}</span>
+
         </button>
     )
 }

@@ -1,46 +1,33 @@
-import { useCallback } from "react";
-import { useState } from "react";
+import {useCallback, useContext, useState} from "react";
 import PrimaryButton from "../../PrimaryButton";
 import FilterButton from "./FilterButton";
-import { ArrowsUpDownIcon } from "@heroicons/react/24/outline";
-import { DocumentIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import {ArrowsUpDownIcon, UserGroupIcon, UserIcon} from "@heroicons/react/24/outline";
+import {DocumentIcon} from "@heroicons/react/24/solid";
+import {useNavigate} from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import FileUploadModal from "./FileUploadModal";
-const documentData = [
-    {
-        name: "Document 2",
-        owner: "Zac",
-        lastupdated: "2020-09-09"
-    },
-    {
-        name: "Homework",
-        owner: "John Doe",
-        lastupdated: "2023-01-01"
-    },
-    {
-        name: "Math paper",
-        owner: "Abigail",
-        lastupdated: "2023-03-03"
-    },
-    {
-        name: "Accounting assignment",
-        owner: "Me",
-        lastupdated: "2022-02-02"
-    },
-    {
-        name: "Report",
-        owner: "Me",
-        lastupdated: "2021-01-01"
-    },
-]
-type Data = typeof documentData[0];
-type SortKeys = keyof Data;
+import { AuthContext } from "../../../contexts/AuthContextProvider";
+
+
+export interface DocumentRecord {
+    name: string,
+    owner: string,
+    lastupdated: string,
+    uuid: string,
+}
+
+interface Props {
+    documentData: DocumentRecord[]
+}
+
+type SortKeys = "name" | "owner" | "lastupdated";
 type SortOrder = "Ascending" | "Descending";
 type Filter = "All" | "Me" | "Shared";
 
 
-export default function DashboardTable() {
+export default function DashboardTable({documentData} : Props) {
+    const {currentUser} = useContext(AuthContext);
+
     const navigate = useNavigate();
 
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -77,12 +64,12 @@ export default function DashboardTable() {
             <FileUploadModal isVisible={isUploadModalOpen} onOutsideClick={()=>setIsUploadModalOpen(false)}/>
             <div className="flex flex-row gap-2">
                 <Tooltip text="Filter by" position="bottom">
-                    <FilterButton label="All" onClick={()=> setFilter("All")}/>
+                    <FilterButton label="All" onClick={()=> setFilter("All")} isSelected={filter==="All"}/>
                 </Tooltip>
                 <Tooltip text="Filter by" position="top">
-                    <FilterButton label="Private" onClick={()=> setFilter("Me")}/>
+                    <FilterButton label="Private" icon={<UserIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Me")} isSelected={filter==="Me"}/>
                 </Tooltip>
-                <FilterButton label="Shared" onClick={()=> setFilter("Shared")}/>
+                <FilterButton label="Shared" icon={<UserGroupIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Shared")} isSelected={filter==="Shared"}/>
                 <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
             </div>
                 <div className="relative overflow-x-auto">
@@ -100,7 +87,7 @@ export default function DashboardTable() {
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
                                     <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
-                                    <button type="button" className="hover:underline" onClick={()=>navigate("/editor")}>{document.name}</button>
+                                    <button type="button" className="hover:underline" onClick={()=>navigate(`/document/${document.uuid}`)}>{document.name}</button>
                                 </td>
                                 <td className="py-3">{document.owner}</td>
                                 <td className="py-3">{document.lastupdated}</td>
