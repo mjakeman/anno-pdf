@@ -2,7 +2,7 @@ import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
 import googleLogo from "../../../assets/glogo.svg";
 import {auth} from "../../../firebaseAuth";
-import {ChangeEvent, useContext, useState} from "react";
+import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
@@ -27,6 +27,12 @@ export default function SignUp() {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(location.state?.redirect ? location.state.redirect : "/dash");
+        }
+    }, []);
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
