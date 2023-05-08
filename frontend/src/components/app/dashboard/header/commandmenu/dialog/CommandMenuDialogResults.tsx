@@ -37,14 +37,17 @@ export default function CommandMenuDialogResults({ searchInput } : Props) {
 /**
  *
  */
-function buildInitialSearchableData(documents: DocumentRecord[]) : CommandOption[] {
+function buildInitialSearchableData(documents: DocumentRecord[] | null) : CommandOption[] {
 
     let searchableData : CommandOption[] = [];
 
-    // Transform all the documents to be searchable
-    documents.map((document) => {
-        searchableData.push(transformDocumentToCommandOption(document));
-    })
+    if (documents) {
+        // Transform all the documents to be searchable
+        documents.map((document) => {
+            searchableData.push(transformDocumentToCommandOption(document));
+        })
+    }
+
 
     // The fixed values / routes we want to be searchable
     const fixedSearchData : CommandOption[] = [
