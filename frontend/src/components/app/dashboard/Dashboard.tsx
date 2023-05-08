@@ -38,7 +38,7 @@ export default function Dashboard() {
 
     return (
         <div className="mx-12 flex flex-col gap-4" id="portal-destination">
-            <h1 className="text-anno-red-primary text-4xl font-bold">Documents</h1>
+            <h1 className="text-anno-red-primary text-4xl font-bold dark:text-anno-pink-500">Documents</h1>
             {documents
                 ?
                     <DashboardTable documentData={documents}/>
