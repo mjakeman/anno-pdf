@@ -3,13 +3,24 @@ import collabImg from '../../../assets/images/homepage/collab.jpg';
 import annotationImg from '../../../assets/images/homepage/annotations.jpg';
 import Container from "../../Container";
 import PrimaryButton from "../../PrimaryButton";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {PencilSquareIcon, UsersIcon} from "@heroicons/react/24/outline";
 import Logo from "../../Logo";
+import {useContext, useEffect} from "react";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
 
 export default function Home() {
 
     let navigate = useNavigate();
+    let location = useLocation();
+    const {currentUser} = useContext(AuthContext);
+
+
+    useEffect(() => {
+        if (currentUser) {
+            navigate(location.state?.redirect ? location.state.redirect : "/dash");
+        }
+    }, []);
 
     return (
         <>
