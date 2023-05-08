@@ -24,8 +24,8 @@ class UserController {
 
   async getDocuments(req: Request, res: Response) {
     let currentUser: string;
-    if (req.user) {
-      currentUser = req.user;
+    if (req.uid) {
+      currentUser = req.uid;
     } else {
       return res.status(400).send('User not found in request object.');
     }
@@ -46,6 +46,8 @@ class UserController {
           email: userObject.email,
           name: userObject.name
         }
+      } else {
+        console.log(`Document Owner not found: ID=${createdByUid}`);
       }
 
       result.push(data);

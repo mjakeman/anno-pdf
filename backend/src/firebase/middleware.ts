@@ -1,6 +1,5 @@
 import admin from './firebaseAdminConfig';
 import { Request, Response, NextFunction } from 'express'
-import Config from "../util/Config";
 import {DecodedIdToken} from "firebase-admin/lib/auth";
 
 class Middleware {
@@ -29,17 +28,13 @@ class Middleware {
 
     // Authentication middleware
     validateToken = async (req: Request, res: Response, next: NextFunction) => {
-        if (Config.ENVIRONMENT !== 'PROD') {
-            req.user = Config.TEST_UID;
-            return next();
-        }
-
         // Bearer token
         let token = await this.decodeToken(req.headers.authorization);
 
         // Pass to REST handlers
         if (token) {
-            req.user = token.uid;
+            req.uid = token.uid;
+            req.email = token.email;
             return next();
         }
 

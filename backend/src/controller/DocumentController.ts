@@ -10,10 +10,21 @@ const emailService = new EmailService();
 
 class DocumentController {
 
-    async deleteDocument(req: Request, res: Response) {
+    deleteDocument = async (req: Request, res: Response) => {
+        let user: string;
+        if (req.uid) {
+            user = req.uid;
+        } else {
+            return res.status(400).send('User not found in request object.');
+        }
+
         const dbDoc = await deleteDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
+        }
+
+        if (dbDoc.createdBy !== user) {
+            return res.status(403).send('You do not have the permissions to delete this document');
         }
 
         // Delete object from s3 bucket
@@ -33,7 +44,7 @@ class DocumentController {
         return res.status(200).send('Document deleted from mongo and s3 - Title: ' + dbDoc.title);
     }
 
-    async getDocument(req: Request, res: Response) {
+    getDocument = async (req: Request, res: Response) => {
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
@@ -60,16 +71,21 @@ class DocumentController {
         }
     }
 
-    async updateDocument(req: Request, res: Response) {
-        let user: string;
-        if (req.user) {
-            user = req.user;
+    updateDocument = async (req: Request, res: Response) => {
+        let uid
+        if (req.uid && req.email) {
+            uid = req.uid;
         } else {
             return res.status(400).send('User not found in request object.');
         }
 
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
         const data = req.body;
-        data['lastUpdatedBy'] = user;
+        data['lastUpdatedBy'] = uid;
         const updatedDoc = await updateDocument(req.params.uuid, data);
 
         if (updatedDoc) {
@@ -79,10 +95,10 @@ class DocumentController {
         return res.status(404).send('Document not found');
     }
 
-    async createAndUploadDocument(req: Request, res: Response) {
+    createAndUploadDocument = async (req: Request, res: Response) => {
         let user: string;
-        if (req.user) {
-            user = req.user;
+        if (req.uid) {
+            user = req.uid;
         } else {
             return res.status(400).send('User not found in request object.');
         }
@@ -130,7 +146,15 @@ class DocumentController {
         return req.pipe(busboy);
     }
 
-    async shareDocument(req: Request, res: Response) {
+    shareDocument = async (req: Request, res: Response) => {
+        if (!req.body.email) {
+            return res.status(400).send('"email" field is required in the request body');
+        }
+
+        if (this.isUserSharingOrRemovingThemselves(req)) {
+            return res.status(400).send('Trying to share/remove own user from document');
+        }
+
         const updatedDoc = await addSharedUser(req.params.uuid, req.body.email);
 
         // send invite email
@@ -144,35 +168,67 @@ class DocumentController {
         return res.json(updatedDoc);
     }
 
-    async removeUserFromDocument(req: Request, res: Response) {
+    removeUserFromDocument = async (req: Request, res: Response)  => {
+        if (!req.body.email) {
+            return res.status(400).send('"email" field is required in the request body');
+        }
+
+        if (this.isUserSharingOrRemovingThemselves(req)) {
+            return res.status(400).send('Trying to share/remove own user from document');
+        }
+
         const updatedDoc = await removeSharedUser(req.params.uuid, req.body.email);
         return res.json(updatedDoc);
     }
 
-    async validateShareRequest(req: Request, res: Response, next: NextFunction) {
+    checkDocumentViewingPermissions = async (req: Request, res: Response, next: NextFunction) => {
+        let uid, email: string;
+        if (req.uid && req.email) {
+            uid = req.uid;
+            email = req.email;
+        } else {
+            return res.status(400).send('User not found in request object.');
+        }
+
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
-        let user: string;
-        if (req.user) {
-            user = req.user;
-        } else {
-            return res.status(500).send('User not found in request object. Internal server error');
-        }
-
-        if (dbDoc.createdBy !== user) {
-            return res.status(403).send('Only document owners have sharing permissions');
-        }
-
-        if (!req.body.email) {
-            return res.status(400).send('"email" field is required in the request body');
+        if (!this.hasViewingPermissions(dbDoc, uid, email)) {
+            return res.status(403).send('Insufficient permissions');
         }
 
         return next();
     }
 
+    checkDocumentOwnerPermissions = async (req: Request, res: Response, next: NextFunction) => {
+        let uid: string;
+        if (req.uid) {
+            uid = req.uid;
+        } else {
+            return res.status(400).send('User not found in request object.');
+        }
+
+        const dbDoc = await getDocument(req.params.uuid);
+        if (!dbDoc) {
+            return res.status(404).send('Document not found');
+        }
+
+        if (dbDoc.createdBy !== uid) {
+            return res.status(403).send('Insufficient permissions');
+        }
+
+        return next();
+    }
+
+    isUserSharingOrRemovingThemselves = (req: Request) => {
+        return req.email === req.body.email;
+    }
+
+    hasViewingPermissions = (dbDoc: any, uid: string, email: string) => {
+        return dbDoc.createdBy === uid || dbDoc.sharedWith.includes(email);
+    }
 }
 
 function toS3Key(uuid: string) : string {
