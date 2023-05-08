@@ -4,6 +4,7 @@ import CommandMenuDialogResultsRecent from "./CommandMenuDialogResultsRecent";
 import CommandMenuDialogResultsSearch from "./CommandMenuDialogResultsSearch";
 import {DocumentRecord} from "../../../DashboardTable";
 import {DocContext} from "../../../DashboardLayout";
+import {RecentContext} from "../../../../../../contexts/RecentContextProvider";
 
 interface Props {
     searchInput: string,
@@ -11,6 +12,8 @@ interface Props {
 export default function CommandMenuDialogResults({ searchInput } : Props) {
 
     const {documents} = useContext(DocContext);
+    const {recentDocBuffer} = useContext(RecentContext);
+    const recent = buildRecentData(recentDocBuffer);
 
     const searchableData = buildInitialSearchableData(documents);
     const [searchResults, setSearchResults] = useState<CommandOption[]>([]);
@@ -25,7 +28,7 @@ export default function CommandMenuDialogResults({ searchInput } : Props) {
             {/* If we haven't searched anything, show the recent */}
             {searchInput.length === 0
                 ?
-                <CommandMenuDialogResultsRecent recent={[]}/>
+                <CommandMenuDialogResultsRecent recent={recent}/>
                 :
                 <CommandMenuDialogResultsSearch searchResults={searchResults} searchInput={searchInput}/>
             }
@@ -33,10 +36,15 @@ export default function CommandMenuDialogResults({ searchInput } : Props) {
     );
 }
 
+function buildRecentData(documents: DocumentRecord[]) {
+    let recentData : CommandOption[] = [];
+    documents.map((document) => {
+        recentData.push(transformDocumentToCommandOption(document));
+    })
+    return recentData;
+}
 
-/**
- *
- */
+
 function buildInitialSearchableData(documents: DocumentRecord[] | null) : CommandOption[] {
 
     let searchableData : CommandOption[] = [];
