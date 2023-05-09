@@ -3,8 +3,8 @@ import { Document } from '../../models/Document';
 async function getDocuments(user: any) {
     return Document.find({
         $or: [
-            {createdBy: user.uid},
-            {sharedWith: user.email}
+            {'owner.uid': user.uid},
+            {'sharedWith': user.email}
         ]
     });
 }

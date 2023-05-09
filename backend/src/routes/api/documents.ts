@@ -6,19 +6,19 @@ const router = Router();
 const documentController = new DocumentController();
 
 // Get document by uuid
-router.get('/:uuid', documentController.getDocument);
+router.get('/:uuid', documentController.checkDocumentViewingPermissions, documentController.getDocument);
 
 // Delete document by uuid
-router.delete('/:uuid/delete', documentController.deleteDocument);
+router.delete('/:uuid/delete', documentController.checkDocumentOwnerPermissions, documentController.deleteDocument);
 
 // Update document by uuid
-router.post('/:uuid/update', documentController.updateDocument);
+router.post('/:uuid/update', documentController.checkDocumentViewingPermissions, documentController.updateDocument);
 
 // Share document
-router.post('/:uuid/share', documentController.validateShareRequest, documentController.shareDocument);
+router.post('/:uuid/share', documentController.checkDocumentViewingPermissions, documentController.shareDocument);
 
 // Remove user from document
-router.post('/:uuid/removeUser', documentController.validateShareRequest, documentController.removeUserFromDocument);
+router.post('/:uuid/removeUser', documentController.checkDocumentOwnerPermissions, documentController.removeUserFromDocument);
 
 // Create and upload document
 router.post('/create', documentController.createAndUploadDocument);

@@ -10,7 +10,6 @@ declare var process : {
         AWS_ACCESS_KEY: string
         AWS_SECRET_ACCESS_KEY: string
         AWS_BUCKET: string
-        TEST_UID: string
         FIREBASE_CONFIG_BASE64: string
         GMAIL: string
         GMAIL_PASSWORD: string
@@ -23,7 +22,6 @@ const FIREBASE_CONFIG_BASE64 = process.env.FIREBASE_CONFIG_BASE64;
 const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
 const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const AWS_BUCKET = process.env.AWS_BUCKET;
-const TEST_UID = process.env.TEST_UID || "DEFAULT UID";
 const GMAIL = process.env.GMAIL;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL;
@@ -44,7 +42,6 @@ export default {
     AWS_ACCESS_KEY,
     AWS_SECRET_ACCESS_KEY,
     AWS_BUCKET,
-    TEST_UID,
     GMAIL,
     GMAIL_PASSWORD,
     FRONTEND_BASE_URL
