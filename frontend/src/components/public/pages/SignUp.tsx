@@ -60,7 +60,12 @@ export default function SignUp() {
                     email: response.data.email,
                     firebaseUserRef: auth.currentUser!
                 });
-                navigate(location.state.redirect ? location.state.redirect:"/dash");
+                if(location.state && location.state.redirect){
+                    navigate(location.state.redirect ? location.state.redirect:"/dash");
+                }else{
+                    navigate("/dash");
+                }
+            
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
