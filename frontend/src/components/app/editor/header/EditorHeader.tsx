@@ -128,7 +128,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup annoDocument={annoDocument} owner={annoDocument.owner} onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={annoDocument.sharedWith}/>
+                        <SharePopup annoDocument={annoDocument} owner={annoDocument.owner} onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={[...annoDocument.sharedWith, annoDocument.owner]}/>
                     </span>
 
                 </div>

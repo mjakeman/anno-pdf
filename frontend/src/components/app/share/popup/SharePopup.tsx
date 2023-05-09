@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
 import {AnnoDocument, Owner, SharedUser} from "../../editor/Models";
@@ -20,6 +20,8 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
     const shareDropdown = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState('');
     const {addToast} = useToast();
+    const {currentUser} = useContext(AuthContext);
+
 
     useDetectOutsideClick(shareDropdown, onOutsideClick);
 
@@ -55,6 +57,14 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
         });
     }
 
+    // Onload, filter out the current user.
+    useEffect(() => {
+        setSharedWithUsers(sharedWithUsers.filter((user) => {
+            return user.email !== currentUser?.email;
+        }));
+    }, []);
+
+
     return (
         <div ref={shareDropdown} className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100">
             <h1 className="font-bold text-black dark:text-white">Share '{annoDocument.title}'</h1>
@@ -67,7 +77,7 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
-                        <SharedWithUserRow ownerUid={owner.uid} key={index} email={user.email} userUid={user.uuid} name={user.name ?? 'New User'} onConfirmRemove={(email) => removeFromPeople(email, sharedWithUsers)}/>
+                        <SharedWithUserRow ownerUid={owner.uid} key={index} email={user.email} userUid={user.uid} name={user.name ?? 'New User'} onConfirmRemove={(email) => removeFromPeople(email, sharedWithUsers)}/>
                     ))
                     :
                     <div className="flex justify-center items-center italic font-light text-zinc-300">

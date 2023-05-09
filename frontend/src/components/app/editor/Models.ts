@@ -1,7 +1,7 @@
 import {fabric} from "fabric";
 
 export interface SharedUser {
-    uuid: string | null; // Null if the user doesn't exist yet (i.e. sharing with someone who doesn't have an Anno account)
+    uid: string | null; // Null if the user doesn't exist yet (i.e. sharing with someone who doesn't have an Anno account)
     name: string | null; // Null if the user doesn't exist yet
     email: string;
 }
