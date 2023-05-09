@@ -1,34 +1,35 @@
 import React, {useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
+import {Owner, SharedUser} from "../../editor/Models";
 
 interface SharePopupProps {
+    owner: Owner,
+    docName: string,
     onSharePress:  (params: any) => any;
 
-    peopleSharedWith: {id: number, fullName: string, email: string}[],
+    peopleSharedWith: SharedUser[],
     onOutsideClick: (params: any) => any;
 }
-export default function SharePopup({onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
+export default function SharePopup({owner, docName, onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
 
     const shareDropdown = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState('');
 
     useDetectOutsideClick(shareDropdown, onOutsideClick);
 
-    const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
+    const [sharedWithUsers, setSharedWithUsers] = useState<SharedUser[]>(peopleSharedWith);
 
-    function removeFromPeople(idOfSharedUserToBeRemoved: number, peopleList: { id: number, fullName: string, email: string }[]) {
+    function removeFromPeople(emailOfPersonToBeRemoved: string, peopleList: SharedUser[]) {
         const indexOfObject = peopleList.findIndex(object => {
-            return object.id === idOfSharedUserToBeRemoved;
+            return object.email === emailOfPersonToBeRemoved;
         });
+        // TODO: This is where we query!
         setSharedWithUsers([
             ...peopleList.slice(0, indexOfObject),
             ...peopleList.slice(indexOfObject + 1),
         ]);
     }
-
-    // TODO: replace with the actual name of the doc, from context (or state?)
-    const docName = 'Employment Contract w/ UoA';
 
     return (
         <div ref={shareDropdown} className="drop-shadow-around rounded-lg p-4 flex flex-col gap-2 w-104 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100">
@@ -42,7 +43,7 @@ export default function SharePopup({onSharePress, peopleSharedWith, onOutsideCli
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
-                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.fullName} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
+                        <SharedWithUserRow ownerUid={owner.uid} key={index} email={user.email} userUid={user.uuid} name={user.name ?? 'New User'} onConfirmRemove={(email) => removeFromPeople(email, sharedWithUsers)}/>
                     ))
                     :
                     <div className="flex justify-center items-center italic font-light text-zinc-300">

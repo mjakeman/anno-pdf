@@ -7,7 +7,7 @@ export interface SharedUser {
 }
 
 export interface Owner {
-    uuid: string;
+    uid: string;
     name: string;
     email: string;
 }
