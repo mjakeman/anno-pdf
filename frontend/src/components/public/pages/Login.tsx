@@ -59,9 +59,13 @@ export default function Login() {
                     email: response.data.email,
                     firebaseUserRef: auth.currentUser!
                 });
-                navigate(location.state.redirect ? location.state.redirect:"/dash");
-            }
-        }).catch(async function (error) {
+                if(location.state && location.state.redirect){
+                    navigate(location.state.redirect ? location.state.redirect:"/dash");
+                }else{
+                    navigate("/dash");
+                }
+    }})
+        .catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
             await signOut(auth);
         });
