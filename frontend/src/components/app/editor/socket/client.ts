@@ -43,6 +43,9 @@ export default class SocketClient {
             return;
         }
 
+        const [_active, _add, _remove, _shared, resetActiveUsers] = this.context;
+        resetActiveUsers();
+
         this.socket?.emit('initial-data', userId, documentId);
     }
 
@@ -59,7 +62,7 @@ export default class SocketClient {
 
         console.log("Peer connected: " + JSON.stringify(userData));
 
-        if (!userData.id) {
+        if (!userData.uid) {
             console.error("ERROR: User ID is null");
             this.notify?.call(null, "User ID is null");
             return;

@@ -18,10 +18,10 @@ export default function SharedWithUserRow({userId, fullName, email, onConfirmRem
     const {currentUser, setCurrentUser, firebaseUserRef} = useContext(AuthContext);
 
     // TODO: change '0' to the currentlyLoggedInUser's id (based on context/store of who is logged in)
-    const [isCurrentUser, setIsCurrentUser] = useState(userId === currentUser?.id);
+    const [isCurrentUser, setIsCurrentUser] = useState(userId === currentUser?.uid);
 
     useEffect(() => {
-        setIsCurrentUser(userId === currentUser?.id);
+        setIsCurrentUser(userId === currentUser?.uid);
     }, [currentUser]);
 
     function handleDeleteConfirm() {

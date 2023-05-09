@@ -19,7 +19,7 @@ export default function SharePopup({onSharePress, peopleSharedWith, onOutsideCli
 
     function removeFromPeople(idOfSharedUserToBeRemoved: string, peopleList: UserData[]) {
         const indexOfObject = peopleList.findIndex(object => {
-            return object.id === idOfSharedUserToBeRemoved;
+            return object.uid === idOfSharedUserToBeRemoved;
         });
         setSharedWithUsers([
             ...peopleList.slice(0, indexOfObject),
@@ -42,7 +42,7 @@ export default function SharePopup({onSharePress, peopleSharedWith, onOutsideCli
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
-                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.name} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
+                        <SharedWithUserRow key={index} email={user.email} userId={user.uid} fullName={user.name} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
                     ))
                     :
                     <div className="flex justify-center items-center italic font-light text-zinc-300">

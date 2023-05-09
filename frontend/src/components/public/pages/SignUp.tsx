@@ -56,7 +56,7 @@ export default function SignUp() {
             if (response.status == 200 || response.status == 201) {
                 setCurrentUser(
                     {
-                        id: response.data.uid,
+                        uid: response.data.uid,
                         name: response.data.name,
                         email: response.data.email
                     },

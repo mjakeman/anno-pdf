@@ -40,7 +40,7 @@ export default function App() {
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
                 setCurrentUserInternal({
-                    id: response.data.uid,
+                    uid: response.data.uid,
                     name: response.data.name,
                     email: response.data.email,
                 });
@@ -62,7 +62,7 @@ export default function App() {
             if (user) {
                 if (currentUser) {
                     setCurrentUserInternal({
-                        id: currentUser.uid,
+                        uid: currentUser.uid,
                         name: currentUser.name,
                         email: currentUser.email,
                     });

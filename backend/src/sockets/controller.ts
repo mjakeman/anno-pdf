@@ -4,7 +4,7 @@ import {User} from "../models/User";
 
 // Match Editor.tsx in frontend
 interface UserData {
-    id: string,
+    uid: string,
     name: string,
     email: string,
 }
@@ -58,9 +58,9 @@ const on_connect = async (socket: socketio.Socket) => {
                 return;
             }
 
-            userMap[socket.id] = { id: userId, name: user.get('name'), email: user.get('email') };
+            userMap[socket.id] = { uid: userId, name: user.get('name'), email: user.get('email') };
 
-            console.log("sending: " + JSON.stringify(userMap[socket.id]));
+            console.log("broadcasting: " + JSON.stringify(userMap[socket.id]));
 
             socket.join(documentId);
             socket.to(documentId).emit('peer-connected', userMap[socket.id]);
@@ -69,6 +69,7 @@ const on_connect = async (socket: socketio.Socket) => {
             socket.in(documentId).fetchSockets().then((peers) => {
                 for (const peerSocket of peers) {
                     const peerUserData = userMap[peerSocket.id];
+                    console.log("backfill: " + JSON.stringify(peerUserData));
                     socket.emit('peer-connected', peerUserData);
                 }
             });
@@ -123,7 +124,7 @@ const on_connect = async (socket: socketio.Socket) => {
             const documentId = socketMap[socket.id];
             delete socketMap[socket.id];
 
-            const userId = userMap[socket.id].id;
+            const userId = userMap[socket.id].uid;
             delete userMap[socket.id];
 
             socket.to(documentId).emit('peer-disconnected', userId);

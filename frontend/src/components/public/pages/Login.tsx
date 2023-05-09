@@ -52,13 +52,13 @@ export default function Login() {
             if (response.status == 200 || response.status == 201) {
                 setCurrentUser(
                     {
-                        id: response.data.uid,
+                        uid: response.data.uid,
                         name: response.data.name,
                         email: response.data.email,
                     },
                     auth.currentUser!,
                 );
-                navigate(location.state.redirect ? location.state.redirect:"/dash");
+                //navigate(location.state.redirect ? location.state.redirect:"/dash");
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);

@@ -13,7 +13,7 @@ export const DocumentContext = React.createContext<any[]>([]);
 
 // Match controller.ts in backend
 export interface UserData {
-    id: string,
+    uid: string,
     name: string,
     email: string,
 }
@@ -26,12 +26,12 @@ export default function Editor() {
 
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testUsers = [
-        {id: '0', name: 'John Doe', email: 'johndoe@gmail.com',},
-        {id: '1', name: 'Alice Smith', email: 'alice@hotmail.com',},
-        {id: '2', name: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {id: '3', name: 'Bob Brown', email: 'bob@gmail.com',},
-        {id: '4', name: 'David Mannings', email: 'david@yahoo.com',},
-        {id: '5', name: 'Eve Post', email: 'eve@hotmail.com',},
+        {uid: '0', name: 'John Doe', email: 'johndoe@gmail.com',},
+        {uid: '1', name: 'Alice Smith', email: 'alice@hotmail.com',},
+        {uid: '2', name: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
+        {uid: '3', name: 'Bob Brown', email: 'bob@gmail.com',},
+        {uid: '4', name: 'David Mannings', email: 'david@yahoo.com',},
+        {uid: '5', name: 'Eve Post', email: 'eve@hotmail.com',},
     ];
 
     const [activeUsers, setActiveUsers] = useState<UserData[]>([]);
@@ -43,22 +43,25 @@ export default function Editor() {
 
     const addActiveUser = (user: UserData) => {
         setActiveUsers(users => {
-            users.push(user);
-            return users;
+            console.log(`pushed user, now: ${JSON.stringify([...users, user])}`);
+            return [...users, user];
         });
     };
 
     const removeActiveUser = (userId: string) => {
         setActiveUsers(users => {
-            const obj = users.find(obj => obj.id == userId)!;
-            const index = users.indexOf(obj);
-            delete users[index];
-            return users;
+            const new_users = users.filter(obj => obj.uid !== userId);
+            console.log(`removed user, now: ${JSON.stringify(new_users)}`);
+            return new_users;
         });
     };
 
+    const resetActiveUsers = () => {
+        setActiveUsers([]);
+    }
+
     return (
-        <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, sharedUsers]}>
+        <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, sharedUsers, resetActiveUsers]}>
             <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
                 <ZoomContext.Provider value={[zoom, setZoom]}>
                     <div className="h-screen flex flex-col">
