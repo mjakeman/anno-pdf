@@ -13,31 +13,14 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContextProvider";
 import { useToast } from "../../../../hooks/useToast";
-
 export default function EditorHeader() {
     const {firebaseUserRef} = useContext(AuthContext);
     let  { documentUuid } = useParams();
     const {addToast} = useToast();
 
     const navigate = useNavigate();
-    // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
-    const testPeople = [
-        {id: 0, fullName: 'John Doe', email: 'johndoe@gmail.com',},
-        {id: 1, fullName: 'Alice Smith', email: 'alice@hotmail.com',},
-        {id: 2, fullName: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {id: 3, fullName: 'Bob Brown', email: 'bob@gmail.com',},
-        {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
-        {id: 5, fullName: 'Eve Post', email: 'eve@hotmail.com',},
-    ];
-
-    // TODO: replace with the live set of active users which is changing.
-    const activeUsers = [
-        {id: 0, fullName: 'John Doe', email: 'johndoe@gmail.com',},
-        {id: 1, fullName: 'Alice Smith', email: 'alice@hotmail.com',},
-        {id: 2, fullName: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {id: 3, fullName: 'Bob Brown', email: 'bob@gmail.com',},
-        {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
-    ];
+    const [activeUsers, _add, _remove, sharedUsers] = useContext(DocumentContext);
+    const {currentUser} = useContext(AuthContext);
 
     // TODO: change to actual documentDetails
     const testDocumentName = 'Employment Contract w/ UoA';
@@ -72,9 +55,8 @@ export default function EditorHeader() {
                 type: 'error'
             })
         });
-        
-    }
 
+    }
 
     function fullScreenClick() {
         const elem = document.documentElement;
@@ -121,7 +103,7 @@ export default function EditorHeader() {
                 <Zoom />
 
                 {/* Active Users */}
-                <ActiveUserBubbles activeUsers={activeUsers} />
+                <ActiveUserBubbles activeUsers={[currentUser, ...activeUsers]} />
 
                 {/* Share button*/}
                 <div className="relative">
@@ -129,7 +111,7 @@ export default function EditorHeader() {
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={testPeople}/>
+                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={sharedUsers}/>
                     </span>
 
                 </div>
@@ -138,3 +120,8 @@ export default function EditorHeader() {
         </header>
     );
 }
+
+import {DocumentContext} from "../Editor";
+import firebase from "firebase/compat";
+import Auth = firebase.auth.Auth;
+import {ac} from "vitest/dist/types-0373403c";

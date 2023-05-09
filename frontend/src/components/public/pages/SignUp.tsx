@@ -54,12 +54,14 @@ export default function SignUp() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                setCurrentUser({
-                    uid: response.data.uid,
-                    name: response.data.name,
-                    email: response.data.email,
-                    firebaseUserRef: auth.currentUser!
-                });
+                setCurrentUser(
+                    {
+                        id: response.data.uid,
+                        name: response.data.name,
+                        email: response.data.email
+                    },
+                    auth.currentUser!
+                );
                 navigate(location.state.redirect ? location.state.redirect:"/dash");
             }
         }).catch(async function (error) {

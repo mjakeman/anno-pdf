@@ -1,13 +1,9 @@
 import React, {useEffect, useState} from "react";
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import ActiveUserBubble from "./ActiveUserBubble";
-import {ChevronUpIcon} from "@heroicons/react/24/solid";
 
-interface UserData {
-    id: string,
-    fullName: string,
-    email: string,
-}
+import {ChevronUpIcon} from "@heroicons/react/24/solid";
+import {UserData} from "../Editor";
 
 interface ActiveUserBubblesProps {
     activeUsers: UserData[],
@@ -73,9 +69,9 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
                 <div className={`${!showOverflowUsersList && "hidden"} mt-2 right-0 absolute max-h-72 overflow-auto w-max bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100 shadow px-6 py-4 rounded-xl flex flex-col gap-2`}>
                     {overflowUsers.map((user, index) => (
                         <div key={index} className="flex flex-row items-center gap-2">
-                            <ProfileBubble size={ProfileBubbleSizes.Small} fullName={user.fullName}/>
+                            <ProfileBubble size={ProfileBubbleSizes.Small} fullName={user.name}/>
                             <div className="flex flex-col grow">
-                                <p className="font-medium text-black dark:text-white">{user.fullName}</p>
+                                <p className="font-medium text-black dark:text-white">{user.name}</p>
                                 <span className="text-slate-500 text-sm dark:text-stone-300">{user.email}</span>
                             </div>
                         </div>

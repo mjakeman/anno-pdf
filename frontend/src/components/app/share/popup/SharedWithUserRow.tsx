@@ -1,9 +1,9 @@
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {TrashIcon, XMarkIcon} from "@heroicons/react/24/solid"
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 interface SharedWithUserRowProps {
-    userId: number,
+    userId: string,
     fullName: string,
 
     email: string,
@@ -15,9 +15,14 @@ interface SharedWithUserRowProps {
 export default function SharedWithUserRow({userId, fullName, email, onConfirmRemove} : SharedWithUserRowProps) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const {currentUser, setCurrentUser, firebaseUserRef} = useContext(AuthContext);
 
     // TODO: change '0' to the currentlyLoggedInUser's id (based on context/store of who is logged in)
-    const isCurrentUser = userId === 0;
+    const [isCurrentUser, setIsCurrentUser] = useState(userId === currentUser?.id);
+
+    useEffect(() => {
+        setIsCurrentUser(userId === currentUser?.id);
+    }, [currentUser]);
 
     function handleDeleteConfirm() {
         setShowConfirmation(false);

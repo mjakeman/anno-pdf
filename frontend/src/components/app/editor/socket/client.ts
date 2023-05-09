@@ -1,5 +1,7 @@
 import socketio, {Socket} from "socket.io-client";
 import {fabric} from "fabric";
+import {useContext} from "react";
+import {DocumentContext, UserData} from "../Editor";
 
 const server = import.meta.env.VITE_BACKEND_URL;
 
@@ -8,21 +10,16 @@ type PageCallback = {
     objectModifiedFunc: (uuid: string, data: fabric.Object) => void;
 }
 
-// Match controller.ts in backend
-interface UserData {
-    id: string,
-    fullName: string,
-    email: string,
-}
-
 export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
-    peers: Array<UserData> = new Array<UserData>();
+    context = useContext(DocumentContext);
+    notify?: Function;
 
     setup = (userId: string, documentId: string, notify?: Function) => {
         this.socket = socketio(server);
+        this.notify = notify;
 
         this.socket.on('peer-added', this.peerObjectAdded);
         this.socket.on('peer-modified', this.peerObjectModified);
@@ -31,10 +28,8 @@ export default class SocketClient {
 
         this.socket.on('connect', () => this.sendInitialData(userId, documentId));
         this.socket.on('reconnect', () => this.sendInitialData(userId, documentId));
-        this.socket.on('disconnect', () => {
-            if (notify) {
-                notify.call(null, "Backend server terminated the connection");
-            }
+        this.socket.on('error', (message) => {
+            notify?.call(null, message);
         });
     }
 
@@ -43,7 +38,11 @@ export default class SocketClient {
     }
 
     sendInitialData = (userId: string, documentId: string) => {
-        this.peers = [];
+        if (!userId || !documentId) {
+            this.notify?.call(null, "Either userId (" + userId + ") or documentId (" + documentId + ") is not valid");
+            return;
+        }
+
         this.socket?.emit('initial-data', userId, documentId);
     }
 
@@ -56,15 +55,37 @@ export default class SocketClient {
     }
 
     peerConnected = (userData: UserData) => {
-        this.peers.push(userData);
-        console.log(this.peers);
+        const [_active, addActiveUser] = this.context;
+
+        console.log("Peer connected: " + JSON.stringify(userData));
+
+        if (!userData.id) {
+            console.error("ERROR: User ID is null");
+            this.notify?.call(null, "User ID is null");
+            return;
+        }
+
+        if (!userData.name) {
+            console.error("ERROR: User name is null");
+            this.notify?.call(null, "User name is null");
+            userData.name = "Unknown User";
+        }
+
+        if (!userData.email) {
+            console.error("ERROR: User email is null");
+            this.notify?.call(null, "User email is null");
+            userData.email = "Unknown Email";
+        }
+
+        addActiveUser(userData);
     }
 
     peerDisconnected = (userId: string) => {
-        const obj = this.peers.find(obj => obj.id == userId)!;
-        const index = this.peers.indexOf(obj);
-        delete this.peers[index];
-        console.log(this.peers);
+
+        console.log("Peer disconnected: " + JSON.stringify(userId));
+
+        const [_active, _add, removeActiveUser] = this.context;
+        removeActiveUser(userId);
     }
 
     peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {

@@ -1,8 +1,9 @@
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import React, {useState} from "react";
+import {UserData} from "../Editor";
 
 interface ActiveUserBubbleProps {
-    user: {id: string, fullName: string, email: string };
+    user: UserData;
 }
 
 export default function ActiveUserBubble({user} : ActiveUserBubbleProps) {
@@ -12,14 +13,14 @@ export default function ActiveUserBubble({user} : ActiveUserBubbleProps) {
     return (
         <div className="relative">
             <span onMouseOver={() => setShowUserInfoCard(true)} onMouseLeave={() => setShowUserInfoCard(false)} className="hover:cursor-pointer">
-                <ProfileBubble size={ProfileBubbleSizes.Large} fullName={user.fullName}></ProfileBubble>
+                <ProfileBubble size={ProfileBubbleSizes.Large} fullName={user.name}></ProfileBubble>
             </span>
 
             {/* Shown only on hover... */}
             <div className={`${!showUserInfoCard && "hidden"} right-0 absolute z-50 bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100 shadow px-6 py-4 rounded-xl flex flex-row items-center gap-2`}>
-                <ProfileBubble size={ProfileBubbleSizes.Small} fullName={user.fullName}/>
+                <ProfileBubble size={ProfileBubbleSizes.Small} fullName={user.name}/>
                 <div className="flex flex-col grow">
-                    <p className="font-medium text-black dark:text-white">{user.fullName}</p>
+                    <p className="font-medium text-black dark:text-white">{user.name}</p>
                     <span className="text-slate-500 text-sm dark:text-stone-300">{user.email}</span>
                 </div>
             </div>

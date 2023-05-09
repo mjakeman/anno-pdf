@@ -15,15 +15,12 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth)
-    const [signInWithEmailAndPassword, user, loading, emailError] = useSignInWithEmailAndPassword(auth)
+    const [signInWithGoogle, _googleUser, _googleLoading, _googleError] = useSignInWithGoogle(auth)
+    const [signInWithEmailAndPassword, _user, _loading, _emailError] = useSignInWithEmailAndPassword(auth)
 
     const navigate = useNavigate();
 
     const location = useLocation();
-
-    const errorMessage = 'Error whilst logging in. Please try again';
-
     const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     useEffect(() => {
@@ -53,12 +50,14 @@ export default function Login() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                setCurrentUser({
-                    uid: response.data.uid,
-                    name: response.data.name,
-                    email: response.data.email,
-                    firebaseUserRef: auth.currentUser!
-                });
+                setCurrentUser(
+                    {
+                        id: response.data.uid,
+                        name: response.data.name,
+                        email: response.data.email,
+                    },
+                    auth.currentUser!,
+                );
                 navigate(location.state.redirect ? location.state.redirect:"/dash");
             }
         }).catch(async function (error) {

@@ -1,12 +1,11 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
-import mongoose from "mongoose";
 
-// Match client.ts in frontend
+// Match Editor.tsx in frontend
 interface UserData {
     id: string,
-    fullName: string,
+    name: string,
     email: string,
 }
 
@@ -38,16 +37,30 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     };
 
-    socket.on('initial-data', (userId: string, documentId: string) => {
-        try {
-            // Join room
-            const user = User.findOne({uid: userId}, 'id name email');
-            userMap[socket.id] = { id: userId, fullName: user.get('name'), email: user.get('email') };
+    const disconnectWithError = (socket: socketio.Socket, message: string) => {
+        console.error(message);
+        socket.emit('error', message);
+        socket.disconnect();
+    }
 
-            if (!mongoose.Types.ObjectId.isValid(userId)) {
-                console.error(`ERROR: ${socket.id}: Invalid userId '${userId}'`);
-                socket.disconnect();
+    socket.on('initial-data', async (userId: string, documentId: string) => {
+        try {
+            if (!userId || !documentId) {
+                disconnectWithError(socket, "UserId or DocumentId is null");
+                return;
             }
+
+            // Join room
+            const user = await User.findOne({ uid: userId });
+
+            if (!user) {
+                disconnectWithError(socket, "User does not exist in database");
+                return;
+            }
+
+            userMap[socket.id] = { id: userId, name: user.get('name'), email: user.get('email') };
+
+            console.log("sending: " + JSON.stringify(userMap[socket.id]));
 
             socket.join(documentId);
             socket.to(documentId).emit('peer-connected', userMap[socket.id]);
@@ -73,8 +86,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -87,8 +99,7 @@ const on_connect = async (socket: socketio.Socket) => {
             console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-modified', index, uuid, data);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -101,8 +112,7 @@ const on_connect = async (socket: socketio.Socket) => {
             console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-added', index, uuid, data);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -123,8 +133,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 }

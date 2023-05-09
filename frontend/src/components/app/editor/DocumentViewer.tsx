@@ -111,7 +111,8 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
 
         if (documentUuid && currentUser) {
-            socketClient.current?.setup(currentUser.uid, documentUuid, notify);
+            console.log(currentUser);
+            socketClient.current?.setup(currentUser.id, documentUuid, notify);
         }
 
         return () => {

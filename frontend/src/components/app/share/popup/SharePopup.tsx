@@ -1,11 +1,11 @@
 import React, {useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
+import {UserData} from "../../editor/Editor";
 
 interface SharePopupProps {
     onSharePress:  (params: any) => any;
-
-    peopleSharedWith: {id: number, fullName: string, email: string}[],
+    peopleSharedWith: UserData[],
     onOutsideClick: (params: any) => any;
 }
 export default function SharePopup({onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
@@ -17,7 +17,7 @@ export default function SharePopup({onSharePress, peopleSharedWith, onOutsideCli
 
     const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
 
-    function removeFromPeople(idOfSharedUserToBeRemoved: number, peopleList: { id: number, fullName: string, email: string }[]) {
+    function removeFromPeople(idOfSharedUserToBeRemoved: string, peopleList: UserData[]) {
         const indexOfObject = peopleList.findIndex(object => {
             return object.id === idOfSharedUserToBeRemoved;
         });
@@ -42,7 +42,7 @@ export default function SharePopup({onSharePress, peopleSharedWith, onOutsideCli
                 {sharedWithUsers.length
                     ?
                     sharedWithUsers.map((user, index) => (
-                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.fullName} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
+                        <SharedWithUserRow key={index} email={user.email} userId={user.id} fullName={user.name} onConfirmRemove={(id) => removeFromPeople(id, sharedWithUsers)}/>
                     ))
                     :
                     <div className="flex justify-center items-center italic font-light text-zinc-300">
