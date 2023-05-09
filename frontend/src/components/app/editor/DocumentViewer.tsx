@@ -1,32 +1,32 @@
 import * as pdfjs from "pdfjs-dist";
 import React, {useContext, useEffect, useRef, useState} from "react";
-import {MissingPDFException, PDFDocumentProxy} from "pdfjs-dist";
+import {PDFDocumentProxy} from "pdfjs-dist";
 import {v4 as uuidv4} from "uuid";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import {auth} from "../../../firebaseAuth";
-import {signOut} from "firebase/auth";
-import axios from "axios";
+import {AnnoDocument} from "./Models";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
 
 interface Props {
-    documentUuid: string | undefined,
+    onDocumentLoaded: () => void,
+    document: AnnoDocument,
 }
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-export default function DocumentViewer({ documentUuid } : Props) {
+export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
 
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
-    const {currentUser, setCurrentUser, firebaseUserRef} = useContext(AuthContext);
+    const {currentUser, firebaseUserRef} = useContext(AuthContext);
+
+    const [pageLoaderCount, setPageLoaderCount] = useState<number>(0);
 
     const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
@@ -39,33 +39,15 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
     // Load entire PDF
     function loadDocument() {
-        if (!documentUuid) return; // if documentUuid isn't set
+        if (!document) return; // if documentUuid isn't set
         if (!currentUser) return; // not logged in
-        firebaseUserRef!.getIdToken()
-            .then((token) => {
-
-                axios.get(`${import.meta.env.VITE_BACKEND_URL}/documents/${documentUuid}/`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }).then(function (response) {
-                    let raw  = window.atob(response.data.base64file);
-                    const loadingTask = pdfjs.getDocument({data: raw});
-                    loadingTask.promise.then(function(pdf) {
-                        setPdfDocument(pdf);
-                    }).catch(error => {
-                        console.log(error)
-                        console.log(`couldn't load document`)
-                    });
-                }).catch(function (error) {
-                    console.log(error)
-                    console.log(`couldn't fetch document`)
-                });
-
-            })
-            .catch((e) => {
-                console.log(e)
-            });
+        const loadingTask = pdfjs.getDocument({data: window.atob(document.base64File)});
+        loadingTask.promise.then(function(pdf) {
+            setPdfDocument(pdf);
+        }).catch(error => {
+            console.log(error)
+            console.log(`couldn't load document`)
+        });
     }
 
     let currentPage = 1;
@@ -90,16 +72,13 @@ export default function DocumentViewer({ documentUuid } : Props) {
             pdfDocument.getPage(currentPage).then(function (page) {
                 loadPages(page);
             });
-        } else {
-            // If currentPage is > numPages, then we have fully loaded.
-            setIsLoaded(true);
         }
     }
 
 
     useEffect(() => {
-        if (documentUuid) {
-            socketClient.current?.setup(uuidv4(), documentUuid);
+        if (document.uuid) {
+            socketClient.current?.setup(uuidv4(), document.uuid);
         }
 
         return () => {
@@ -107,27 +86,23 @@ export default function DocumentViewer({ documentUuid } : Props) {
         }
     }, []);
 
+
+    function onPageLoaded(pageIndex: number) {
+        if (pageIndex === pdfDocument!.numPages - 1) onDocumentLoaded();
+    }
+
+
     return (
         <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">
-            {isLoaded
-                ?
-                    <div className="grid gap-4 py-12 place-items-center">
-                        {pdfPages.map((page, index) => (
-                            <PageRenderer key={index} page={page} pageNumber={index} socketClientRef={socketClient} />
-                        ))}
-                    </div>
-                :
-                <div className="grid place-items-center h-full">
-                    <svg className="animate-spin h-32 w-32 text-white" xmlns="http://www.w3.org/2000/svg"
-                         fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                        </path>
-                    </svg>
-                </div>
-            }
+            <div className="grid gap-4 py-12 place-items-center">
+
+                {/* Only start the page rendering once we have a full list of pages */}
+                {pdfDocument && pdfPages.length === pdfDocument.numPages &&
+                    pdfPages.map((page, index) => (
+                        <PageRenderer onLoad={(pageIndex)=> onPageLoaded(pageIndex)} key={index} page={page} pageIndex={index} socketClientRef={socketClient} />
+                    ))
+                }
+            </div>
         </div>
     )
 }

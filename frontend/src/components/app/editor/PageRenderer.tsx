@@ -11,11 +11,12 @@ import {v4 as uuidv4} from "uuid";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface Props {
+    onLoad: (pageNumber: number) => void
     page: PDFPageProxy;
-    pageNumber: number;
+    pageIndex: number;
     socketClientRef: MutableRefObject<SocketClient>;
 }
-const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) => {
+const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : Props) => {
 
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -48,6 +49,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
             height: pageImg.height,
         });
         setCanvas(newCanvas);
+        onLoad(pageIndex);
 
     }, [pageImg]);
 
@@ -55,7 +57,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
         // Setup event handlers
         canvas.on('object:modified', data => {
             const socketClient = socketClientRef.current;
-            socketClient.onObjectModified(pageNumber, data);
+            socketClient.onObjectModified(pageIndex, data);
         });
         canvas.on('object:added', data => {
             const uuid = uuidv4();
@@ -63,7 +65,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
             data.target['id'] = uuid;
 
             const socketClient = socketClientRef.current;
-            socketClient.onObjectAdded(pageNumber, uuid, data.target!);
+            socketClient.onObjectAdded(pageIndex, uuid, data.target!);
         });
     }
 
@@ -88,7 +90,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
         if (!canvas) return;
 
         const socketClient = socketClientRef.current;
-        socketClient.registerPage(pageNumber, {
+        socketClient.registerPage(pageIndex, {
             objectAddedFunc: (uuid, data) => {
                 runWithEventsFrozen(canvas, () => {
                     console.log("Addition received from peer")
@@ -177,7 +179,7 @@ const PageRenderer = React.memo(({ page, pageNumber, socketClientRef } : Props) 
         // Teardown event handlers
         return () => {
             disableEvents(canvas);
-            socketClient.unregisterPage(pageNumber);
+            socketClient.unregisterPage(pageIndex);
         }
 
     }, [canvas]);
