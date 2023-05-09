@@ -3,8 +3,8 @@ import {CommandOption} from "./CommandMenuDialog";
 import CommandMenuDialogResultsRecent from "./CommandMenuDialogResultsRecent";
 import CommandMenuDialogResultsSearch from "./CommandMenuDialogResultsSearch";
 import {DocumentRecord} from "../../../DashboardTable";
-import {DocContext} from "../../../DashboardLayout";
 import {RecentContext} from "../../../../../../contexts/RecentContextProvider";
+import {DocContext} from "../../../../../../contexts/DocContextProvider";
 
 interface Props {
     searchInput: string,

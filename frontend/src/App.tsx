@@ -19,6 +19,7 @@ import axios from "axios";
 import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import {RecentContextProvider} from "./contexts/RecentContextProvider";
+import {DocContext, DocContextProvider} from "./contexts/DocContextProvider";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -83,9 +84,10 @@ export default function App() {
     return (
         <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
-                <RecentContextProvider>
-                    <ToastProvider>
-                        <Routes>
+                <DocContextProvider>
+                    <RecentContextProvider>
+                        <ToastProvider>
+                            <Routes>
                                 <Route path='*' element={<Navigate to="/notfound"></Navigate>} ></Route>
                                 <Route path="/" element={<PublicLayout />}>
                                     <Route index element={<Home/>} />
@@ -96,15 +98,18 @@ export default function App() {
                                     <Route path="signup" element={<SignUp/>} />
                                     <Route path="notfound" element={<PageNotFound/>}/>
                                 </Route>
-                                <Route path="/dash" element={
-                                    <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
-                                }>
-                                    <Route index element={<Dashboard/>} />
-                                </Route>
-                                <Route path="/document/:documentUuid" element={<ProtectedRoute outlet={<Editor/>}></ProtectedRoute>} />
-                        </Routes>
-                    </ToastProvider>
-                </RecentContextProvider>
+
+                                        <Route path="/dash" element={
+                                            <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
+                                        }>
+                                            <Route index element={<Dashboard/>} />
+                                        </Route>
+                                        <Route path="/document/:documentUuid" element={<ProtectedRoute outlet={<Editor/>}></ProtectedRoute>} />
+
+                            </Routes>
+                        </ToastProvider>
+                    </RecentContextProvider>
+                </DocContextProvider>
             </DarkModeContext.Provider>
         </AuthContext.Provider>
         );

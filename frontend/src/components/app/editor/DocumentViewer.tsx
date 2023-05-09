@@ -8,6 +8,8 @@ import SocketClient from "./socket/client";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {AnnoDocument} from "./Models";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
+import {DocumentRecord} from "../dashboard/DashboardTable";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
@@ -27,6 +29,7 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
 
     const [pageLoaderCount, setPageLoaderCount] = useState<number>(0);
+    const { addToBuffer } = useContext(RecentContext);
 
     const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
@@ -35,6 +38,13 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     useEffect(() => {
         if (!firebaseUserRef) return;
         loadDocument();
+        let docRecord : DocumentRecord = {
+            name: document.title,
+            owner: document.owner.name,
+            lastUpdated: document.updatedAt,
+            uuid: document.uuid,
+        };
+        addToBuffer(docRecord);
     }, [currentUser]);
 
     // Load entire PDF

@@ -1,4 +1,4 @@
-import {useCallback, useContext, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import PrimaryButton from "../../PrimaryButton";
 import FilterButton from "./FilterButton";
 import {ArrowsUpDownIcon, UserGroupIcon, UserIcon} from "@heroicons/react/24/outline";
@@ -13,7 +13,7 @@ import {RecentContext} from "../../../contexts/RecentContextProvider";
 export interface DocumentRecord {
     name: string,
     owner: string,
-    lastupdated: string,
+    lastUpdated: string,
     uuid: string,
 }
 
@@ -21,13 +21,12 @@ interface Props {
     documentData: DocumentRecord[]
 }
 
-type SortKeys = "name" | "owner" | "lastupdated";
+type SortKeys = "name" | "owner" | "lastUpdated";
 type SortOrder = "Ascending" | "Descending";
 type Filter = "All" | "Me" | "Shared";
 
 
 export default function DashboardTable({documentData} : Props) {
-    const {currentUser} = useContext(AuthContext);
 
     const navigate = useNavigate();
 
@@ -58,13 +57,9 @@ export default function DashboardTable({documentData} : Props) {
             }
         })
     }
-    , [sortKey, sortDirection])
-
-    const { addToBuffer } = useContext(RecentContext);
-
+    , [sortKey, sortDirection]);
 
     function handleDocumentClicked(document: DocumentRecord) {
-        addToBuffer(document);
         navigate(`/document/${document.uuid}`);
     }
 
@@ -100,7 +95,7 @@ export default function DashboardTable({documentData} : Props) {
                                     <button type="button" className="hover:underline" onClick={() =>  handleDocumentClicked(document)}>{document.name}</button>
                                 </td>
                                 <td className="py-3">{document.owner}</td>
-                                <td className="py-3">{document.lastupdated}</td>
+                                <td className="py-3">{document.lastUpdated}</td>
                             </tr>
                         ))}
                     </tbody>
