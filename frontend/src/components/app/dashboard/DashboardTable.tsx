@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import FileUploadModal from "./FileUploadModal";
 import { AuthContext } from "../../../contexts/AuthContextProvider";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
 
 
 export interface DocumentRecord {
@@ -59,6 +60,15 @@ export default function DashboardTable({documentData} : Props) {
     }
     , [sortKey, sortDirection])
 
+    const { addToBuffer } = useContext(RecentContext);
+
+
+    function handleDocumentClicked(document: DocumentRecord) {
+        addToBuffer(document);
+        navigate(`/document/${document.uuid}`);
+    }
+
+
     return(
         <>  
             <FileUploadModal isVisible={isUploadModalOpen} onOutsideClick={()=>setIsUploadModalOpen(false)}/>
@@ -87,7 +97,7 @@ export default function DashboardTable({documentData} : Props) {
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
                                 <td className="py-3 font-extrabold">
                                     <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
-                                    <button type="button" className="hover:underline" onClick={()=>navigate(`/document/${document.uuid}`)}>{document.name}</button>
+                                    <button type="button" className="hover:underline" onClick={() =>  handleDocumentClicked(document)}>{document.name}</button>
                                 </td>
                                 <td className="py-3">{document.owner}</td>
                                 <td className="py-3">{document.lastupdated}</td>
