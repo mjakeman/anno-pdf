@@ -5,7 +5,6 @@ import {DecodedIdToken} from "firebase-admin/lib/auth";
 class Middleware {
 
     decodeToken = async (authHeader: string|undefined): Promise<DecodedIdToken|null> => {
-
         if (!authHeader) {
             console.error("Auth header not found");
             return null;
@@ -33,8 +32,19 @@ class Middleware {
 
         // Pass to REST handlers
         if (token) {
-            req.uid = token.uid;
-            req.email = token.email;
+            if (!token.email) {
+                return res.status(401).send('email not found in auth token');
+            }
+
+            if (!token.uid) {
+                return res.status(401).send('uid not found in auth token');
+            }
+
+            req.user = {
+                uid: token.uid,
+                email: token.email
+            }
+
             return next();
         }
 
