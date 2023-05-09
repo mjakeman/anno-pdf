@@ -67,12 +67,20 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
             const socketClient = socketClientRef.current;
             socketClient.onObjectAdded(pageIndex, uuid, data.target!);
         });
+
+        // Setup Delete Event Handler
+        canvas.on('selection:created', (event) => {
+          console.log(event);
+        })
+        window.addEventListener('keyup',removeObjectOnDeleteKeyPress)
     }
 
     const disableEvents = (canvas: fabric.Canvas) => {
         // Setup event handlers
         canvas.off('object:modified');
         canvas.off('object:added');
+        canvas.off('object:selected')
+        window.removeEventListener('keyup', removeObjectOnDeleteKeyPress)
     }
 
     // Prevent loop feedback when processing events from the server (i.e. avoiding triggering
@@ -81,6 +89,16 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         disableEvents(canvas);
         fn();
         enableEvents(canvas);
+    }
+
+    const removeObjectOnDeleteKeyPress = (e: KeyboardEvent) => {
+        if (!canvas) return;
+        if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
+            canvas.getActiveObjects().forEach((obj) => {
+                canvas.remove(obj);
+            });
+            canvas.discardActiveObject().renderAll();
+        }
     }
 
     // (3) Once the canvas is loaded, draw the actual image.
