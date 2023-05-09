@@ -5,7 +5,7 @@ import ActiveUserBubbles from "./ActiveUserBubbles";
 import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import DarkModeToggleTest from "../../../DarkModeToggleTest";
 import Logo from "../../../Logo";
 import { useNavigate, useParams } from "react-router-dom";
@@ -13,22 +13,19 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContextProvider";
 import { useToast } from "../../../../hooks/useToast";
+import {AnnoDocument} from "../Models";
+import moment from "moment";
 
-export default function EditorHeader() {
+interface Props {
+    annoDocument: AnnoDocument,
+}
+
+export default function EditorHeader({ annoDocument } : Props) {
     const {firebaseUserRef} = useContext(AuthContext);
     let  { documentUuid } = useParams();
     const {addToast} = useToast();
 
     const navigate = useNavigate();
-    // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
-    const testPeople = [
-        {id: 0, fullName: 'John Doe', email: 'johndoe@gmail.com',},
-        {id: 1, fullName: 'Alice Smith', email: 'alice@hotmail.com',},
-        {id: 2, fullName: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {id: 3, fullName: 'Bob Brown', email: 'bob@gmail.com',},
-        {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
-        {id: 5, fullName: 'Eve Post', email: 'eve@hotmail.com',},
-    ];
 
     // TODO: replace with the live set of active users which is changing.
     const activeUsers = [
@@ -39,9 +36,11 @@ export default function EditorHeader() {
         {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
     ];
 
-    // TODO: change to actual documentDetails
-    const testDocumentName = 'Employment Contract w/ UoA';
-    const testLastUpdated = 'Last updated 23 Feb 2023 at 11:04am by me';
+    function formatLastUpdated(dateUTC: string) {
+        const localDate = moment.utc(dateUTC).local();
+        const formattedDate = localDate.format('D MMM YYYY [at] h:mm A');
+        return `Last Updated ${formattedDate}`;
+    }
 
     const [showSharePopup, setShowSharePopup] = useState(false);
 
@@ -99,11 +98,11 @@ export default function EditorHeader() {
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
                     {/* TODO: add edit function*/}
-                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-end">
-                        {testDocumentName}
+                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
+                        {annoDocument.title}
                     </h1>
                     <p className="text-xs text-neutral-400 dark:text-white font-light self-start">
-                        {testLastUpdated}
+                        {formatLastUpdated(annoDocument.updatedAt)}
                     </p>
                 </div>
 
@@ -129,7 +128,7 @@ export default function EditorHeader() {
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={testPeople}/>
+                        <SharePopup annoDocument={annoDocument} owner={annoDocument.owner} onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={[...annoDocument.sharedWith, annoDocument.owner]}/>
                     </span>
 
                 </div>
