@@ -1,18 +1,16 @@
 import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
-import middleware from "../firebase/middleware";
 import {User} from "../models/User";
 
 
 class UserController {
-  
 
-  async getUsers(_req: Request, res: Response) {
+  getUsers = async (_req: Request, res: Response) => {
     return res.json(await getUsers());
   }
 
-  async getUser(req: Request, res: Response) {
+  getUser = async (req: Request, res: Response) => {
     const dbUser = await getUser(req.params.uid);
 
     if (dbUser) {
@@ -22,46 +20,16 @@ class UserController {
     return res.status(404).send("Could not find user");
   }
 
-  async getDocuments(req: Request, res: Response) {
-    let currentUser: string;
-    if (req.uid) {
-      currentUser = req.uid;
-    } else {
-      return res.status(400).send('User not found in request object.');
-    }
+  getDocuments = async (req: Request, res: Response) => {
+    let currentUserUid = req.user!.uid;
 
-    const currentUserObj = await getUser(currentUser);
+    const currentUserObj = await getUser(currentUserUid);
     const documents = await getDocuments(currentUserObj);
-    const result: Object[] = [];
-
-    // Add document owner information.
-    for (let doc of documents) {
-      const data = JSON.parse(JSON.stringify(doc));
-
-      const createdByUid = data.createdBy;
-      const userObject = await getUser(createdByUid);
-      if (userObject) {
-        data['owner'] = {
-          uid: createdByUid,
-          email: userObject.email,
-          name: userObject.name
-        }
-      } else {
-        console.log(`Document Owner not found: ID=${createdByUid}`);
-      }
-
-      result.push(data);
-    }
-
-    return res.json(result);
+    return res.json(documents);
   }
 
-  async createUser(req: Request, res: Response) {
-
-    // TODO: This could be simplified to just req.user if we remove
-    //  the displayName and email fields from mongo and keep firebase
-    //  as the one source of truth for auth.
-    const token = (await middleware.decodeToken(req.headers.authorization))!;
+  createUser = async (req: Request, res: Response) => {
+    const user = req.user!;
 
     let displayName;
     if (req.body.name) {
@@ -71,7 +39,7 @@ class UserController {
     }
 
     // Check for existing user
-    const existingUser = await User.findOne({ uid: token.uid });
+    const existingUser = await User.findOne({ uid: user.uid });
 
     if (existingUser) {
       return res.status(200).json(existingUser);
@@ -79,9 +47,9 @@ class UserController {
 
     // Create new user
     const dbUser = await createUser({
-      uid: token.uid,
+      uid: user.uid,
       name: displayName,
-      email: token.email
+      email: user.email
     });
 
     if (dbUser) {

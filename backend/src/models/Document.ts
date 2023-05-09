@@ -3,7 +3,11 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const documentSchema = new Schema({
-    createdBy: { type: String, required: true },
+    owner: {
+        uid: { type: String, required: true },
+        email: { type: String, required: true },
+        name: { type: String },
+    },
     title: { type: String, required: true },
     sharedWith: [String],
     lastUpdatedBy: String,
