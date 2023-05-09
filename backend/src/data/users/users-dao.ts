@@ -17,14 +17,14 @@ async function getUsersByEmailList(emails: String[]) {
         if (user) {
             users.push({
                 uid: user.uid,
-                name: user.name,
-                email: user.email
+                email: user.email,
+                name: user.name
             });
         } else {
             users.push({
                 uid: null,
-                name: null,
-                email: email
+                email: email,
+                name: null
             });
         }
     }
