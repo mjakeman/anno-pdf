@@ -1,6 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
+import {backfill, saveAddition, saveModification} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -86,6 +87,18 @@ const on_connect = async (socket: socketio.Socket) => {
             }
 
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
+
+            // Initialise canvas
+            // TODO: Backfill more than one page
+            const objects = backfill(documentId, 0);
+            for (let obj of objects) {
+                // @ts-ignore
+                const uuid = obj['uuid'];
+                socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, uuid, obj);
+                console.log("pushed backfill object");
+            }
+
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
@@ -99,6 +112,8 @@ const on_connect = async (socket: socketio.Socket) => {
 
             console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-modified', index, uuid, data);
+
+            saveModification(documentId, index, uuid, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
@@ -112,6 +127,8 @@ const on_connect = async (socket: socketio.Socket) => {
 
             console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-added', index, uuid, data);
+
+            saveAddition(documentId, index, uuid, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }

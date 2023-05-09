@@ -15,6 +15,7 @@ export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
+    backfillQueue = new Map<number, Array<{uuid: string, data: fabric.Object}>>();
     context = useContext(DocumentContext);
     notify?: Function;
 
@@ -52,6 +53,7 @@ export default class SocketClient {
 
     registerPage = (index: number, callback: PageCallback) => {
         this.map.set(index, callback);
+        this.doBackfill(index);
     }
 
     unregisterPage = (index: number) => {
@@ -92,10 +94,36 @@ export default class SocketClient {
         removeActiveUser(userId);
     }
 
+    pushBackfill = (index: number, uuid: string, data: fabric.Object) => {
+        let queue = this.backfillQueue.get(1)
+        if (!queue) {
+            queue = [];
+            this.backfillQueue.set(index, queue);
+        }
+
+        queue.push({uuid, data});
+    }
+
+    doBackfill = (index: number) => {
+        const queue = this.backfillQueue.get(index);
+        if (queue) {
+            while (queue.length != 0) {
+                const item = queue.pop();
+                if (item) {
+                    const callbacks = this.map.get(index);
+                    callbacks?.objectAddedFunc(item.uuid, item.data);
+                }
+            }
+        }
+    }
+
     peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {
-        console.log("Received page " + index + " addition from peer: " + data);
+        console.log("Received page " + index + " addition from peer: " + JSON.stringify(data) + "with callback " + JSON.stringify(this.map.get(index)));
         const callbacks = this.map.get(index);
-        callbacks?.objectAddedFunc(uuid, data);
+        if (callbacks)
+            callbacks?.objectAddedFunc(uuid, data);
+        else
+            this.pushBackfill(index, uuid, data);
     }
 
     peerObjectModified = (index: number, uuid: string, data: fabric.Object) => {
