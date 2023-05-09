@@ -95,8 +95,8 @@ const on_connect = async (socket: socketio.Socket) => {
                 // @ts-ignore
                 const uuid = obj['uuid'];
                 socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, uuid, obj);
-                console.log("pushed backfill object");
             }
+            console.log(`Pushed ${objects.length} backfill objects`);
 
 
         } catch (e) {
