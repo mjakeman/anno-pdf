@@ -183,6 +183,7 @@ class DocumentController {
 
         if (dbDoc) {
             console.log('Document copy created in MongoDB - Title: ' + dbDoc.title);
+            req.params.uuid = dbDoc.uuid;
             return this.getDocument(req, res);
         }
 
