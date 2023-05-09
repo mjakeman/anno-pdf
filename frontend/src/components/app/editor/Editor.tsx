@@ -1,28 +1,57 @@
 import Toolbar from "./toolbar/Toolbar";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import EditorHeader from "./header/EditorHeader";
 import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
 import {useParams} from "react-router-dom";
+import EditorSkeleton from "./EditorSkeleton";
+import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {AnnoDocument, AnnoUser} from "./Models";
+import axios from "axios";
+import AnimatedSpinner from "../AnimatedSpinner";
 
-import {ac} from "vitest/dist/types-0373403c";
 export const ToolContext = React.createContext<any[]>([]);
 export const ZoomContext = React.createContext<any[]>([]);
 export const DocumentContext = React.createContext<any[]>([]);
-
-// Match controller.ts in backend
-export interface UserData {
-    uid: string,
-    name: string,
-    email: string,
-}
 
 export default function Editor() {
 
     const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
     const [zoom, setZoom] = useState(100); // Initial Zoom
     let  { documentUuid } = useParams();
+    const {currentUser, firebaseUserRef} = useContext(AuthContext);
+    const [document, setDocument] = useState<AnnoDocument | null>(null);
+
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (!firebaseUserRef) return;
+        firebaseUserRef!.getIdToken()
+            .then((token) => {
+                axios.get(`${import.meta.env.VITE_BACKEND_URL}/documents/${documentUuid}/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(function (response) {
+                    setDocument({
+                        uuid: response.data.uuid,
+                        title: response.data.title,
+                        createdAt: response.data.createdAt,
+                        updatedAt: response.data.updatedAt,
+                        base64File: response.data.base64file,
+                        sharedWith: response.data.sharedWith, // Array of Users
+                        owner: response.data.owner,
+                        annotations: response.data.annotations,
+                    });
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [currentUser]);
 
     // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
     const testUsers = [
@@ -34,14 +63,14 @@ export default function Editor() {
         {uid: '5', name: 'Eve Post', email: 'eve@hotmail.com',},
     ];
 
-    const [activeUsers, setActiveUsers] = useState<UserData[]>([]);
-    const [sharedUsers, setSharedUsers] = useState<UserData[]>(testUsers);
+    const [activeUsers, setActiveUsers] = useState<AnnoUser[]>([]);
+    const [sharedUsers, setSharedUsers] = useState<AnnoUser[]>(testUsers);
 
     useEffect(() => {
         setActiveToolData(new Pan("pan"));
     }, []);
 
-    const addActiveUser = (user: UserData) => {
+    const addActiveUser = (user: AnnoUser) => {
         setActiveUsers(users => {
             console.log(`pushed user, now: ${JSON.stringify([...users, user])}`);
             return [...users, user];
@@ -64,22 +93,32 @@ export default function Editor() {
         <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, sharedUsers, resetActiveUsers]}>
             <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
                 <ZoomContext.Provider value={[zoom, setZoom]}>
-                    <div className="h-screen flex flex-col">
+                    {document ?
+                        <div className="h-screen flex flex-col">
 
-                        <EditorHeader/>
+                            <EditorHeader annoDocument={document}/>
 
-                        {/* Toolbar */}
-                        <div className="fixed translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
-                            <Toolbar/>
+                            {/* Toolbar */}
+                            <div className="fixed translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
+                                <Toolbar/>
+                            </div>
+
+                            {/* Document Space */}
+                            <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-auto">
+
+                                {!isLoaded &&
+                                    <div className="grid place-items-center h-full ">
+                                        <AnimatedSpinner className={"h-36 w-36 text-white"}/>
+                                    </div>
+                                }
+                                <span className={`${isLoaded ? "block" : "hidden"} `}>
+                                    <DocumentViewer onDocumentLoaded={() => setIsLoaded(true)} document={document} />
+                            </span>
+                            </main>
                         </div>
-
-                        {/* Document Space */}
-                        <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-hidden">
-
-                            <DocumentViewer documentUuid={documentUuid}/>
-
-                        </main>
-                    </div>
+                        :
+                        <EditorSkeleton/>
+                    }
                 </ZoomContext.Provider>
             </ToolContext.Provider>
         </DocumentContext.Provider>

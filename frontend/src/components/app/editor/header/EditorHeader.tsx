@@ -13,7 +13,15 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContextProvider";
 import { useToast } from "../../../../hooks/useToast";
-export default function EditorHeader() {
+import {DocumentContext} from "../Editor";
+import {AnnoDocument} from "../Models";
+import moment from "moment";
+
+interface Props {
+    annoDocument: AnnoDocument,
+}
+
+export default function EditorHeader({ annoDocument } : Props) {
     const {firebaseUserRef} = useContext(AuthContext);
     let  { documentUuid } = useParams();
     const {addToast} = useToast();
@@ -22,9 +30,11 @@ export default function EditorHeader() {
     const [activeUsers, _add, _remove, sharedUsers] = useContext(DocumentContext);
     const {currentUser} = useContext(AuthContext);
 
-    // TODO: change to actual documentDetails
-    const testDocumentName = 'Employment Contract w/ UoA';
-    const testLastUpdated = 'Last updated 23 Feb 2023 at 11:04am by me';
+    function formatLastUpdated(dateUTC: string) {
+        const localDate = moment.utc(dateUTC).local();
+        const formattedDate = localDate.format('D MMM YYYY [at] h:mm A');
+        return `Last Updated ${formattedDate}`;
+    }
 
     const [showSharePopup, setShowSharePopup] = useState(false);
 
@@ -81,11 +91,11 @@ export default function EditorHeader() {
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
                     {/* TODO: add edit function*/}
-                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-end">
-                        {testDocumentName}
+                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
+                        {annoDocument.title}
                     </h1>
                     <p className="text-xs text-neutral-400 dark:text-white font-light self-start">
-                        {testLastUpdated}
+                        {formatLastUpdated(annoDocument.updatedAt)}
                     </p>
                 </div>
 
@@ -111,7 +121,7 @@ export default function EditorHeader() {
                     <PrimaryButton label={"Share"} icon={<UserPlusIcon className={"h-6 w-6"} />} onClick={() => setShowSharePopup(true)}/>
 
                     <span className={`absolute mt-2 z-50 right-0 ${!showSharePopup ? "hidden" : "block"} `}>
-                        <SharePopup onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={sharedUsers}/>
+                        <SharePopup annoDocument={annoDocument} owner={annoDocument.owner} onOutsideClick={() => setShowSharePopup(false)} onSharePress={(email) => inviteUser(email)} peopleSharedWith={[...annoDocument.sharedWith, annoDocument.owner]}/>
                     </span>
 
                 </div>
@@ -120,8 +130,3 @@ export default function EditorHeader() {
         </header>
     );
 }
-
-import {DocumentContext} from "../Editor";
-import firebase from "firebase/compat";
-import Auth = firebase.auth.Auth;
-import {ac} from "vitest/dist/types-0373403c";

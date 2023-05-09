@@ -1,5 +1,5 @@
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
-import Editor, {UserData} from "./components/app/editor/Editor";
+import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
 import PublicLayout from "./components/public/layout/PublicLayout";
@@ -18,6 +18,8 @@ import {signOut, User,} from "firebase/auth";
 import axios from "axios";
 import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
+import {RecentContextProvider} from "./contexts/RecentContextProvider";
+import {AnnoUser} from "./components/app/editor/Models";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
@@ -26,7 +28,7 @@ export default function App() {
     const [currentUser, setCurrentUserInternal] = useLocalStorage('user', null);
     const [firebaseUserRef, setFirebaseUserRef] = useState<User | null>(null);
 
-    const setCurrentUser = (user: UserData|null, firebaseRef: User|null) => {
+    const setCurrentUser = (user: AnnoUser|null, firebaseRef: User|null) => {
         setCurrentUserInternal(user);
         setFirebaseUserRef(firebaseRef);
     }
@@ -87,26 +89,28 @@ export default function App() {
     return (
         <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
-                <ToastProvider>
-                    <Routes>
-                            <Route path='*' element={<Navigate to="/notfound"></Navigate>} ></Route>
-                            <Route path="/" element={<PublicLayout />}>
-                                <Route index element={<Home/>} />
-                                <Route path="about" element={<About/>} />
-                                <Route path="contact" element={<Contact/>} />
-                                <Route path="terms" element={<Terms/>} />
-                                <Route path="login" element={<Login/>} />
-                                <Route path="signup" element={<SignUp/>} />
-                                <Route path="notfound" element={<PageNotFound/>}/>
-                            </Route>
-                            <Route path="/dash" element={
-                                <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
-                            }>
-                                <Route index element={<Dashboard/>} />
-                            </Route>
-                            <Route path="/document/:documentUuid" element={<ProtectedRoute outlet={<Editor/>}></ProtectedRoute>} />
-                    </Routes>
-                </ToastProvider>
+                <RecentContextProvider>
+                    <ToastProvider>
+                        <Routes>
+                                <Route path='*' element={<Navigate to="/notfound"></Navigate>} ></Route>
+                                <Route path="/" element={<PublicLayout />}>
+                                    <Route index element={<Home/>} />
+                                    <Route path="about" element={<About/>} />
+                                    <Route path="contact" element={<Contact/>} />
+                                    <Route path="terms" element={<Terms/>} />
+                                    <Route path="login" element={<Login/>} />
+                                    <Route path="signup" element={<SignUp/>} />
+                                    <Route path="notfound" element={<PageNotFound/>}/>
+                                </Route>
+                                <Route path="/dash" element={
+                                    <ProtectedRoute outlet={<DashboardLayout />}></ProtectedRoute>
+                                }>
+                                    <Route index element={<Dashboard/>} />
+                                </Route>
+                                <Route path="/document/:documentUuid" element={<ProtectedRoute outlet={<Editor/>}></ProtectedRoute>} />
+                        </Routes>
+                    </ToastProvider>
+                </RecentContextProvider>
             </DarkModeContext.Provider>
         </AuthContext.Provider>
         );

@@ -1,10 +1,10 @@
 import React from 'react'
 import { User } from 'firebase/auth';
-import {UserData} from "../components/app/editor/Editor";
+import {AnnoUser} from "../components/app/editor/Models";
 
 interface AuthContext {
-    currentUser: UserData | null;
-    setCurrentUser: (user: UserData|null, firebase: User|null) => void;
+    currentUser: AnnoUser | null;
+    setCurrentUser: (user: AnnoUser|null, firebase: User|null) => void;
     firebaseUserRef: User | null,
 }
 

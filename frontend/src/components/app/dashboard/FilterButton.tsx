@@ -13,7 +13,7 @@ export default function FilterButton({onClick, label, icon,isSelected} : FilterB
     return (
         <button type="button"
                 onClick={onClick}
-                className={`py-1 px-4 text-gray-500 flex flex-row gap-1 items-center content-center rounded-2xl bg-white font-bold text-lg transition-colors hover:bg-gray-200 border-2 border-gray-300 ${isSelected ? selectedStyle : ''}` }
+                className={`py-1 px-4 text-gray-500 flex flex-row gap-1 items-center content-center rounded-2xl font-bold text-lg transition-colors hover:bg-gray-200 border-2 border-gray-300 ${isSelected ? selectedStyle : ''}` }
         >
             {icon}
             <span>{label}</span>

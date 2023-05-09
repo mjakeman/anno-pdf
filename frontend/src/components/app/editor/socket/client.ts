@@ -1,7 +1,8 @@
 import socketio, {Socket} from "socket.io-client";
 import {fabric} from "fabric";
 import {useContext} from "react";
-import {DocumentContext, UserData} from "../Editor";
+import {DocumentContext} from "../Editor";
+import {AnnoUser} from "../Models";
 
 const server = import.meta.env.VITE_BACKEND_URL;
 
@@ -57,7 +58,7 @@ export default class SocketClient {
         this.map.delete(index);
     }
 
-    peerConnected = (userData: UserData) => {
+    peerConnected = (userData: AnnoUser) => {
         const [_active, addActiveUser] = this.context;
 
         console.log("Peer connected: " + JSON.stringify(userData));

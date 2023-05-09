@@ -7,13 +7,13 @@ export enum ProfileBubbleSizes {
 
 interface ProfileBubbleProps {
     size: ProfileBubbleSizes,
-    fullName: string,
+    name: string,
 }
 
-export default function ProfileBubble({size, fullName} : ProfileBubbleProps) {
+export default function ProfileBubble({size, name} : ProfileBubbleProps) {
 
     // Use styling generated from a name
-    const {bgColor, borderColor} = generateUniqueColors(fullName);
+    const {bgColor, borderColor} = generateUniqueColors(name);
     const profileColor = {
         backgroundColor: bgColor,
         borderColor: borderColor,
@@ -22,7 +22,7 @@ export default function ProfileBubble({size, fullName} : ProfileBubbleProps) {
     return (
         <div>
             <div className={`${size} font-medium text-white rounded-full flex items-center justify-center border-2`} style={profileColor}>
-                {fullName[0]}
+                {name[0]}
             </div>
 
         </div>
@@ -32,9 +32,9 @@ function normaliseHashCode(code: number, min: number, max: number) {
     return Math.floor((code % (max - min)) + min);
 }
 
-// TODO: might be worth storing this somewhere to improve effiency (either on backend or somewhere else)
-// TODO: Also worth just adding a timestamp part to it
 function getHashCode(fullName: string) : number {
+    // TODO: add way of preventing a hover changing the timestamp
+    // const fullNameWithTimestamp = fullName + new Date().getMinutes().toString();
     let hash = 0;
     for (let i = 0; i < fullName.length; i++) {
         hash = fullName.charCodeAt(i) + ((hash << 5) - hash);
