@@ -45,7 +45,7 @@ const on_connect = async (socket: socketio.Socket) => {
             userMap[socket.id] = { id: userId, fullName: user.get('name'), email: user.get('email') };
 
             if (!mongoose.Types.ObjectId.isValid(userId)) {
-                console.error(`ERROR ${socket.id}: Invalid userId '${userId}'`);
+                console.error(`ERROR: ${socket.id}: Invalid userId '${userId}'`);
                 socket.disconnect();
             }
 

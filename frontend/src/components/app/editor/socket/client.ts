@@ -21,7 +21,7 @@ export default class SocketClient {
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
     peers: Array<UserData> = new Array<UserData>();
 
-    setup = (userId: string, documentId: string) => {
+    setup = (userId: string, documentId: string, notify?: Function) => {
         this.socket = socketio(server);
 
         this.socket.on('peer-added', this.peerObjectAdded);
@@ -31,7 +31,11 @@ export default class SocketClient {
 
         this.socket.on('connect', () => this.sendInitialData(userId, documentId));
         this.socket.on('reconnect', () => this.sendInitialData(userId, documentId));
-        this.socket.on('disconnect', () => alert("Backend server terminated the connection"));
+        this.socket.on('disconnect', () => {
+            if (notify) {
+                notify.call(null, "Backend server terminated the connection");
+            }
+        });
     }
 
     teardown = () => {

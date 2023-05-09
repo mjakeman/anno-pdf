@@ -10,6 +10,7 @@ import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {auth} from "../../../firebaseAuth";
 import {signOut} from "firebase/auth";
 import axios from "axios";
+import {useToast} from "../../../hooks/useToast";
 
 
 const server = import.meta.env.VITE_BACKEND_URL;
@@ -30,6 +31,8 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
     const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
+
+    const {addToast} = useToast();
 
     // (1) Startup
     useEffect(() => {
@@ -98,14 +101,23 @@ export default function DocumentViewer({ documentUuid } : Props) {
 
 
     useEffect(() => {
-        if (documentUuid && user) {
-            socketClient.current?.setup(user.uid, documentUuid);
+
+        const notify = (message: string) => {
+            addToast({
+                position: 'top-left',
+                message: message,
+                type: 'error'
+            })
+        }
+
+        if (documentUuid && currentUser) {
+            socketClient.current?.setup(currentUser.uid, documentUuid, notify);
         }
 
         return () => {
             socketClient.current?.teardown();
         }
-    }, [user]);
+    }, [currentUser]);
 
     return (
         <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">
