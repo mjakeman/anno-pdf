@@ -1,29 +1,32 @@
 import {NextFunction, Request, Response} from 'express';
 import Busboy from 'busboy';
-import { createDocument, deleteDocument, updateDocument, getDocument, addSharedUser, removeSharedUser } from "../data/documents/documents-dao";
+import {
+    addSharedUser,
+    createDocument,
+    deleteDocument,
+    getDocument,
+    removeSharedUser,
+    updateDocument
+} from "../data/documents/documents-dao";
 import s3 from "../s3/s3Config";
 import Config from "../util/Config";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {EmailService} from "../service/EmailService";
+import {getUser, getUsersByEmailList} from "../data/users/users-dao";
 
 const emailService = new EmailService();
 
 class DocumentController {
 
     deleteDocument = async (req: Request, res: Response) => {
-        let user: string;
-        if (req.uid) {
-            user = req.uid;
-        } else {
-            return res.status(400).send('User not found in request object.');
-        }
+        const currentUserUid = req.user!.uid;
 
         const dbDoc = await deleteDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
-        if (dbDoc.createdBy !== user) {
+        if (dbDoc.owner!.uid !== currentUserUid) {
             return res.status(403).send('You do not have the permissions to delete this document');
         }
 
@@ -62,9 +65,10 @@ class DocumentController {
             if (!s3Document.Body) throw Error("s3 document 'Data' was null");
 
             const base64pdf = s3Document.Body.toString('base64');
-            const documentInfo = JSON.parse(JSON.stringify(dbDoc));
-            documentInfo['base64file'] = base64pdf;
-            return res.send(documentInfo);
+            const documentJson = JSON.parse(JSON.stringify(dbDoc));
+            documentJson['base64file'] = base64pdf;
+            documentJson['sharedWith'] = await getUsersByEmailList(documentJson.sharedWith);
+            return res.send(documentJson);
         } catch (e) {
             console.log(e.message);
             return res.status(500).send("Error fetching document from s3");
@@ -72,20 +76,13 @@ class DocumentController {
     }
 
     updateDocument = async (req: Request, res: Response) => {
-        let uid
-        if (req.uid && req.email) {
-            uid = req.uid;
-        } else {
-            return res.status(400).send('User not found in request object.');
-        }
-
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
         const data = req.body;
-        data['lastUpdatedBy'] = uid;
+        data['lastUpdatedBy'] = req.user!.uid;
         const updatedDoc = await updateDocument(req.params.uuid, data);
 
         if (updatedDoc) {
@@ -96,11 +93,9 @@ class DocumentController {
     }
 
     createAndUploadDocument = async (req: Request, res: Response) => {
-        let user: string;
-        if (req.uid) {
-            user = req.uid;
-        } else {
-            return res.status(400).send('User not found in request object.');
+        const dbUser = await getUser(req.user!.uid);
+        if (!dbUser) {
+            return res.status(500).send('Error fetching user details');
         }
 
         let busboy;
@@ -127,7 +122,11 @@ class DocumentController {
             console.log('Upload to s3 successful: ', upload.Location);
 
             const dbDoc = await createDocument({
-                createdBy: user,
+                owner: {
+                    uid: dbUser.uid,
+                    email: dbUser.email,
+                    name: dbUser.name
+                },
                 title: info.filename,
                 uuid: id,
                 sharedWith: [],
@@ -151,7 +150,7 @@ class DocumentController {
             return res.status(400).send('"email" field is required in the request body');
         }
 
-        if (this.isUserSharingOrRemovingThemselves(req)) {
+        if (this.isUserSharingOrRemovingThemselves(req.user!.email, req.body.email)) {
             return res.status(400).send('Trying to share/remove own user from document');
         }
 
@@ -173,7 +172,7 @@ class DocumentController {
             return res.status(400).send('"email" field is required in the request body');
         }
 
-        if (this.isUserSharingOrRemovingThemselves(req)) {
+        if (this.isUserSharingOrRemovingThemselves(req.user!.email, req.body.email)) {
             return res.status(400).send('Trying to share/remove own user from document');
         }
 
@@ -182,13 +181,7 @@ class DocumentController {
     }
 
     checkDocumentViewingPermissions = async (req: Request, res: Response, next: NextFunction) => {
-        let uid, email: string;
-        if (req.uid && req.email) {
-            uid = req.uid;
-            email = req.email;
-        } else {
-            return res.status(400).send('User not found in request object.');
-        }
+        const { uid, email } = req.user!;
 
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
@@ -203,31 +196,26 @@ class DocumentController {
     }
 
     checkDocumentOwnerPermissions = async (req: Request, res: Response, next: NextFunction) => {
-        let uid: string;
-        if (req.uid) {
-            uid = req.uid;
-        } else {
-            return res.status(400).send('User not found in request object.');
-        }
+        const uid = req.user!.uid;
 
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
-        if (dbDoc.createdBy !== uid) {
+        if (dbDoc.owner!.uid !== uid) {
             return res.status(403).send('Insufficient permissions');
         }
 
         return next();
     }
 
-    isUserSharingOrRemovingThemselves = (req: Request) => {
-        return req.email === req.body.email;
+    isUserSharingOrRemovingThemselves = (currentUserEmail: string, sharedUserEmail: string) => {
+        return currentUserEmail === sharedUserEmail;
     }
 
     hasViewingPermissions = (dbDoc: any, uid: string, email: string) => {
-        return dbDoc.createdBy === uid || dbDoc.sharedWith.includes(email);
+        return dbDoc.owner.uid === uid || dbDoc.sharedWith.includes(email);
     }
 }
 
