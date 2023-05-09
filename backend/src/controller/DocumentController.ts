@@ -100,7 +100,7 @@ class DocumentController {
 
         let busboy;
         try {
-            busboy = Busboy({ headers: req.headers});
+            busboy = Busboy({ headers: req.headers });
         } catch (e) {
             return res.status(500).send(e.message);
         }
@@ -131,7 +131,6 @@ class DocumentController {
                 uuid: id,
                 sharedWith: [],
                 annotations: {},
-                url: upload.Location,
             });
 
             if (dbDoc) {
@@ -143,6 +142,51 @@ class DocumentController {
         })
 
         return req.pipe(busboy);
+    }
+
+    copyDocument = async (req: Request, res: Response) =>  {
+        const dbUser = await getUser(req.user!.uid);
+        if (!dbUser) {
+            return res.status(500).send('Error fetching user details');
+        }
+
+        const docToCopy = await getDocument(req.params.uuid);
+        if (!docToCopy) {
+            return res.status(404).send('Document not found');
+        }
+
+        const id = uuidv4();
+        const s3Key = toS3Key(id);
+
+        // create a copy in s3
+        const params = {
+            CopySource: `${Config.AWS_BUCKET}/${toS3Key(docToCopy.uuid)}`,
+            Bucket: Config.AWS_BUCKET,
+            Key: s3Key,
+        };
+        await s3.copyObject(params).promise();
+        console.log('Copy made in s3 successfully');
+
+        // Create a copy in mongo
+        const data = {
+            owner: {
+                uid: dbUser.uid,
+                email: dbUser.email,
+                name: dbUser.name
+            },
+            title: `Copy of ${docToCopy.title}`,
+            uuid: id,
+            sharedWith: [],
+            annotations: []
+        }
+        const dbDoc = await createDocument(data);
+
+        if (dbDoc) {
+            console.log('Document copy created in MongoDB - Title: ' + dbDoc.title);
+            return this.getDocument(req, res);
+        }
+
+        return res.sendStatus(422);
     }
 
     shareDocument = async (req: Request, res: Response) => {
