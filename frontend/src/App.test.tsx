@@ -25,6 +25,15 @@ describe('App', () => {
 
     });
 
+    it('Dark mode toggle test', () =>{
+        render(<App />);
+        expect(screen.getByText('Toggle Dark Mode: LIGHT')).toBeInTheDocument();
+        fireEvent.click(screen.getByText('Toggle Dark Mode: LIGHT'));
+        expect(screen.getByText('Toggle Dark Mode: DARK')).toBeInTheDocument();
+        fireEvent.click(screen.getByText('Toggle Dark Mode: DARK'));
+        expect(screen.getByText('Toggle Dark Mode: LIGHT')).toBeInTheDocument();
+    })
+
 });
 
 
