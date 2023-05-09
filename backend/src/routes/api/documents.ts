@@ -14,6 +14,9 @@ router.delete('/:uuid/delete', documentController.checkDocumentOwnerPermissions,
 // Update document by uuid
 router.post('/:uuid/update', documentController.checkDocumentViewingPermissions, documentController.updateDocument);
 
+// Copy document by uuid
+router.post('/:uuid/copy', documentController.checkDocumentViewingPermissions, documentController.copyDocument);
+
 // Share document
 router.post('/:uuid/share', documentController.checkDocumentViewingPermissions, documentController.shareDocument);
 
