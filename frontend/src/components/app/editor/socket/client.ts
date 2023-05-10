@@ -95,7 +95,7 @@ export default class SocketClient {
     }
 
     pushBackfill = (index: number, uuid: string, data: fabric.Object) => {
-        let queue = this.backfillQueue.get(1)
+        let queue = this.backfillQueue.get(index);
         if (!queue) {
             queue = [];
             this.backfillQueue.set(index, queue);
@@ -118,7 +118,7 @@ export default class SocketClient {
     }
 
     peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {
-        console.log("Received page " + index + " addition from peer: " + JSON.stringify(data) + "with callback " + JSON.stringify(this.map.get(index)));
+        console.log("Received page " + index + " addition from peer");
         const callbacks = this.map.get(index);
         if (callbacks)
             callbacks?.objectAddedFunc(uuid, data);
@@ -127,7 +127,7 @@ export default class SocketClient {
     }
 
     peerObjectModified = (index: number, uuid: string, data: fabric.Object) => {
-        console.log("Received page " + index + " modification from peer: " + data);
+        console.log("Received page " + index + " modification from peer");
         const callbacks = this.map.get(index);
         callbacks?.objectModifiedFunc(uuid, data);
     }

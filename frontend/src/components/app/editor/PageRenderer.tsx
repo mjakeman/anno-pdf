@@ -118,10 +118,6 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         socketClient.registerPage(pageIndex, {
             objectAddedFunc: (uuid, data) => {
                 runWithEventsFrozen(canvas, () => {
-                    console.log("Addition received from peer")
-                    console.log(data);
-                    console.log(uuid);
-                    console.log('\n');
 
                     // @ts-ignore
                     data['id'] = uuid;

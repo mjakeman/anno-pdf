@@ -10,31 +10,6 @@ type CanvasMap = Map<string, Array<Object>>;
 
 const canvasMap: CanvasMap = new Map<string, Array<Object>>();
 
-/*const makePage = (width: number, height: number) => {
-    let canvas = new StaticCanvas(null, {
-        width: width,
-        height: height,
-        backgroundColor: 'white', // TODO REMOVE BG COLOR
-    });
-
-    return canvas;
-}
-
-const retrievePage = (documentId: string, pageNumber: number) => {
-    const pages = canvasMap[documentId];
-
-    // Note: Pages start at 1
-    if (pageNumber > pages.length) {
-        for (let i = pages.length; i < pageNumber; i++) {
-            canvasMap[documentId][i] = makePage(800, 800);
-
-            // TODO: Backfill from database
-        }
-    }
-
-    return pages[pageNumber-1];
-}*/
-
 const getCanvasPageMap = (ref: DocumentPageRef) => {
     let string_ref = JSON.stringify(ref);
     let objects = canvasMap.get(string_ref);
@@ -61,15 +36,15 @@ export const saveModification = (documentId: string, pageNumber: number, uuid: s
     console.log(objects);
 
     // @ts-ignore
-    const obj_index = objects.indexOf(obj => obj['uuid'] === uuid);
+    const object = objects.find(obj => obj['uuid'] === uuid);
 
-    if (obj_index == -1) {
+    if (!object) {
         console.error("ERROR: Could not find object for modification. Data loss may occur");
-        console.log(objects);
+        console.error(objects);
         return;
     }
 
-    objects[obj_index] = modification;
+    Object.assign(object, modification);
     console.log("Saved modification to canvas");
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
