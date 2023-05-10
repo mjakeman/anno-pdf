@@ -6,7 +6,7 @@ import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
 import React, {useEffect, useState} from "react";
-import DarkModeToggleTest from "../../../DarkModeToggleTest";
+import DarkModeToggle from "../../../DarkModeToggle";
 import Logo from "../../../Logo";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -108,7 +108,7 @@ export default function EditorHeader({ annoDocument } : Props) {
 
                 <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
 
-                <DarkModeToggleTest/>
+                <DarkModeToggle/>
 
             </div>
 
