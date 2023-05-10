@@ -67,7 +67,8 @@ export default function EditorHeader({ annoDocument } : Props) {
 
     async function deleteDocument() {
         let token = await firebaseUserRef!.getIdToken();
-        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', {
+
+        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', null, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -124,7 +125,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     </p>
                 </div>
 
-                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => deleteDocument()} onDownload={() => console.log('Download pressed')}/>
+                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => deleteDocument()} onDownload={() => console.log('Download pressed')} annoDoc={annoDocument}/>
 
             </div>
 
