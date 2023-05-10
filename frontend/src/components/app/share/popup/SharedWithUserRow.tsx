@@ -1,5 +1,5 @@
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {TrashIcon, XMarkIcon} from "@heroicons/react/24/solid"
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 interface SharedWithUserRowProps {
