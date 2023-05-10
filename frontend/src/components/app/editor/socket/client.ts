@@ -143,7 +143,6 @@ export default class SocketClient {
         if (data.target instanceof fabric.ActiveSelection) {
 
             const selection = data.target!;
-            console.log(selection);
 
             let socket = this.socket;
 
@@ -158,15 +157,11 @@ export default class SocketClient {
                 const uuid = obj.get('id');
 
                 selection.removeWithUpdate(obj);
-
-                console.log("indiv: " + uuid);
                 socket.emit("object-modified", index, uuid, obj.toJSON());
-
                 selection.addWithUpdate(obj);
             }
 
         } else if (data.target instanceof fabric.Object) {
-            console.log("object!")
 
             const obj = data.target!;
 
@@ -178,26 +173,6 @@ export default class SocketClient {
             console.error(data.target!);
             return;
         }
-
-        /*if (maybeObjects && maybeObjects.length > 0) {
-            for (const object of maybeObjects) {
-                // Adjust coordinates
-                //object.left += data.target!.left;
-                //object.top += data.target!.top;
-
-                objectsToSend.push(object);
-            }
-        } else {
-            objectsToSend.push(data.target!);
-        }
-
-        // Send individually
-        for (const obj of objectsToSend) {
-            // @ts-ignore
-            const uuid = obj.get('id');
-            this.socket.emit("object-modified", index, uuid, obj.toJSON());
-        }*/
-
     }
 
     onObjectAdded = (index: number, uuid: string, object: fabric.Object) => {
