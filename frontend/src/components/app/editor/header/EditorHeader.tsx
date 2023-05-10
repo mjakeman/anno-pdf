@@ -65,6 +65,35 @@ export default function EditorHeader({ annoDocument } : Props) {
         });
     }
 
+    async function deleteDocument() {
+        let token = await firebaseUserRef!.getIdToken();
+
+        await axios.delete(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+                if(response.status==200){
+
+                    navigate('/');
+
+                    addToast({
+                        position: 'top-left',
+                        message: 'Document deleted successfully',
+                        type: 'success'
+                    })
+                }
+            }
+        ).catch((error) => {
+            console.log(error);
+            addToast({
+                position: 'top-left',
+                message: 'Document deletion failed',
+                type: 'error'
+            })
+        });
+    }
+
     function fullScreenClick() {
         const elem = document.documentElement;
         if (fullScreen) {
@@ -122,7 +151,8 @@ export default function EditorHeader({ annoDocument } : Props) {
                     </p>
                 </div>
 
-                <ActionMenu onCopy={() => copyDocument()} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
+                <ActionMenu onCopy={() => copyDocument()} onDelete={() => deleteDocument()} onDownload={() => console.log('Download pressed')} annoDoc={annoDocument}/>
+
             </div>
 
             {/* Right Side */}
