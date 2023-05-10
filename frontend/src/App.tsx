@@ -1,4 +1,4 @@
-import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
+import {Navigate, Route, Routes, useNavigate, BrowserRouter} from "react-router-dom";
 import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
@@ -87,6 +87,7 @@ export default function App() {
     }, []);
 
     return (
+        <BrowserRouter>
         <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <RecentContextProvider>
@@ -113,5 +114,6 @@ export default function App() {
                 </RecentContextProvider>
             </DarkModeContext.Provider>
         </AuthContext.Provider>
+        </BrowserRouter>
         );
 }
