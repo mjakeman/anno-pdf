@@ -138,9 +138,66 @@ export default class SocketClient {
             console.error("Socket is null");
             return;
         }
-        // @ts-ignore
-        const uuid = data.target!.get('id');
-        this.socket.emit("object-modified", index, uuid, data.target!.toJSON());
+
+        // Check for event type
+        if (data.target instanceof fabric.ActiveSelection) {
+
+            const selection = data.target!;
+            console.log(selection);
+
+            let socket = this.socket;
+
+            const objects = selection.getObjects();
+
+            // Iterate over objects in selection, temporarily remove them
+            // to have normalised object coordinates, transmit the update, then
+            // re-add them to the selection. Brilliant API design. I love fabric <3
+            for (const obj of objects) {
+
+                // @ts-ignore
+                const uuid = obj.get('id');
+
+                selection.removeWithUpdate(obj);
+
+                console.log("indiv: " + uuid);
+                socket.emit("object-modified", index, uuid, obj.toJSON());
+
+                selection.addWithUpdate(obj);
+            }
+
+        } else if (data.target instanceof fabric.Object) {
+            console.log("object!")
+
+            const obj = data.target!;
+
+            // @ts-ignore
+            const uuid = obj.get('id');
+            this.socket.emit("object-modified", index, uuid, obj.toJSON());
+        } else {
+            console.error("other! unprocessable");
+            console.error(data.target!);
+            return;
+        }
+
+        /*if (maybeObjects && maybeObjects.length > 0) {
+            for (const object of maybeObjects) {
+                // Adjust coordinates
+                //object.left += data.target!.left;
+                //object.top += data.target!.top;
+
+                objectsToSend.push(object);
+            }
+        } else {
+            objectsToSend.push(data.target!);
+        }
+
+        // Send individually
+        for (const obj of objectsToSend) {
+            // @ts-ignore
+            const uuid = obj.get('id');
+            this.socket.emit("object-modified", index, uuid, obj.toJSON());
+        }*/
+
     }
 
     onObjectAdded = (index: number, uuid: string, object: fabric.Object) => {

@@ -144,7 +144,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                     console.log(uuid);
                     console.log('\n');
 
-                    var found = false;
+                    let found = false;
 
                     canvas.forEachObject(object => {
 
