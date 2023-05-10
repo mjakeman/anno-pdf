@@ -28,7 +28,7 @@ export default function SharedWithUserRow({ownerUid, userUid, name, email, onCon
     return (
         <div className={`flex flex-row items-center gap-4 p-2 rounded-xl transition-colors ${showConfirmation && "bg-red-200 dark:bg-anno-space-700"}`}>
 
-            <ProfileBubble size={ProfileBubbleSizes.Small} name={name}/>
+            <ProfileBubble size={ProfileBubbleSizes.Small} email={email}/>
 
             <div className="flex flex-col grow">
                 <p className="font-medium text-black dark:text-white">{name} {isRowCurrentUser && "(you)"} </p>
