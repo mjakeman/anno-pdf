@@ -107,9 +107,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                 </div>
 
                 <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
-
-                <DarkModeToggle/>
-
+                
             </div>
 
             {/* Right Side */}
