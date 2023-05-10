@@ -58,7 +58,7 @@ function UserSettings() {
     async function handleSignOut(){
         try {
             await signOut(auth);
-            currentUser.setCurrentUser(null);
+            currentUser.setCurrentUser(null, null);
             navigate('/');
         } catch(error) {
             console.log(error);
