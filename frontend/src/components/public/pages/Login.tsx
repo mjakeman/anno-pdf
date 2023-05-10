@@ -118,7 +118,7 @@ export default function Login() {
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
-                    <PrimaryButton onClick={handleSignInWithEmailAndPassword} label="Log in"/>
+                    <PrimaryButton onClick={handleSignInWithEmailAndPassword} label="Login"/>
 
                     {error !== '' && <div data-cy="error-message"
                         className="bg-anno-red-secondary bg-opacity-70 py-3 px-4 text-white flex flex-row items-center justify-center gap-1 text-sm">
