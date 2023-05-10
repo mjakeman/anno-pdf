@@ -6,7 +6,6 @@ import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
 import React, {useState} from "react";
-import DarkModeToggleTest from "../../../DarkModeToggleTest";
 import Logo from "../../../Logo";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -27,7 +26,7 @@ export default function EditorHeader({ annoDocument } : Props) {
     const {addToast} = useToast();
 
     const navigate = useNavigate();
-    const [activeUsers, _add, _remove, sharedUsers] = useContext(DocumentContext);
+    const [activeUsers] = useContext(DocumentContext);
     const {currentUser} = useContext(AuthContext);
 
     function formatLastUpdated(dateUTC: string) {
@@ -37,7 +36,6 @@ export default function EditorHeader({ annoDocument } : Props) {
     }
 
     const [showSharePopup, setShowSharePopup] = useState(false);
-
     const [fullScreen, setFullScreen] = useState(false);
 
     async function inviteUser(email: string){
@@ -65,7 +63,6 @@ export default function EditorHeader({ annoDocument } : Props) {
                 type: 'error'
             })
         });
-
     }
 
     function fullScreenClick() {
@@ -100,8 +97,6 @@ export default function EditorHeader({ annoDocument } : Props) {
                 </div>
 
                 <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
-
-                <DarkModeToggleTest/>
 
             </div>
 
