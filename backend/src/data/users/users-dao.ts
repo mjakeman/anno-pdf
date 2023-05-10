@@ -45,4 +45,4 @@ async function createUser(user: any) {
     }
 }
 
-export { createUser, getUsers, getUser, getUsersByEmailList }
+export { createUser, getUsers, getUser, getUsersByEmailList, getUserByEmail }
