@@ -5,7 +5,7 @@ import DocumentViewer from "./DocumentViewer";
 import React from "react";
 import Logo from "../../Logo";
 import ActionMenu from "./header/ActionMenu";
-import DarkModeToggleTest from "../../DarkModeToggleTest";
+import DarkModeToggle from "../../DarkModeToggle";
 import Fullscreen from "./header/Fullscreen";
 import Zoom from "./header/Zoom";
 import ActiveUserBubbles from "./header/ActiveUserBubbles";
