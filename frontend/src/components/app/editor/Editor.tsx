@@ -5,13 +5,15 @@ import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
 import {useParams} from "react-router-dom";
+import EditorSkeleton from "./EditorSkeleton";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import {AnnoDocument} from "./Models";
+import {AnnoDocument, AnnoUser} from "./Models";
 import axios from "axios";
 import AnimatedSpinner from "../AnimatedSpinner";
-import EditorSkeleton from "./EditorSkeleton";
+
 export const ToolContext = React.createContext<any[]>([]);
 export const ZoomContext = React.createContext<any[]>([]);
+export const DocumentContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
@@ -51,43 +53,75 @@ export default function Editor() {
             });
     }, [currentUser]);
 
+    // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
+    const testUsers = [
+        {uid: '0', name: 'John Doe', email: 'johndoe@gmail.com',},
+        {uid: '1', name: 'Alice Smith', email: 'alice@hotmail.com',},
+        {uid: '2', name: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
+        {uid: '3', name: 'Bob Brown', email: 'bob@gmail.com',},
+        {uid: '4', name: 'David Mannings', email: 'david@yahoo.com',},
+        {uid: '5', name: 'Eve Post', email: 'eve@hotmail.com',},
+    ];
+
+    const [activeUsers, setActiveUsers] = useState<AnnoUser[]>([]);
+    const [sharedUsers, setSharedUsers] = useState<AnnoUser[]>(testUsers);
 
     useEffect(() => {
         setActiveToolData(new Pan("pan"));
     }, []);
 
+    const addActiveUser = (user: AnnoUser) => {
+        setActiveUsers(users => {
+            console.log(`pushed user, now: ${JSON.stringify([...users, user])}`);
+            return [...users, user];
+        });
+    };
+
+    const removeActiveUser = (userId: string) => {
+        setActiveUsers(users => {
+            const new_users = users.filter(obj => obj.uid !== userId);
+            console.log(`removed user, now: ${JSON.stringify(new_users)}`);
+            return new_users;
+        });
+    };
+
+    const resetActiveUsers = () => {
+        setActiveUsers([]);
+    }
 
     return (
-        <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
-            <ZoomContext.Provider value={[zoom, setZoom]}>
-                {document ?
-                    <div className="h-screen flex flex-col">
+        <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, sharedUsers, resetActiveUsers]}>
+            <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
+                <ZoomContext.Provider value={[zoom, setZoom]}>
+                    {document ?
+                        <div className="h-screen flex flex-col">
 
-                        <EditorHeader annoDocument={document}/>
+                            <EditorHeader annoDocument={document}/>
 
-                        {/* Toolbar */}
-                        <div className="fixed translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
-                            <Toolbar/>
-                        </div>
+                            {/* Toolbar */}
+                            <div className="fixed translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
+                                <Toolbar/>
+                            </div>
 
-                        {/* Document Space */}
-                        <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-auto">
+                            {/* Document Space */}
+                            <main className="grow bg-zinc-300 dark:bg-anno-space-700 overflow-y-auto">
 
-                            {!isLoaded &&
-                                <div className="grid place-items-center h-full ">
-                                    <AnimatedSpinner className={"h-36 w-36 text-white"}/>
-                                </div>
-                            }
-                            <span className={`${isLoaded ? "block" : "hidden"} `}>
+                                {!isLoaded &&
+                                    <div className="grid place-items-center h-full ">
+                                        <AnimatedSpinner className={"h-36 w-36 text-white"}/>
+                                    </div>
+                                }
+                                <span className={`${isLoaded ? "block" : "hidden"} `}>
                                     <DocumentViewer onDocumentLoaded={() => setIsLoaded(true)} document={document} />
                             </span>
-                        </main>
-                    </div>
-                    :
-                    <EditorSkeleton />
-                }
-            </ZoomContext.Provider>
-        </ToolContext.Provider>
+                            </main>
+                        </div>
+                        :
+                        <EditorSkeleton/>
+                    }
+                </ZoomContext.Provider>
+            </ToolContext.Provider>
+        </DocumentContext.Provider>
     );
 
 }

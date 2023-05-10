@@ -15,8 +15,8 @@ export default function Login() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
 
-    const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth)
-    const [signInWithEmailAndPassword, user, loading, emailError] = useSignInWithEmailAndPassword(auth)
+    const [signInWithGoogle, _googleUser, _googleLoading, _googleError] = useSignInWithGoogle(auth)
+    const [signInWithEmailAndPassword, _user, _loading, _emailError] = useSignInWithEmailAndPassword(auth)
 
     const navigate = useNavigate();
 
@@ -53,19 +53,21 @@ export default function Login() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                setCurrentUser({
-                    uid: response.data.uid,
-                    name: response.data.name,
-                    email: response.data.email,
-                    firebaseUserRef: auth.currentUser!
-                });
+                setCurrentUser(
+                    {
+                        uid: response.data.uid,
+                        name: response.data.name,
+                        email: response.data.email,
+                    },
+                    auth.currentUser!,
+                );
                 if(location.state && location.state.redirect){
                     navigate(location.state.redirect ? location.state.redirect:"/dash");
                 }else{
                     navigate("/dash");
                 }
-    }})
-        .catch(async function (error) {
+            }
+        }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
             await signOut(auth);
         });
