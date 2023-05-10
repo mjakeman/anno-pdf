@@ -68,7 +68,7 @@ export default function EditorHeader({ annoDocument } : Props) {
     async function deleteDocument() {
         let token = await firebaseUserRef!.getIdToken();
 
-        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', null, {
+        await axios.delete(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', {
             headers: {
                 Authorization: `Bearer ${token}`
             }
