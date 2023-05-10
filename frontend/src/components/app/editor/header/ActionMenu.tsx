@@ -43,6 +43,8 @@ export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Act
                             <DocumentDuplicateIcon className="w-4 h-4 text-anno-red-primary dark:text-anno-pink-500" />
                         </button>
 
+                        {isOwner && <div className="border-l-2 border-anno-pink-500 dark:border-pink-100  my-1.5 translate-x-1/2"></div>}
+
                         {isOwner && <button onClick={onDelete}  type="button" className="rounded-lg px-2 hover:bg-red-100 dark:hover:bg-zinc-300 transition-colors">
                             <TrashIcon className="w-5 h-5 stroke-2 text-red-500 dark:text-white" />
                         </button>}
