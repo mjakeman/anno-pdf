@@ -122,18 +122,22 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                     // @ts-ignore
                     data['id'] = uuid;
 
-                    fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
-                        const newObj = enlivenedObjects[0];
-                        newObj.opacity = 0;
-                        newObj.animate('opacity', 1, {
-                            duration: 500,
-                            onChange: canvas.renderAll.bind(canvas),
-                            easing: fabric.util.ease['easeInQuad']
-                        });
+                    try {
+                        fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
+                            const newObj = enlivenedObjects[0];
+                            newObj.opacity = 0;
+                            newObj.animate('opacity', 1, {
+                                duration: 500,
+                                onChange: canvas.renderAll.bind(canvas),
+                                easing: fabric.util.ease['easeInQuad']
+                            });
 
-                        canvas.add(newObj);
-                        canvas.renderAll();
-                    }, '', undefined);
+                            canvas.add(newObj);
+                            canvas.renderAll();
+                        }, '', undefined);
+                    } catch (error) {
+                        console.error(error);
+                    }
                     canvas.renderAll();
                 });
             },

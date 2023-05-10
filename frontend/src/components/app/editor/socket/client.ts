@@ -133,7 +133,7 @@ export default class SocketClient {
     }
 
     onObjectModified = (index: number, data: fabric.IEvent) => {
-        console.log("modified: " + data);
+        console.log("modified: " + JSON.stringify(data));
         if (!this.socket) {
             console.error("Socket is null");
             return;
@@ -176,6 +176,13 @@ export default class SocketClient {
     }
 
     onObjectAdded = (index: number, uuid: string, object: fabric.Object) => {
+
+        if (object instanceof fabric.Group) {
+            console.info("Skipping group");
+            return;
+        }
+
+        console.log("added: " + JSON.stringify(object));
         if (!this.socket) {
             console.error("Socket is null");
             return;
