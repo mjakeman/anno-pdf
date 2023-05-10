@@ -1,5 +1,5 @@
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {TrashIcon, XMarkIcon} from "@heroicons/react/24/solid"
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 interface SharedWithUserRowProps {
@@ -28,7 +28,7 @@ export default function SharedWithUserRow({ownerUid, userUid, name, email, onCon
     return (
         <div className={`flex flex-row items-center gap-4 p-2 rounded-xl transition-colors ${showConfirmation && "bg-red-200 dark:bg-anno-space-700"}`}>
 
-            <ProfileBubble size={ProfileBubbleSizes.Small} name={name}/>
+            <ProfileBubble size={ProfileBubbleSizes.Small} email={email}/>
 
             <div className="flex flex-col grow">
                 <p className="font-medium text-black dark:text-white">{name} {isRowCurrentUser && "(you)"} </p>

@@ -4,7 +4,7 @@ import {useContext, useRef} from "react"
 import { useState } from "react"
 import { auth } from "../../../firebaseAuth"
 import { useToast } from "../../../hooks/useToast"
-import DarkModeToggleTest from "../../DarkModeToggleTest"
+import DarkModeToggle from "../../DarkModeToggle"
 import Modal from "../../Modal"
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
@@ -58,7 +58,7 @@ function UserSettings() {
     async function handleSignOut(){
         try {
             await signOut(auth);
-            currentUser.setCurrentUser(null);
+            currentUser.setCurrentUser(null, null);
             navigate('/');
         } catch(error) {
             console.log(error);
@@ -70,7 +70,7 @@ function UserSettings() {
         <div className="flex flex-col gap-4 h-800">
             <h1 className="text-2xl font-bold text-anno-red-primary">My Account</h1>
             <div className="flex flex-col gap-4 ">
-                <DarkModeToggleTest/>
+                <DarkModeToggle/>
             </div>
             <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
                 Sign Out
