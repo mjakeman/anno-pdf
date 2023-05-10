@@ -1,5 +1,13 @@
 import * as socketio from "socket.io";
 import * as http from "http";
+import {User} from "../models/User";
+
+// Match Editor.tsx in frontend
+interface UserData {
+    uid: string,
+    name: string,
+    email: string,
+}
 
 // Maps socketIds to documents
 type SocketMap = {
@@ -13,7 +21,7 @@ type DocumentMap = {
 
 // Maps socketIds to userIds
 type UserMap = {
-    [socketId: string]: string;
+    [socketId: string]: UserData;
 }
 
 const socketMap: SocketMap = {};
@@ -29,22 +37,47 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     };
 
-    socket.on('initial-data', (userId: string, documentId: string) => {
+    const disconnectWithError = (socket: socketio.Socket, message: string) => {
+        console.error(message);
+        socket.emit('error', message);
+        socket.disconnect();
+    }
+
+    socket.on('initial-data', async (userId: string, documentId: string) => {
         try {
+            if (!userId || !documentId) {
+                disconnectWithError(socket, "UserId or DocumentId is null");
+                return;
+            }
+
+            // Join room
+            const user = await User.findOne({ uid: userId });
+
+            if (!user) {
+                disconnectWithError(socket, "User does not exist in database");
+                return;
+            }
+
+            userMap[socket.id] = { uid: userId, name: user.get('name'), email: user.get('email') };
+
+            console.log("broadcasting: " + JSON.stringify(userMap[socket.id]));
+
+            socket.join(documentId);
+            socket.to(documentId).emit('peer-connected', userMap[socket.id]);
+
             // Fetch users in target room
-            const peers = socket.in(documentId).fetchSockets().then(() => {
-                for (const peerSocketId in peers) {
-                    const peerUserId = userMap[peerSocketId];
-                    socket.emit('peer-connected', peerUserId);
+            socket.in(documentId).fetchSockets().then((peers) => {
+                for (const peerSocket of peers) {
+                    const peerUserData = userMap[peerSocket.id];
+                    console.log("backfill: " + JSON.stringify(peerUserData));
+                    socket.emit('peer-connected', peerUserData);
                 }
             });
 
-            // Join room
-            socket.join(documentId);
-            socket.to(documentId).emit('peer-connected', userId);
-
+            // Set up socket map
             socketMap[socket.id] = documentId;
-            userMap[socket.id] = userId;
+
+            // Set up document map
             if (documentMap[documentId] == undefined) {
                 documentMap[documentId] = Array(socket.id);
             }
@@ -54,8 +87,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -68,8 +100,7 @@ const on_connect = async (socket: socketio.Socket) => {
             console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-modified', index, uuid, data);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -82,8 +113,7 @@ const on_connect = async (socket: socketio.Socket) => {
             console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
             socket.to(documentId).emit('peer-added', index, uuid, data);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 
@@ -94,19 +124,17 @@ const on_connect = async (socket: socketio.Socket) => {
             const documentId = socketMap[socket.id];
             delete socketMap[socket.id];
 
-            const userId = userMap[socket.id];
+            const userId = userMap[socket.id].uid;
             delete userMap[socket.id];
 
             socket.to(documentId).emit('peer-disconnected', userId);
 
-            console.log(JSON.stringify(documentMap));
             const index = documentMap[documentId].indexOf(socket.id);
             delete documentMap[documentId][index];
 
             console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
         } catch (e) {
-            console.error(e);
-            socket.disconnect();
+            disconnectWithError(socket, e.toString());
         }
     });
 }

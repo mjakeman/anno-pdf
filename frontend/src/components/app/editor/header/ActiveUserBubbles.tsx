@@ -2,14 +2,10 @@ import React, {useEffect, useState} from "react";
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import ActiveUserBubble from "./ActiveUserBubble";
 import {ChevronUpIcon} from "@heroicons/react/24/solid";
-interface UserData {
-    id: number,
-    fullName: string,
-    email: string,
-}
+import {AnnoUser} from "../Models";
 
 interface ActiveUserBubblesProps {
-    activeUsers: UserData[],
+    activeUsers: AnnoUser[],
 }
 export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps) {
 
@@ -18,8 +14,8 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
 
     const [showOverflow, setShowOverflow] = useState(false);
 
-    const [displayedUsers, setDisplayedUsers] = useState<UserData[]>([]);
-    const [overflowUsers, setOverflowUsers] = useState<UserData[]>([]);
+    const [displayedUsers, setDisplayedUsers] = useState<AnnoUser[]>([]);
+    const [overflowUsers, setOverflowUsers] = useState<AnnoUser[]>([]);
     const [overflowUsersLength, setOverflowUsersLength] = useState(0);
 
     useEffect(()=>{
@@ -74,7 +70,7 @@ export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps
                         <div key={index} className="flex flex-row items-center gap-2">
                             <ProfileBubble size={ProfileBubbleSizes.Small} email={user.email}/>
                             <div className="flex flex-col grow">
-                                <p className="font-medium text-black dark:text-white">{user.fullName}</p>
+                                <p className="font-medium text-black dark:text-white">{user.name}</p>
                                 <span className="text-slate-500 text-sm dark:text-stone-300">{user.email}</span>
                             </div>
                         </div>

@@ -5,8 +5,6 @@ import DashboardHeader from "./header/DashboardHeader";
 import CommandMenuDialog from "./header/commandmenu/dialog/CommandMenuDialog";
 import useDialogToggle from "../../../hooks/useDialogToggle";
 import {DocumentRecord} from "./DashboardTable";
-import {User} from "firebase/auth";
-import {CurrentUser} from "../../../contexts/AuthContextProvider";
 
 interface DocContext {
     documents: DocumentRecord[] | null;
