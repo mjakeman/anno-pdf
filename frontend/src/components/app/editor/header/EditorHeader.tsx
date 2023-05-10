@@ -86,6 +86,16 @@ export default function EditorHeader({ annoDocument } : Props) {
         }
     }
 
+    async function copyDocument(){
+        let token = await firebaseUserRef!.getIdToken();
+
+        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' +documentUuid + '/copy', null,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    }
+
     return (
         <header className="bg-white dark:bg-anno-space-900 border-b-[1px] border-zinc-400 dark:border-anno-space-100 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
 
@@ -106,7 +116,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     </p>
                 </div>
 
-                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
+                <ActionMenu onCopy={() => copyDocument()} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
                 
             </div>
 
