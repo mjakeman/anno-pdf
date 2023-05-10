@@ -119,6 +119,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     message: 'Document copied successfully',
                     type: 'success'
                 })
+                window.open('/document/' + response.data.uuid, '_blank')
             }
         }
         ).catch((error) => {
