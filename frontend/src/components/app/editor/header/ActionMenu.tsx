@@ -1,18 +1,26 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {EllipsisHorizontalIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 
 import {DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import {AnnoDocument} from "../Models";
 
 
 interface ActionMenuProps {
     onDownload:  (params: any) => any,
     onCopy:  (params: any) => any,
     onDelete:  (params: any) => any,
+
+    annoDoc: AnnoDocument
 }
-export default function ActionMenu({onDownload, onCopy, onDelete} : ActionMenuProps ) {
+export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : ActionMenuProps ) {
 
     const [showExpandedMenu, setShowExpandedMenu] = useState(false);
+
+    const {currentUser} = useContext(AuthContext);
+
+    const isOwner = annoDoc.owner.uid == currentUser?.uid;
 
     return (
         <div className="flex flex-row items-center">
@@ -35,11 +43,11 @@ export default function ActionMenu({onDownload, onCopy, onDelete} : ActionMenuPr
                             <DocumentDuplicateIcon className="w-4 h-4 text-anno-red-primary dark:text-anno-pink-500" />
                         </button>
 
-                        <div className="border-l-2 border-anno-pink-500 dark:border-pink-100  my-1.5 translate-x-1/2"></div>
+                        {isOwner && <div className="border-l-2 border-anno-pink-500 dark:border-pink-100  my-1.5 translate-x-1/2"></div>}
 
-                        <button onClick={onDelete}  type="button" className="rounded-lg px-2 hover:bg-red-100 dark:hover:bg-zinc-300 transition-colors">
+                        {isOwner && <button onClick={onDelete}  type="button" className="rounded-lg px-2 hover:bg-red-100 dark:hover:bg-zinc-300 transition-colors">
                             <TrashIcon className="w-5 h-5 stroke-2 text-red-500 dark:text-white" />
-                        </button>
+                        </button>}
 
                     </div>
 
