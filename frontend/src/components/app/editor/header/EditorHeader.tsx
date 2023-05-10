@@ -93,7 +93,22 @@ export default function EditorHeader({ annoDocument } : Props) {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        })
+        }).then((response) => {
+            if(response.data){
+                addToast({
+                    position: 'top-left',
+                    message: 'Document copied successfully',
+                    type: 'success'
+                })
+            }
+        }
+        ).catch((error) => {
+            addToast({
+                position: 'top-left',
+                message: 'Document copy failed',
+                type: 'error'
+            })
+        });
     }
 
     return (
