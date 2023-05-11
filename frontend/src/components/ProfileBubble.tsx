@@ -23,7 +23,7 @@ export default function ProfileBubble({size, email} : ProfileBubbleProps) {
     return (
         <div>
             <div className={`${size} font-medium text-white rounded-full flex items-center justify-center border-2`} style={profileColor}>
-                {email[0]}
+                {email[0].toUpperCase()}
             </div>
 
         </div>
