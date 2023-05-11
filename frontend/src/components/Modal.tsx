@@ -16,7 +16,7 @@ return ReactDOM.createPortal(
     <div className="bg-white rounded-lg z-[200] relative">
         {children}
         <span className="absolute top-2 right-2 hover:cursor-pointer">
-            <XMarkIcon onClick={onOutsideClick} className="w-6 h-6"/>
+            <XMarkIcon onClick={onOutsideClick} className="w-6 h-6 text-slate-500 dark:text-white"/>
         </span>
     </div>
     }
