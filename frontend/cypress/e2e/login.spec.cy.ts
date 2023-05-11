@@ -1,14 +1,13 @@
-describe('Login functionality', () => {
+describe('Login/Logout functionality', () => {
   it('Error logging in with wrong credentials', () => {
-    cy.visit('http://localhost:5173/login')
-    cy.log('Login page loaded and no error message is visible');
-    cy.get('[data-cy="error-message"]').should('not.exist');
-
-    cy.get('[data-cy="email-input"]').type('wrongemail@gmail.com');
-    cy.get('[data-cy="password-input"]').type('123456');
-    cy.get('[data-cy="Log in"]').click();
-
+    cy.login('WrongEmail123@gmail.com', 'wrongtoo123');
     cy.get('[data-cy="error-message"]').should('contain.text', 'Error');
-
   })
+
+  it('successfully logging in with correct credentials then logout', () => {
+    cy.login('jjteehee@gmail.com', 'asdasdasd');
+    cy.url().should('include', '/dash');
+    cy.logout();
+    cy.url().should('equal', 'http://localhost:5173/');
+  });
 })

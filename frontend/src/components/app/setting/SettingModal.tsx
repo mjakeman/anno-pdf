@@ -35,7 +35,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
                         <UserCircleIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
                         <span className="text-zinc-500 dark:text-white">My Account</span>
                     </span>
-                    <span onClick={()=>setActiveTab("settings")} className={"flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg " + isSettingsActive}>
+                    <span onClick={()=>setActiveTab("settings")} data-cy="settings-tab" className={"flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg " + isSettingsActive}>
                         <Cog6ToothIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
                         <span className="text-zinc-500 dark:text-white">Settings</span>
                     </span>
@@ -76,7 +76,7 @@ function UserSettings() {
             <div className="flex flex-col gap-4 ">
                 <DarkModeToggle/>
             </div>
-            <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
+            <button data-cy="logout-button" className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
                 Sign Out
             </button>
             {errorMessage != '' && <div
