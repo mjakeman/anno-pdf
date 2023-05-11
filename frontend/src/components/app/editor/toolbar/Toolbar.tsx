@@ -8,21 +8,42 @@ import TextTool from "./tools/TextTool";
 import MathTool from "./tools/MathTool";
 import Undo from "./tools/Undo";
 import Redo from "./tools/Redo";
+import Tooltip from "../../../Tooltip";
 
 export default function Toolbar() {
 
     return (
     <div className="bg-white dark:bg-anno-space-800 p-2 rounded-full flex items-center gap-2 drop-shadow-around w-min">
-        <PanTool id={'pan'}/>
-        <SelectTool id={'select'} />
-        <PenTool id={'pen-1'}/>
-        <PenTool id={'pen-2'}/>
-        <HighlighterTool id={'highlighter'} />
-        <TextTool id={'text'} />
-        <MathTool id={'math'} />
-        <RectangleTool id={'rect'} />
-        <Undo/>
-        <Redo/>
+        <Tooltip text="Pan" position="bottom">
+            <PanTool id={'pan'}/>
+        </Tooltip>
+        <Tooltip text="Select" position="bottom">
+            <SelectTool id={'select'} />
+        </Tooltip>
+        <Tooltip text="Pen" position="bottom">
+            <PenTool id={'pen-1'}/>
+        </Tooltip>
+        <Tooltip text="Pen" position="bottom">
+            <PenTool id={'pen-2'}/>
+        </Tooltip>
+        <Tooltip text="Highlighter" position="bottom">
+            <HighlighterTool id={'highlighter'} />
+        </Tooltip>
+        <Tooltip text="Text" position="bottom">
+            <TextTool id={'text'} />
+        </Tooltip>
+        <Tooltip text="Equation" position="bottom">
+            <MathTool id={'math'} />
+        </Tooltip>
+        <Tooltip text="Rectangle" position="bottom">
+            <RectangleTool id={'rect'} />
+        </Tooltip>
+        <Tooltip text="Undo" position="bottom">
+            <Undo/>
+        </Tooltip>
+        <Tooltip text="Redo" position="bottom">
+            <Redo/>
+        </Tooltip>
     </div>
     );
 };
