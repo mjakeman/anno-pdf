@@ -2,7 +2,7 @@ import {Document} from "../models/Document";
 
 type DocumentPageRef = {documentId: string, pageNumber: number};
 
-// Maps documents to fabric canvases
+// Maps DocumentPageRefs to fabric canvases
 type CanvasMap = Map<string, Array<Object>>;
 
 const canvasMap: CanvasMap = new Map<string, Array<Object>>();
@@ -39,38 +39,71 @@ const setCanvasPageMap = (ref: DocumentPageRef, objects: Object[]) => {
     canvasMap.set(string_ref, objects);
 }
 
-export const backfill = (documentId: string, pageNumber: number) => {
-    return getCanvasPageMap({documentId, pageNumber});
+export const backfill = (documentId: string) => {
+
+    const backfillMap = new Map<number, Object[]>();
+
+    const pageNumber = pageCountMap.get(documentId) ?? 0;
+    for (let i = 0; i <= pageNumber; i++) {
+        const pageMap = getCanvasPageMap({documentId, pageNumber: i});
+        backfillMap.set(i, pageMap);
+    }
+
+    return backfillMap;
 }
 
-export const savePdf = async (documentId: string) => {
-    console.log(`Persisting document ${documentId}`);
-    // const pageCount = pageCountMap.get(documentId) ?? 0;
+// ONLY run on first load -> use in-memory cache to avoid data loss
+export const loadPdf = async (documentId: string) => {
+    console.log(`Loading document ${documentId}`);
+
+    // Populate canvas page map with data from mongo
     const document = await Document.findOne({uuid: documentId});
+
     if (!document) {
         console.error(`Document ${documentId} is NULL`);
         return;
     }
 
-    //const leftover = pageCount - document.pages.length;
-    /*for (const page of document.pages) {
+    document.pages.forEach((pages, pageNumber) => {
+        setCanvasPageMap({documentId, pageNumber}, pages.annotations);
+    })
+
+    pageCountMap.set(documentId, document.pages.length);
+}
+
+export const savePdf = async (documentId: string) => {
+    console.log(`Persisting document ${documentId}`);
+
+    const document = await Document.findOne({uuid: documentId});
+
+    if (!document) {
+        console.error(`Document ${documentId} is NULL`);
+        return;
+    }
+
+    // Clear mongo pages
+    document.pages = [];
+
+    // Overwrite with in-memory data
+    const pageCount = pageCountMap.get(documentId) ?? 0;
+    for (let i = 0; i <= pageCount; i++) {
         const annotations = getCanvasPageMap({documentId, pageNumber: i});
-        Object.assign(page.annotations, annotations);
-    }*/
-    // Add pages which do not already exist - can we clear and re-add?
-    /*for (let i = 0; i < pageCount; i++) {
-        const annotations = getCanvasPageMap({documentId, pageNumber: i});
-        const page = document.pages[i];
-        if (page) {
-            Object.assign(page.annotations, annotations);
-        } else if {
-            document.pages[i] =
-        }
+        console.log(annotations);
+        document.pages.push({
+            annotations: annotations,
+        });
+    }
 
+    console.log(pageCount);
+    console.log(document.pages);
 
-    }*/
-
-    await document.save();
+    document.save()
+        .then(_ => {
+            console.log("Saved document successfully");
+        })
+        .catch(err => {
+            console.error("Failed to save document: ", err);
+        })
 }
 
 export const saveModification = (documentId: string, pageNumber: number, modification: any) => {

@@ -2,11 +2,33 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const pageSchema = new Schema({
+export interface IPage {
+    annotations: Object[]
+}
+
+const pageSchema = new Schema<IPage>({
     annotations: [Object]
 });
 
-const documentSchema = new Schema({
+
+interface IOwner {
+    uid: string;
+    email: string;
+    name?: string;
+}
+
+interface IDocument extends Document {
+    owner: IOwner;
+    title: string;
+    sharedWith: string[];
+    lastUpdatedBy?: string;
+    uuid: string;
+    pages: IPage[];
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+const documentSchema = new Schema<IDocument>({
     owner: {
         uid: { type: String, required: true },
         email: { type: String, required: true },
