@@ -202,7 +202,7 @@ class DocumentController {
         const updatedDoc = await addSharedUser(req.params.uuid, req.body.email);
 
         // send invite email
-        const emailSent = await emailService.sendEmail(req.params.uuid, req.body.email)
+        const emailSent = await emailService.sendEmail(req.params.uuid, req.body.email, req.user.email)
         if (emailSent) {
             console.log(`Document shared: email sent to ${req.body.email}`);
         } else {
