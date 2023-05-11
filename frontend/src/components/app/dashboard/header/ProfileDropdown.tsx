@@ -44,7 +44,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
             <div className="flex flex-row gap-4 items-center pl-4 py-2  pr-12">
                 {/*TODO: replace with profile square component*/}
                 <div className={"grid place-items-center rounded text-white font-bold h-10 w-10 text-2xl "} style={profileColor}>
-                    {currentUser?.name[0]}
+                    {currentUser?.name[0].toUpperCase()}
                 </div>
                 <div className="flex flex-col">
                     <span className="text-xl dark:text-white">{currentUser?.name}</span>
