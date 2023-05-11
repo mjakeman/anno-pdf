@@ -15,6 +15,7 @@ import { useToast } from "../../../../hooks/useToast";
 import {DocumentContext} from "../Editor";
 import {AnnoDocument} from "../Models";
 import moment from "moment";
+import Tooltip from "../../../Tooltip";
 
 interface Props {
     annoDocument: AnnoDocument,
@@ -137,13 +138,18 @@ export default function EditorHeader({ annoDocument } : Props) {
             <div className="flex flex-row items-center justify-between gap-4">
 
                 {/* Logo */}
-                <Logo className="w-8 h-8 hover:cursor-pointer" onClick={()=>navigate("/dash")}/>
+                <Tooltip text="Back" position="bottom">
+                    <Logo className="w-8 h-8 hover:cursor-pointer" onClick={()=>navigate("/dash")}/>
+                </Tooltip>
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
-                    <h1 className="truncate max-w-sm text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
-                        {annoDocument.title}
-                    </h1>
+                    {/* TODO: add edit function*/}
+                    <Tooltip text={annoDocument.title} position="bottom">
+                        <h1 className="truncate max-w-sm text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
+                            {annoDocument.title}
+                        </h1>
+                    </Tooltip>
                     <p className="text-xs text-neutral-400 dark:text-white font-light self-start">
                         {formatLastUpdated(annoDocument.updatedAt)}
                     </p>
@@ -156,7 +162,9 @@ export default function EditorHeader({ annoDocument } : Props) {
             {/* Right Side */}
             <div className="flex flex-row items-center justify-between gap-2">
 
-                <Fullscreen onClick={() => fullScreenClick()}/>
+                <Tooltip text="Fullscreen" position="bottom">
+                    <Fullscreen onClick={() => fullScreenClick()}/>
+                </Tooltip>
 
                 <Zoom />
 

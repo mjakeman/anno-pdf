@@ -5,6 +5,7 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 import {DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import {AnnoDocument} from "../Models";
+import Tooltip from "../../../Tooltip";
 
 
 interface ActionMenuProps {
@@ -22,11 +23,15 @@ export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Act
 
     const isOwner = annoDoc.owner.uid == currentUser?.uid;
 
+    const actionText = showExpandedMenu ? "Close" : "Action"
+
     return (
         <div className="flex flex-row items-center">
-            <button onClick={() => setShowExpandedMenu(!showExpandedMenu)} type="button" className="z-50 bg-anno-red-primary dark:bg-anno-red-secondary w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-anno-red-secondary dark:hover:bg-anno-pink-500">
-                {showExpandedMenu ? <XMarkIcon className="w-5 h-5 text-white" /> : <EllipsisHorizontalIcon className="w-8 h-8 text-white"/> }
-            </button>
+            <Tooltip text={actionText} position="bottom">
+                <button onClick={() => setShowExpandedMenu(!showExpandedMenu)} type="button" className="z-50 bg-anno-red-primary dark:bg-anno-red-secondary w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-anno-red-secondary dark:hover:bg-anno-pink-500">
+                    {showExpandedMenu ? <XMarkIcon className="w-5 h-5 text-white" /> : <EllipsisHorizontalIcon className="w-8 h-8 text-white"/> }
+                </button>
+            </Tooltip>
             {showExpandedMenu &&
                 <div className="-ml-4 flex rounded-r-xl border-y-2 border-r-2 border-anno-red-primary dark:border-anno-red-secondary">
                     <div className="flex flex-row ml-6 mr-2 gap-2 items-stretch justify-center">

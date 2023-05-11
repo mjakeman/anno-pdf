@@ -96,9 +96,11 @@ export default function DashboardTable({documentData} : Props) {
                     {sortedData().filter((document) => filter === "All" || document.owner === filter || filter === "Shared" && document.owner !== "Me")
                     .map((document, index) => (
                             <tr key={index} className="border-b-2 text-gray-800 dark:text-white">
-                                <td className="py-3 font-extrabold">
-                                    <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
-                                    <button type="button" className="hover:underline" onClick={() =>  handleDocumentClicked(document)}>{document.name}</button>
+                                <td className="py-3">
+                                    <Tooltip text={document.name} position="top">
+                                        <DocumentIcon className="w-5 h-5 inline-block mr-2"/>
+                                            <button type="button" className="font-extrabold hover:underline" onClick={() =>  handleDocumentClicked(document)}>{document.name}</button>
+                                    </Tooltip>
                                 </td>
                                 <td className="py-3">{document.owner}</td>
                                 <td className="py-3">{formatLastUpdated(document.lastUpdated)}</td>
