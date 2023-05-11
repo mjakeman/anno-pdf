@@ -1,6 +1,6 @@
-import { UserCircleIcon } from "@heroicons/react/24/solid"
+import {MoonIcon, SunIcon, UserCircleIcon} from "@heroicons/react/24/solid"
 import { Cog6ToothIcon } from "@heroicons/react/24/solid"
-import {useContext, useRef} from "react"
+import React, {useContext, useRef} from "react"
 import { useState } from "react"
 import { auth } from "../../../firebaseAuth"
 import { useToast } from "../../../hooks/useToast"
@@ -10,6 +10,7 @@ import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {signOut} from "firebase/auth";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
+import {DarkModeContext} from "../../../App";
 
 type SettingTabs = "account" | "settings"
 
@@ -58,6 +59,20 @@ function UserSettings() {
 
     const currentUser = useContext(AuthContext);
 
+    const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
+
+    function turnOnDarkMode() {
+        if (!isDarkMode) {
+            setIsDarkMode(true);
+        }
+    }
+
+    function turnOffDarkMode() {
+        if (isDarkMode) {
+            setIsDarkMode(false);
+        }
+    }
+
     async function handleSignOut(){
         try {
             await signOut(auth);
@@ -73,10 +88,18 @@ function UserSettings() {
     return (
         <div className="flex flex-col gap-4 h-800">
             <h1 className="text-2xl font-bold text-anno-red-primary">My Account</h1>
-            <div className="flex flex-col gap-4 ">
-                <DarkModeToggle/>
-            </div>
-            <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
+            <div className=" flex flex-row gap-4 items-center px-4 py-2 ">
+                { isDarkMode ? <MoonIcon className="w-6 h-6 text-zinc-500 dark:text-white" /> : <SunIcon className="w-6 h-6 text-zinc-500 dark:text-white" />}
+                <span className="text-zinc-500 dark:text-white">Theme</span>
+                <div className="relative bg-gray-100 dark:bg-anno-space-900 rounded-lg dark:text-white ">
+                    <div className="flex flex-row items-center mx-1">
+                        <button onClick={() => turnOffDarkMode()} type="button" className="z-50 px-3 py-1 rounded-lg">Light</button>
+                        <button onClick={() => turnOnDarkMode()} type="button" className="z-50 px-3 py-1 rounded-lg">Dark</button>
+                        <div className={`${isDarkMode ? "translate-x-[90%]" : ""} transition-transform absolute bg-white dark:bg-anno-space-700 h-4/5 w-1/2 rounded-lg`}>
+                        </div>
+                    </div>
+                </div>
+            </div>            <button className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
                 Sign Out
             </button>
             {errorMessage != '' && <div
