@@ -1,7 +1,4 @@
-// This is madness
-
-// import {StaticCanvas} from "fabric/fabric-impl";
-// import {fabric} from "fabric";
+import {Document} from "../models/Document";
 
 type DocumentPageRef = {documentId: string, pageNumber: number};
 
@@ -10,7 +7,23 @@ type CanvasMap = Map<string, Array<Object>>;
 
 const canvasMap: CanvasMap = new Map<string, Array<Object>>();
 
+// Keeps track of page numbers
+type PageCountMap = Map<string, number>;
+
+const pageCountMap: PageCountMap = new Map<string, number>();
+
 const getCanvasPageMap = (ref: DocumentPageRef) => {
+
+    // Store up-to-date page count
+    if (pageCountMap.has(ref.documentId)) {
+        const currentPageCount = pageCountMap.get(ref.documentId)!;
+        if (ref.pageNumber > currentPageCount) {
+            pageCountMap.set(ref.documentId, ref.pageNumber);
+        }
+    } else {
+        pageCountMap.set(ref.documentId, ref.pageNumber);
+    }
+
     let string_ref = JSON.stringify(ref);
     let objects = canvasMap.get(string_ref);
     if (!objects) {
@@ -28,6 +41,36 @@ const setCanvasPageMap = (ref: DocumentPageRef, objects: Object[]) => {
 
 export const backfill = (documentId: string, pageNumber: number) => {
     return getCanvasPageMap({documentId, pageNumber});
+}
+
+export const savePdf = async (documentId: string) => {
+    console.log(`Persisting document ${documentId}`);
+    // const pageCount = pageCountMap.get(documentId) ?? 0;
+    const document = await Document.findOne({uuid: documentId});
+    if (!document) {
+        console.error(`Document ${documentId} is NULL`);
+        return;
+    }
+
+    //const leftover = pageCount - document.pages.length;
+    /*for (const page of document.pages) {
+        const annotations = getCanvasPageMap({documentId, pageNumber: i});
+        Object.assign(page.annotations, annotations);
+    }*/
+    // Add pages which do not already exist - can we clear and re-add?
+    /*for (let i = 0; i < pageCount; i++) {
+        const annotations = getCanvasPageMap({documentId, pageNumber: i});
+        const page = document.pages[i];
+        if (page) {
+            Object.assign(page.annotations, annotations);
+        } else if {
+            document.pages[i] =
+        }
+
+
+    }*/
+
+    await document.save();
 }
 
 export const saveModification = (documentId: string, pageNumber: number, uuid: string, modification: Object) => {
@@ -56,7 +99,6 @@ export const saveAddition = (documentId: string, pageNumber: number, uuid: strin
     addition['uuid'] = uuid;
     objects.push(addition);
 
-    // fabric.util.enlivenObjects([addition], canvas.add.bind(canvas), '', undefined);
     console.log("Saved addition to canvas");
     setCanvasPageMap({documentId, pageNumber}, objects);
 }

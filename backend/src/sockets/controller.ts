@@ -1,7 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
-import {backfill, saveAddition, saveModification} from "./canvas";
+import {backfill, saveAddition, saveModification, savePdf} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -150,6 +150,10 @@ const on_connect = async (socket: socketio.Socket) => {
             delete documentMap[documentId][index];
 
             console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
+
+            // Save document
+            savePdf(documentId);
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
