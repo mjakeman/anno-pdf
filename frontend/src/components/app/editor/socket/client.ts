@@ -7,7 +7,7 @@ import {AnnoUser} from "../Models";
 const server = import.meta.env.VITE_BACKEND_URL;
 
 type PageCallback = {
-    objectAddedFunc: (uuid: string, data: fabric.Object) => void;
+    objectAddedFunc: (data: fabric.Object) => void;
     objectModifiedFunc: (uuid: string, data: fabric.Object) => void;
 }
 
@@ -15,7 +15,7 @@ export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
-    backfillQueue = new Map<number, Array<{uuid: string, data: fabric.Object}>>();
+    backfillQueue = new Map<number, Array<fabric.Object>>();
     context = useContext(DocumentContext);
     notify?: Function;
 
@@ -94,14 +94,14 @@ export default class SocketClient {
         removeActiveUser(userId);
     }
 
-    pushBackfill = (index: number, uuid: string, data: fabric.Object) => {
+    pushBackfill = (index: number, data: fabric.Object) => {
         let queue = this.backfillQueue.get(index);
         if (!queue) {
             queue = [];
             this.backfillQueue.set(index, queue);
         }
 
-        queue.push({uuid, data});
+        queue.push(data);
     }
 
     doBackfill = (index: number) => {
@@ -111,19 +111,28 @@ export default class SocketClient {
                 const item = queue.pop();
                 if (item) {
                     const callbacks = this.map.get(index);
-                    callbacks?.objectAddedFunc(item.uuid, item.data);
+                    callbacks?.objectAddedFunc(item);
                 }
             }
         }
     }
 
-    peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {
+    safeConvertToJson = (object: fabric.Object) => {
+        // This works. Don't touch it please
+        const converted = object.toObject(["uuid", "latex"]);
+        const json = JSON.stringify(converted);
+
+        return json;
+    }
+
+    peerObjectAdded = (index: number, data: string) => {
         console.log("Received page " + index + " addition from peer");
+        const parsed = JSON.parse(data) as fabric.Object;
         const callbacks = this.map.get(index);
         if (callbacks)
-            callbacks?.objectAddedFunc(uuid, data);
+            callbacks?.objectAddedFunc(parsed);
         else
-            this.pushBackfill(index, uuid, data);
+            this.pushBackfill(index, parsed);
     }
 
     peerObjectModified = (index: number, uuid: string, data: fabric.Object) => {
@@ -153,11 +162,8 @@ export default class SocketClient {
             // re-add them to the selection. Brilliant API design. I love fabric <3
             for (const obj of objects) {
 
-                // @ts-ignore
-                const uuid = obj.get('id');
-
                 selection.removeWithUpdate(obj);
-                socket.emit("object-modified", index, uuid, obj.toJSON());
+                socket.emit("object-modified", index, obj.toJSON());
                 selection.addWithUpdate(obj);
             }
 
@@ -166,7 +172,7 @@ export default class SocketClient {
             const obj = data.target!;
 
             // @ts-ignore
-            const uuid = obj.get('id');
+            const uuid = obj.get('uuid');
             this.socket.emit("object-modified", index, uuid, obj.toJSON());
         } else {
             console.error("other! unprocessable");
@@ -175,19 +181,27 @@ export default class SocketClient {
         }
     }
 
-    onObjectAdded = (index: number, uuid: string, object: fabric.Object) => {
+    onObjectAdded = (index: number, object: fabric.Object) => {
 
         if (object instanceof fabric.Group) {
             console.info("Skipping group");
             return;
         }
 
-        console.log("added: " + JSON.stringify(object));
         if (!this.socket) {
             console.error("Socket is null");
             return;
         }
-        this.socket.emit("object-added", index, uuid, object.toJSON());
+
+        if (object.type === 'MathItext') {
+            console.info("Sending maths annotation");
+        }
+
+        const json = this.safeConvertToJson(object);
+
+        // console.log(`Sending: ${json}`);
+
+        this.socket.emit("object-added", index, json);
     }
 
 };

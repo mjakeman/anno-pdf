@@ -92,11 +92,11 @@ export const saveModification = (documentId: string, pageNumber: number, uuid: s
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
-export const saveAddition = (documentId: string, pageNumber: number, uuid: string, addition: Object) => {
+export const saveAddition = (documentId: string, pageNumber: number, addition: Object) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
 
     // @ts-ignore
-    addition['uuid'] = uuid;
+    // addition['uuid'] = uuid;
     objects.push(addition);
 
     console.log("Saved addition to canvas");

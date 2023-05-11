@@ -6,6 +6,7 @@ import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
 import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
+import {MathAnnotation} from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -62,10 +63,10 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         canvas.on('object:added', data => {
             const uuid = uuidv4();
             // @ts-ignore
-            data.target['id'] = uuid;
+            data.target['uuid'] = uuid;
 
             const socketClient = socketClientRef.current;
-            socketClient.onObjectAdded(pageIndex, uuid, data.target!);
+            socketClient.onObjectAdded(pageIndex, data.target!);
         });
 
         // Setup Delete Event Handler
@@ -116,14 +117,26 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
         const socketClient = socketClientRef.current;
         socketClient.registerPage(pageIndex, {
-            objectAddedFunc: (uuid, data) => {
+            objectAddedFunc: (data) => {
                 runWithEventsFrozen(canvas, () => {
-
-                    // @ts-ignore
-                    data['id'] = uuid;
-
                     try {
-                        fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
+                        if (data.type == 'MathItext') {
+                            console.log("adding maths");
+                            console.log(data);
+                            // convert to obj
+                            // @ts-ignore
+                            let text = new MathAnnotation(data['latex'], {
+                                left: data.left,
+                                top: data.top,
+                            });
+                            canvas.add(text);
+                            return;
+                        }
+
+                        console.log("Attempting to enliven object:");
+                        console.log(data);
+                        fabric.util.enlivenObjects([data], function (enlivenedObjects: any[]) {
+
                             const newObj = enlivenedObjects[0];
                             newObj.opacity = 0;
                             newObj.animate('opacity', 1, {
@@ -134,6 +147,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
                             canvas.add(newObj);
                             canvas.renderAll();
+
                         }, '', undefined);
                     } catch (error) {
                         console.error(error);
@@ -153,7 +167,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                     canvas.forEachObject(object => {
 
                         // @ts-ignore
-                        const cmp_uuid = object['id'];
+                        const cmp_uuid = object['uuid'];
                         console.log(cmp_uuid);
 
                         if (uuid === cmp_uuid) {
@@ -178,7 +192,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                             });
 
                             // @ts-ignore
-                            object['id'] = uuid;
+                            object['uuid'] = uuid;
 
                             object.setCoords();
                             canvas.renderAll();

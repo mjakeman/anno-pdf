@@ -92,9 +92,7 @@ const on_connect = async (socket: socketio.Socket) => {
             // TODO: Backfill more than one page
             const objects = backfill(documentId, 0);
             for (let obj of objects) {
-                // @ts-ignore
-                const uuid = obj['uuid'];
-                socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, uuid, obj);
+                socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, obj);
             }
             console.log(`Pushed ${objects.length} backfill objects`);
 
@@ -119,16 +117,18 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
-    socket.on('object-added', (index: number, uuid: string, data: string) => {
+    socket.on('object-added', (index: number, data: string) => {
         try {
             guard(socket);
 
+            console.log(`received: ${data}`);
+            const parsed = JSON.parse(data);
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-added', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${parsed.uuid} of type ${parsed.type}`);
+            socket.to(documentId).emit('peer-added', index, data);
 
-            saveAddition(documentId, index, uuid, data);
+            saveAddition(documentId, index, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }

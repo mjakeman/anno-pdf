@@ -13,7 +13,7 @@ class Maths extends Tool {
         canvas.on('mouse:down', (event) => {
             if (event.target === null) {
                 // @ts-ignore
-                let text = new fabric.Math("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+                let text = new MathAnnotation("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
                     left: event.e.offsetX,
                     top: event.e.offsetY,
                 });
@@ -26,8 +26,7 @@ class Maths extends Tool {
 }
 export default Maths;
 
-// @ts-ignore
-fabric.Math = fabric.util.createClass(fabric.Object, {
+export const MathAnnotation = fabric.util.createClass(fabric.Object, {
     type: 'MathItext',
     latex: '',
     svgString: '',
@@ -42,6 +41,7 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
     _renderMath(svgString: string, canvas: fabric.Canvas) {
         // Render Math object
         let current = this;
+        console.log(`at stage a: ${(current as any).uuid}`);
         fabric.loadSVGFromString(svgString, (objects, options) => {
             let obj = fabric.util.groupSVGElements(objects, options);
             (obj as any).set({latex: this.latex});
@@ -55,10 +55,15 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
                 top: top,
                 angle: angle,
             });
+            // @ts-ignore
+            obj['uuid'] = current['uuid'];
+            console.log(`at stage b: ${(obj as any).uuid}`);
             obj.toObject = (function(toObject) {
                 return function() {
+                    console.log(`at stage c: ${(obj as any).uuid}`);
                     return fabric.util.object.extend(toObject.call(obj), {
-                        latex: (obj as any).latex
+                        latex: (obj as any).latex,
+                        uuid: (obj as any).uuid
                     });
                 };
             })(fabric.Group.prototype.toObject);
