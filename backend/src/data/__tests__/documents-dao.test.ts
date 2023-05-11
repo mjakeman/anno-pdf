@@ -209,3 +209,13 @@ describe('Test documents-dao', () => {
         expect(dbDocument!.sharedWith).toStrictEqual(['shared1@email.com', 'shared2@email.com']);
     })
 
+    it ('removeSharedUser removes user from Document', async () => {
+        await removeSharedUser('0003', 'shared3@email.com');
+
+        let dbDocument = await getDocument('0003');
+        
+        expect(dbDocument).toBeTruthy();
+        expect(dbDocument!.sharedWith).toStrictEqual([]);
+
+    })
+})
