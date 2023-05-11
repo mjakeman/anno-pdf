@@ -3,15 +3,15 @@ import {CommandOption} from "./CommandMenuDialog";
 import CommandMenuDialogResultsRecent from "./CommandMenuDialogResultsRecent";
 import CommandMenuDialogResultsSearch from "./CommandMenuDialogResultsSearch";
 import {DocumentRecord} from "../../../DashboardTable";
-import {DocContext} from "../../../DashboardLayout";
 import {RecentContext} from "../../../../../../contexts/RecentContextProvider";
+import {LoadedDocContext} from "../../../../../../contexts/LoadedDocsContextProvider";
 
 interface Props {
     searchInput: string,
 }
 export default function CommandMenuDialogResults({ searchInput } : Props) {
 
-    const {documents} = useContext(DocContext);
+    const {documents} = useContext(LoadedDocContext);
     const {recentDocBuffer} = useContext(RecentContext);
     const recent = buildRecentData(recentDocBuffer);
 

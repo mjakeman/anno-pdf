@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {useToast} from "../../../hooks/useToast";
 import {AnnoDocument} from "./Models";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
+import {DocumentRecord} from "../dashboard/DashboardTable";
 
 interface Props {
     onDocumentLoaded: () => void,
@@ -22,7 +24,10 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
-    useNavigate();
+
+    const [pageLoaderCount, setPageLoaderCount] = useState<number>(0);
+    const { addToBuffer } = useContext(RecentContext);
+
     const socketClient = useRef<SocketClient>(new SocketClient());
 
     const {addToast} = useToast();
@@ -31,6 +36,13 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     useEffect(() => {
         if (!firebaseUserRef) return;
         loadDocument();
+        let docRecord : DocumentRecord = {
+            name: document.title,
+            owner: document.owner.name,
+            lastUpdated: document.updatedAt,
+            uuid: document.uuid,
+        };
+        addToBuffer(docRecord);
     }, [currentUser]);
 
     // Load entire PDF

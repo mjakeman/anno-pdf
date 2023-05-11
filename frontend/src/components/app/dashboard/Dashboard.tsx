@@ -2,12 +2,12 @@ import DashboardTable, {DocumentRecord} from "./DashboardTable";
 import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import {DocContext} from "./DashboardLayout";
+import { LoadedDocContext} from "../../../contexts/LoadedDocsContextProvider";
 
 
 export default function Dashboard() {
 
-    const {documents, setDocuments} = useContext(DocContext);
+    const {documents, setDocuments} = useContext(LoadedDocContext);
 
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
 
@@ -24,7 +24,7 @@ export default function Dashboard() {
                     let savedDocs : DocumentRecord[]    = [];
                     docs.map((doc: any) => {
                         const savedDoc : DocumentRecord = {
-                            lastupdated: doc.updatedAt,
+                            lastUpdated: doc.updatedAt,
                             name: doc.title,
                             owner: doc.owner.uid === currentUser!.uid ? "Me" : doc.owner.name,
                             uuid: doc.uuid,
