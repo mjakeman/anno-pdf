@@ -43,13 +43,12 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
                 ...peopleList.slice(indexOfObject + 1),
             ]);
             addToast({
-                position: 'bottom-right',
+            
                 message: 'Successfully removed user.',
                 type: 'success'
             })
         }).catch(error => {
             addToast({
-                position: 'bottom-right',
                 message: 'Failed to remove user. Please double check you are the document owner and try again.',
                 type: 'error'
             })
