@@ -8,7 +8,7 @@ const server = import.meta.env.VITE_BACKEND_URL;
 
 type PageCallback = {
     objectAddedFunc: (data: fabric.Object) => void;
-    objectModifiedFunc: (uuid: string, data: fabric.Object) => void;
+    objectModifiedFunc: (data: fabric.Object) => void;
 }
 
 export default class SocketClient {
@@ -117,17 +117,14 @@ export default class SocketClient {
         }
     }
 
-    safeConvertToJson = (object: fabric.Object) => {
+    safeConvertToPayload = (object: fabric.Object) => {
         // This works. Don't touch it please
-        const converted = object.toObject(["uuid", "latex"]);
-        const json = JSON.stringify(converted);
-
-        return json;
+        return object.toObject(["uuid", "latex"]);
     }
 
-    peerObjectAdded = (index: number, data: string) => {
+    peerObjectAdded = (index: number, data: Object) => {
         console.log("Received page " + index + " addition from peer");
-        const parsed = JSON.parse(data) as fabric.Object;
+        const parsed = data as fabric.Object;
         const callbacks = this.map.get(index);
         if (callbacks)
             callbacks?.objectAddedFunc(parsed);
@@ -135,10 +132,11 @@ export default class SocketClient {
             this.pushBackfill(index, parsed);
     }
 
-    peerObjectModified = (index: number, uuid: string, data: fabric.Object) => {
+    peerObjectModified = (index: number, data: Object) => {
         console.log("Received page " + index + " modification from peer");
+        const parsed = data as fabric.Object;
         const callbacks = this.map.get(index);
-        callbacks?.objectModifiedFunc(uuid, data);
+        callbacks?.objectModifiedFunc(parsed);
     }
 
     onObjectModified = (index: number, data: fabric.IEvent) => {
@@ -162,8 +160,24 @@ export default class SocketClient {
             // re-add them to the selection. Brilliant API design. I love fabric <3
             for (const obj of objects) {
 
+                try {
+                    if ((obj as any).transient) {
+                        console.info("Transient object, skipping...")
+                        return obj;
+                    }
+                } catch (e) {}
+
                 selection.removeWithUpdate(obj);
-                socket.emit("object-modified", index, obj.toJSON());
+
+                // Convert payload inside removeWithUpdate block
+                try {
+                    const json = this.safeConvertToPayload(obj)
+                    socket.emit("object-modified", index, json);
+                    console.log(`MODIFIED: ${obj.type} ${(obj as any).uuid}`);
+                } catch (e) {
+                    console.error(e);
+                }
+
                 selection.addWithUpdate(obj);
             }
 
@@ -171,9 +185,16 @@ export default class SocketClient {
 
             const obj = data.target!;
 
-            // @ts-ignore
-            const uuid = obj.get('uuid');
-            this.socket.emit("object-modified", index, uuid, obj.toJSON());
+            try {
+                if ((obj as any).transient) {
+                    console.info("Transient object, skipping...")
+                    return obj;
+                }
+            } catch (e) {}
+
+            const json = this.safeConvertToPayload(obj);
+            this.socket.emit("object-modified", index, json);
+            console.log(`ADDED: ${obj.type} ${(obj as any).uuid}`);
         } else {
             console.error("other! unprocessable");
             console.error(data.target!);
@@ -188,16 +209,25 @@ export default class SocketClient {
             return;
         }
 
+        try {
+            if ((object as any).transient) {
+                console.info("Transient object, skipping...")
+                return object;
+            }
+        } catch (e) {}
+
         if (!this.socket) {
             console.error("Socket is null");
             return;
         }
 
+        console.log(`ADDED: ${object.type} ${(object as any).uuid}`);
+
         if (object.type === 'MathItext') {
             console.info("Sending maths annotation");
         }
 
-        const json = this.safeConvertToJson(object);
+        const json = this.safeConvertToPayload(object);
 
         // console.log(`Sending: ${json}`);
 

@@ -73,13 +73,12 @@ export const savePdf = async (documentId: string) => {
     await document.save();
 }
 
-export const saveModification = (documentId: string, pageNumber: number, uuid: string, modification: Object) => {
+export const saveModification = (documentId: string, pageNumber: number, modification: any) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
     console.log("object:")
     console.log(objects);
 
-    // @ts-ignore
-    const object = objects.find(obj => obj['uuid'] === uuid);
+    const object = objects.find(obj => (obj as any).uuid === (modification as any).uuid);
 
     if (!object) {
         console.error("ERROR: Could not find object for modification. Data loss may occur");
@@ -92,11 +91,9 @@ export const saveModification = (documentId: string, pageNumber: number, uuid: s
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
-export const saveAddition = (documentId: string, pageNumber: number, addition: Object) => {
+export const saveAddition = (documentId: string, pageNumber: number, addition: any) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
 
-    // @ts-ignore
-    // addition['uuid'] = uuid;
     objects.push(addition);
 
     console.log("Saved addition to canvas");

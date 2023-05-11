@@ -117,13 +117,14 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
         const socketClient = socketClientRef.current;
         socketClient.registerPage(pageIndex, {
-            objectAddedFunc: (data) => {
+            objectAddedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
                     try {
                         if (data.type == 'MathItext') {
                             console.log("adding maths");
                             console.log(data);
                             // convert to obj
+                            // TODO: SCALING !!!
                             // @ts-ignore
                             let text = new MathAnnotation(data['latex'], {
                                 left: data.left,
@@ -155,9 +156,12 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                     canvas.renderAll();
                 });
             },
-            objectModifiedFunc: (uuid, data) => {
+            objectModifiedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
                     console.log("Modification received from peer")
+
+                    const uuid = (data as any).uuid;
+
                     console.log(data);
                     console.log(uuid);
                     console.log('\n');
@@ -166,11 +170,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
                     canvas.forEachObject(object => {
 
-                        // @ts-ignore
-                        const cmp_uuid = object['uuid'];
-                        console.log(cmp_uuid);
-
-                        if (uuid === cmp_uuid) {
+                        if ((object as any).uuid === uuid) {
 
                             const dummyFadeOut = fabric.util.object.clone(object);
                             object.set(data);
@@ -191,8 +191,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                                 easing: fabric.util.ease['easeInQuad']
                             });
 
-                            // @ts-ignore
-                            object['uuid'] = uuid;
+                            (object as any).uuid = uuid;
 
                             object.setCoords();
                             canvas.renderAll();

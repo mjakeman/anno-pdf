@@ -102,30 +102,35 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
-    socket.on("object-modified", (index: number, uuid: string, data: string) => {
+    socket.on("object-modified", (index: number, data: any) => {
         try {
             guard(socket);
 
             const documentId = socketMap[socket.id];
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-modified', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${data.uuid} of type ${data.type}`);
+            socket.to(documentId).emit('peer-modified', index, data);
 
-            saveModification(documentId, index, uuid, data);
+            saveModification(documentId, index, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
     });
 
-    socket.on('object-added', (index: number, data: string) => {
+    socket.on('object-added', (index: number, data: any) => {
         try {
             guard(socket);
 
-            console.log(`received: ${data}`);
-            const parsed = JSON.parse(data);
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
+
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${parsed.uuid} of type ${parsed.type}`);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${data.uuid} of type ${data.type}`);
             socket.to(documentId).emit('peer-added', index, data);
 
             saveAddition(documentId, index, data);
