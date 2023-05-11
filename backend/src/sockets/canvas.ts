@@ -99,3 +99,14 @@ export const saveAddition = (documentId: string, pageNumber: number, addition: a
     console.log("Saved addition to canvas");
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
+
+export const saveRemoval = (documentId: string, pageNumber: number, uuid: string) => {
+    let objects = getCanvasPageMap({documentId, pageNumber});
+    console.log("object:")
+    console.log(objects);
+
+    const newObjects = objects.filter(obj => (obj as any).uuid !== uuid);
+
+    console.log("Saved removal to canvas");
+    setCanvasPageMap({documentId, pageNumber}, newObjects);
+}

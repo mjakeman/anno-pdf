@@ -68,6 +68,10 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
             const socketClient = socketClientRef.current;
             socketClient.onObjectAdded(pageIndex, data.target!);
         });
+        canvas.on('object:removed', data => {
+            const socketClient = socketClientRef.current;
+            socketClient.onObjectRemoved(pageIndex, data.target!);
+        })
 
         // Setup Delete Event Handler
         window.addEventListener('keyup',removeObjectOnDeleteKeyPress)
@@ -90,16 +94,6 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
     }
 
     const removeObjectOnDeleteKeyPress = (e: KeyboardEvent) => {
-        if (!canvas) return;
-        if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
-            canvas.getActiveObjects().forEach((obj) => {
-                canvas.remove(obj);
-            });
-            canvas.discardActiveObject().renderAll();
-        }
-    }
-
-    const removeOnDeleteIconClick = (e: KeyboardEvent) => {
         if (!canvas) return;
         if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
             canvas.getActiveObjects().forEach((obj) => {
@@ -202,6 +196,27 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
                     if (!found)
                         console.error("Did not find object to modify - lost data?");
+                });
+            },
+            objectRemovedFunc: uuid => {
+                runWithEventsFrozen(canvas, () => {
+                    console.log("Removal received from peer")
+
+                    let found = false;
+
+                    canvas.forEachObject(object => {
+
+                        if ((object as any).uuid === uuid) {
+
+                            canvas.remove(object);
+                            canvas.renderAll();
+
+                            found = true;
+                        }
+                    });
+
+                    if (!found)
+                        console.error("Did not find object to remove - lost data?");
                 });
             },
         });
