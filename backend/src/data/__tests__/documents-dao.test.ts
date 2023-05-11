@@ -84,3 +84,27 @@ beforeEach(async () => {
 afterEach(async () => {
     await dropCollections();
 })
+
+describe('Test documents-dao', () => {
+
+    it ('getDocument returns document from uuid', async () => {
+        let dbDocument = await getDocument('0001');
+
+        expect(dbDocument).toBeTruthy();
+
+        expect(dbDocument!.owner!.uid).toBe(documents[0].owner.uid);
+        expect(dbDocument!.owner!.email).toBe(documents[0].owner.email);
+        expect(dbDocument!.owner!.name).toBe(documents[0].owner.name);
+
+        expect(dbDocument!.title).toBe(documents[0].title);
+        expect(dbDocument!.uuid).toBe(documents[0].uuid);
+        expect(dbDocument!.sharedWith).toStrictEqual(documents[0].sharedWith);
+        expect(dbDocument!.annotations).toMatchObject(documents[0].annotations);
+    })
+
+    it ('getDocument fails when uuid does not exist', async () => {
+        let dbDocument = await getDocument('9999');
+
+        expect(dbDocument).toBeFalsy();
+    })
+
