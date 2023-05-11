@@ -1,12 +1,14 @@
-import {useContext, useRef, useState} from "react";
+import React, {useContext, useRef, useState} from "react";
 import Modal from "../../Modal";
 import axios from "axios";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../firebaseAuth";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import {DocumentArrowUpIcon} from "@heroicons/react/24/outline";
+import {DocumentArrowUpIcon} from "@heroicons/react/24/solid";
 import PrimaryButton from "../../PrimaryButton";
+import {useToast} from "../../../hooks/useToast";
+import AnimatedSpinner from "../AnimatedSpinner";
 
 interface Props {
     isVisible: boolean;
@@ -15,16 +17,19 @@ interface Props {
 
 export default function FileUploadModal({isVisible, onOutsideClick}: Props){
 
+    const {addToast} = useToast();
+
     const {firebaseUserRef} = useContext(AuthContext);
 
     const [isDragOver, setIsDragOver] = useState(false);
 
     const [uploadedFileName, setUploadedFileName] = useState<string>("No file selected");
+    const [isUploading, setIsUploading] = useState<boolean>(false);
 
     const input = useRef<HTMLInputElement>(null);
 
     const borderStyle = isDragOver ? "border-2 border-dashed border-blue-500" : "border-2 border-dotted";
-    const bgStyle = isDragOver ? "bg-blue-100" : "";
+    const bgStyle = isDragOver ? "bg-blue-100 dark:bg-anno-space-100" : "";
 
     let navigate = useNavigate();
 
@@ -34,10 +39,14 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
                  <h1 className="text-2xl font-bold text-anno-red-primary dark:text-white self-start">Upload PDF</h1>
                  <h1 className="dark:text-zinc-300 self-start"><span className="text-anno-red-secondary">* </span>Please select a PDF file to upload</h1>
                 <div className={`w-full h-full flex flex-col gap-2 items-center justify-center ${borderStyle} + ${bgStyle}`} onDragOver={dragOver} onDragLeave={dragLeave} onDrop={drop}>
-                    <DocumentArrowUpIcon className="w-24 h-24 text-zinc-500 dark:text-white" />
+                    {isUploading ?
+                        <AnimatedSpinner className={"mb-4 w-20 h-20 text-blue-500"}/>
+                    :
+                        <DocumentArrowUpIcon className="w-24 h-24 text-zinc-400 dark:text-white" />
+                    }
 
                     <h1 className="text-2xl text-center dark:text-white">Drag & drop</h1>
-                    <p className="text-2xl text-center dark:text-white">or <button onClick={()=>input.current?.click()} className="underline underline-offset-4 text-anno-red-primary hover:text-anno-red-secondary transition-colors dark:text-anno-red-secondary hover:text-anno-red-primary">browse</button></p>
+                    <p className="text-2xl text-center dark:text-white">or <button onClick={()=>input.current?.click()} className="underline underline-offset-4 text-blue-500 hover:text-blue-800 transition-colors dark:text-anno-red-secondary dark:hover:text-anno-red-primary">browse</button></p>
                     <input type="file" id="file" name="file" onChange={handleFileUpload} accept="application/pdf" ref={input} className="hidden"/>
                     <p className="text-center text-zinc-400 dark:text-white">{uploadedFileName}</p>
                 </div>
@@ -73,7 +82,7 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
 
     async function importFile(file: File) {
         setUploadedFileName(file.name);
-
+        setIsUploading(true);
         let formData = new FormData();
         formData.append("file", file);
         let token = await firebaseUserRef!.getIdToken();
@@ -82,11 +91,26 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
                 Authorization: `Bearer ${token}`
             }
         }).then(response => {
-                // Success
-                navigate(`/document/${response.data.uuid}`)
+            // Success
+            addToast({
+                position: 'top-left',
+                message: 'Successfully created document!',
+                type: 'success'
+            })
+            navigate(`/document/${response.data.uuid}`)
+            setIsUploading(false);
         }).catch(error => {
-
-            console.log(error);
+            let message = "An error occurred. Please try again."
+            if (error.response.data) {
+                message = error.response.data;
+            }
+            addToast({
+                position: 'top-left',
+                message: message,
+                type: 'error'
+            })
+            setUploadedFileName('No file selected');
+            setIsUploading(false);
         });
 
     }
