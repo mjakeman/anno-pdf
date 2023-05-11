@@ -200,3 +200,12 @@ describe('Test documents-dao', () => {
         expect(dbDocument!.title).toBe('NewTitle');
     })
 
+    it ('addSharedUser adds user to Document', async () => {
+        await addSharedUser('0001', 'shared2@email.com');
+
+        let dbDocument = await getDocument('0001');
+
+        expect(dbDocument).toBeTruthy();
+        expect(dbDocument!.sharedWith).toStrictEqual(['shared1@email.com', 'shared2@email.com']);
+    })
+
