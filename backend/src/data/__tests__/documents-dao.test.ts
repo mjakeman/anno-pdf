@@ -179,3 +179,15 @@ describe('Test documents-dao', () => {
         expect(dbDocument).toBeFalsy();
     })
 
+    it ('deleteDocument deletes Document from db', async () => {
+        await deleteDocument('0003');
+
+        let dbDocument = await getDocument('0003');
+        expect(dbDocument).toBeFalsy();
+    })
+
+    it ('deleteDocument fails when document does not exist', async () => {
+        let dbDocument = await deleteDocument('9999');
+        expect(dbDocument).toBeFalsy();
+    })
+
