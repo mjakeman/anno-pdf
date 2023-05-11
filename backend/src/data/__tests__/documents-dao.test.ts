@@ -133,3 +133,49 @@ describe('Test documents-dao', () => {
         expect(dbDocuments[1]!.annotations).toMatchObject(documents[1].annotations);
     })
 
+    it ('createDocument adds Document to db', async () => {
+        const newDocument = new Document({
+            owner: {
+                uid: '004',
+                email: 'User4@email.com',
+                name: 'User4'
+            },
+            title: 'Document4',
+            uuid: '0004',
+            sharedWith: [],
+            annotations: {},
+        });
+
+        await createDocument(newDocument);
+        
+        let dbDocument = await getDocument('0004');
+
+        expect(dbDocument).toBeTruthy();
+        expect(newDocument).toBeTruthy();
+
+        expect(dbDocument!.owner!.uid).toBe(newDocument.owner!.uid);
+        expect(dbDocument!.owner!.email).toBe(newDocument.owner!.email);
+        expect(dbDocument!.owner!.name).toBe(newDocument.owner!.name);
+
+        expect(dbDocument!.title).toBe(newDocument.title);
+        expect(dbDocument!.uuid).toBe(newDocument.uuid);
+        expect(dbDocument!.sharedWith).toStrictEqual(newDocument.sharedWith);
+        expect(dbDocument!.annotations).toMatchObject(newDocument.annotations);
+    })
+
+    it ('createDocument fails when missing a field', async () => {
+        const newDocument = new Document({
+            owner: {
+                uid: '005',
+                email: 'User5@email.com',
+                name: 'User5'
+            },
+            uuid: '0005',
+            sharedWith: [],
+            annotations: {},
+        });
+
+        const dbDocument = await createDocument(newDocument);
+        expect(dbDocument).toBeFalsy();
+    })
+
