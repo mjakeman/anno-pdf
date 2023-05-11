@@ -93,7 +93,6 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
         }).then(response => {
             // Success
             addToast({
-                position: 'top-left',
                 message: 'Successfully created document!',
                 type: 'success'
             })
@@ -105,7 +104,6 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
                 message = error.response.data;
             }
             addToast({
-                position: 'top-left',
                 message: message,
                 type: 'error'
             })
