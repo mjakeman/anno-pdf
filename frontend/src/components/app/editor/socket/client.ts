@@ -9,6 +9,7 @@ const server = import.meta.env.VITE_BACKEND_URL;
 type PageCallback = {
     objectAddedFunc: (data: fabric.Object) => void;
     objectModifiedFunc: (data: fabric.Object) => void;
+    objectRemovedFunc: (uuid: string) => void;
 }
 
 export default class SocketClient {
@@ -25,6 +26,7 @@ export default class SocketClient {
 
         this.socket.on('peer-added', this.peerObjectAdded);
         this.socket.on('peer-modified', this.peerObjectModified);
+        this.socket.on('peer-removed', this.peerObjectRemoved);
         this.socket.on('peer-connected', this.peerConnected);
         this.socket.on('peer-disconnected', this.peerDisconnected);
 
@@ -139,6 +141,12 @@ export default class SocketClient {
         callbacks?.objectModifiedFunc(parsed);
     }
 
+    peerObjectRemoved = (index: number, uuid: string) => {
+        console.log("Received page " + index + " removal from peer");
+        const callbacks = this.map.get(index);
+        callbacks?.objectRemovedFunc(uuid);
+    }
+
     onObjectModified = (index: number, data: fabric.IEvent) => {
         console.log("modified: " + JSON.stringify(data));
         if (!this.socket) {
@@ -232,6 +240,20 @@ export default class SocketClient {
         // console.log(`Sending: ${json}`);
 
         this.socket.emit("object-added", index, json);
+    }
+
+    onObjectRemoved = (index: number, object: fabric.Object) => {
+
+        if (!this.socket) {
+            console.error("Socket is null");
+            return;
+        }
+
+        console.log(`REMOVED: ${object.type} ${(object as any).uuid}`);
+
+        const uuid = (object as any).uuid;
+
+        this.socket.emit("object-removed", index, uuid);
     }
 
 };

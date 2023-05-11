@@ -1,7 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
-import {backfill, saveAddition, saveModification, savePdf} from "./canvas";
+import {backfill, saveAddition, saveModification, savePdf, saveRemoval} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -134,6 +134,25 @@ const on_connect = async (socket: socketio.Socket) => {
             socket.to(documentId).emit('peer-added', index, data);
 
             saveAddition(documentId, index, data);
+        } catch (e) {
+            disconnectWithError(socket, e.toString());
+        }
+    });
+
+    socket.on('object-removed', (index: number, uuid: string) => {
+        try {
+            guard(socket);
+
+            if (!uuid) {
+                throw Error("No uuid provided. Ignoring");
+            }
+
+            const documentId = socketMap[socket.id];
+
+            console.log(`[${documentId}] ${socket.id}: on page ${index} removed object ${uuid}`);
+            socket.to(documentId).emit('peer-removed', index, uuid);
+
+            saveRemoval(documentId, index, uuid);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
