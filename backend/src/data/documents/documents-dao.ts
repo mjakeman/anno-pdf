@@ -14,7 +14,12 @@ async function getDocument(uuid: string) {
 }
 
 async function createDocument(document: any) {
-    return await Document.create(document);
+    try {
+        return await Document.create(document);
+    } catch (e) {
+        console.log(e.message);
+        return null;
+    }
 }
 
 async function deleteDocument(uuid: string) {
