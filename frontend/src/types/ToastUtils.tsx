@@ -11,7 +11,7 @@ export type ToastProps = {
     position?: ToastPoisition;
 }
 
-export type ToastPoisition = | "top-right" |  'bottom-right' | 'bottom-left' | 'top-left';
+export type ToastPoisition = | "top-right" |  'bottom-right' | 'bottom-left' | 'top-left' | 'bottom-middle';
 
 export type RequiredToastProps = Required<ToastProps>;
 
@@ -26,6 +26,7 @@ export const toastPositionsMap: Record<RequiredToastProps['position'], string> =
     "bottom-right": "bottom-0 right-1",
     "bottom-left": "bottom-0 left-1",
     "top-left": "top-0 left-1",
+    "bottom-middle" : "bottom-0 left-1/2 transform -translate-x-1/2 right-1/2",
 };
 
 export const toastIconMap: Record<RequiredToastProps['type'], ReactNode> = {

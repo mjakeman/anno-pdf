@@ -91,7 +91,7 @@ function AccountContent() {
         addToast({
             type: 'success',
             message: 'Save success',
-            position: 'top-left'
+            
         })
     }
 
@@ -99,7 +99,6 @@ function AccountContent() {
         addToast({
             type: 'info',
             message: 'Cancelled',
-            position:'top-left'
         })
     }
 
