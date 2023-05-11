@@ -2,12 +2,12 @@ import DashboardTable, {DocumentRecord} from "./DashboardTable";
 import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import {DocContext} from "../../../contexts/DocContextProvider";
+import { LoadedDocContext} from "../../../contexts/LoadedDocsContextProvider";
 
 
 export default function Dashboard() {
 
-    const {documents, setDocuments} = useContext(DocContext);
+    const {documents, setDocuments} = useContext(LoadedDocContext);
 
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
 

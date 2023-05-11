@@ -1,10 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react'
-import { auth } from '../firebaseAuth';
-import { User } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import {DocumentRecord} from "../components/app/dashboard/DashboardTable";
 import useLocalStorage from "../hooks/useLocalStorage";
-import {DocContext} from "./DocContextProvider";
+import {LoadedDocContext} from "./LoadedDocsContextProvider";
 
 const CIRCULAR_BUFFER_SIZE = 5;
 
@@ -33,10 +30,10 @@ interface Props {
 export function RecentContextProvider({children}: Props){
 
     const [recentDocBuffer, setRecentDocBuffer] = useLocalStorage('recent_documents', []);
-    const {documents} = useContext(DocContext);
+    const {documents} = useContext(LoadedDocContext);
 
     function addToBuffer(document: DocumentRecord) {
-        const index = recentDocBuffer.findIndex((doc: DocumentRecord) => doc === document);
+        const index = recentDocBuffer.findIndex((doc: DocumentRecord) => doc.uuid === document.uuid);
         const isAlreadyInBuffer = (index !== -1);
         if (isAlreadyInBuffer) {
             // Shift to front if its already in the buffer
@@ -65,7 +62,10 @@ export function RecentContextProvider({children}: Props){
     function filterNotAllowedDocuments() {
         if (!documents) return false;
         recentDocBuffer.map((document: DocumentRecord) => {
-            if (!documents.includes(document)) {
+
+            const isInDocumentList = (documents.findIndex((doc: DocumentRecord) => doc.uuid === document.uuid)) !== -1;
+            if (!isInDocumentList) {
+                console.log(document);
                 removeFromBuffer(document);
             }
         })
@@ -74,6 +74,11 @@ export function RecentContextProvider({children}: Props){
     useEffect(() => {
         filterNotAllowedDocuments();
     }, [documents]);
+
+    useEffect(() => {
+        console.log(recentDocBuffer);
+    }, [recentDocBuffer]);
+
 
 
     return (

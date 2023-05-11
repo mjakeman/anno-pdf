@@ -4,14 +4,13 @@ import { User } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import {DocumentRecord} from "../components/app/dashboard/DashboardTable";
 import useLocalStorage from "../hooks/useLocalStorage";
-const CIRCULAR_BUFFER_SIZE = 5;
 
-interface DocContext {
+interface LoadedDocContext {
     documents: DocumentRecord[] | null;
     setDocuments: (documents: DocumentRecord[]) => void;
 }
 
-export const DocContext = createContext<DocContext>({
+export const LoadedDocContext = createContext<LoadedDocContext>({
     documents: null,
     setDocuments: () => {},
 });
@@ -20,14 +19,14 @@ interface Props {
     children: React.ReactNode,
 }
 
-export function DocContextProvider({children}: Props){
+export function LoadedDocsContextProvider({children}: Props){
 
     const [documents, setDocuments] = useState<DocumentRecord[] | null>(null);
 
     return (
-        <DocContext.Provider value={{documents, setDocuments}}>
+        <LoadedDocContext.Provider value={{documents, setDocuments}}>
             {children}
-        </DocContext.Provider>
+        </LoadedDocContext.Provider>
     )
 
 }

@@ -4,7 +4,6 @@ import DashboardFooter from "./DashboardFooter";
 import DashboardHeader from "./header/DashboardHeader";
 import CommandMenuDialog from "./header/commandmenu/dialog/CommandMenuDialog";
 import useDialogToggle from "../../../hooks/useDialogToggle";
-import {RecentContextProvider} from "../../../contexts/RecentContextProvider";
 
 export default function DashboardLayout() {
 
@@ -12,30 +11,29 @@ export default function DashboardLayout() {
     const [showSearchDialog, setShowSearchDialog] = useDialogToggle('Escape', 'k');
 
     return (
-             // RecentContext Must be within DocContext, since it is dependent on it
-            <RecentContextProvider>
-                {/* Modals */}
-                {showSearchDialog &&
-                    <div className="fixed z-50 inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-                        <CommandMenuDialog onClose={() => setShowSearchDialog(false)}/>
+            <>
+                    {/* Modals */}
+                    {showSearchDialog &&
+                        <div className="fixed z-50 inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+                            <CommandMenuDialog onClose={() => setShowSearchDialog(false)}/>
+                        </div>
+                    }
+
+                    {/* Core Layout */}
+                    <div className="h-screen flex flex-col">
+
+                        <DashboardHeader onCommandMenuClicked={() => setShowSearchDialog(true)}/>
+
+                        {/* Main Space */}
+                        <main className="grow bg-white dark:bg-anno-space-900">
+                            <Outlet />
+                        </main>
+
+                        <div className="justify-self-end">
+                            <DashboardFooter/>
+                        </div>
+
                     </div>
-                }
-
-                {/* Core Layout */}
-                <div className="h-screen flex flex-col">
-
-                    <DashboardHeader onCommandMenuClicked={() => setShowSearchDialog(true)}/>
-
-                    {/* Main Space */}
-                    <main className="grow bg-white dark:bg-anno-space-900">
-                        <Outlet />
-                    </main>
-
-                    <div className="justify-self-end">
-                        <DashboardFooter/>
-                    </div>
-
-                </div>
-            </RecentContextProvider>
+            </>
     );
 }

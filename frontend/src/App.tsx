@@ -19,7 +19,7 @@ import axios from "axios";
 import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import {RecentContextProvider} from "./contexts/RecentContextProvider";
-import {DocContext, DocContextProvider} from "./contexts/DocContextProvider";
+import {LoadedDocsContextProvider} from "./contexts/LoadedDocsContextProvider";
 import {AnnoUser} from "./components/app/editor/Models";
 
 export const DarkModeContext = createContext<any[]>([]);
@@ -91,7 +91,7 @@ export default function App() {
         <BrowserRouter>
         <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
-                <DocContextProvider>
+                <LoadedDocsContextProvider>
                     <RecentContextProvider>
                         <ToastProvider>
                             <Routes>
@@ -116,7 +116,7 @@ export default function App() {
                             </Routes>
                         </ToastProvider>
                     </RecentContextProvider>
-                </DocContextProvider>
+                </LoadedDocsContextProvider>
             </DarkModeContext.Provider>
         </AuthContext.Provider>
         </BrowserRouter>
