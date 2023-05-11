@@ -1,8 +1,19 @@
 import Container from "../../Container";
 import heroImg from "../../../assets/images/aboutpage/hero.jpg";
 import PrimaryButton from "../../PrimaryButton";
+import {useToast} from "../../../hooks/useToast";
 
 export default function Contact() {
+
+    const {addToast} = useToast();
+
+    function handleSubmit() {
+        addToast({
+            type: 'info',
+            message: 'This feature is coming soon!',
+        })
+    }
+    
     return (
       <Container>
           <section className="mt-12">
@@ -26,7 +37,7 @@ export default function Contact() {
 
               {/* TODO: add email / form submut functionality */}
               <span className="w-fit">
-                   <PrimaryButton onClick={() => console.log('Submitted!')} label="Submit"/>
+                   <PrimaryButton onClick={() => handleSubmit()} label="Submit"/>
               </span>
 
           </form>
