@@ -78,9 +78,9 @@ export default function DashboardTable({documentData} : Props) {
                     <FilterButton label="All" onClick={()=> setFilter("All")} isSelected={filter==="All"}/>
                 </Tooltip>
                 <Tooltip text="Filter by" position="top">
-                    <FilterButton label="Private" icon={<UserIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Me")} isSelected={filter==="Me"}/>
+                    <FilterButton label="My Documents" icon={<UserIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Me")} isSelected={filter==="Me"}/>
                 </Tooltip>
-                <FilterButton label="Shared" icon={<UserGroupIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Shared")} isSelected={filter==="Shared"}/>
+                <FilterButton label="Shared With Me" icon={<UserGroupIcon className="w-6 h-6 stroke-2" />} onClick={()=> setFilter("Shared")} isSelected={filter==="Shared"}/>
                 <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
             </div>
                 <div className="relative overflow-x-auto">
