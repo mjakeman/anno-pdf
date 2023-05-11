@@ -9,6 +9,7 @@ import SettingModal from "../../setting/SettingModal";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import { generateUniqueColors } from "../../../public/ProfileHashUtil";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,
@@ -21,6 +22,10 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
     const [isSettingModalOpen, setIsSettingModalOpen] = useState(false);
 
     const {currentUser} = useContext(AuthContext);
+    const {bgColor} = generateUniqueColors(currentUser!.email || "");
+    const profileColor = {
+        backgroundColor: bgColor,
+    }
 
     return (
         <header className="p-4 flex flex-row items-center justify-between dark:bg-anno-space-900">
@@ -38,7 +43,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
             <div className="relative">
                 <button onClick={() => setShowProfileDropdown(true)} className="flex flex-row gap-4 items-center p-3 transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 rounded-xl">
                     {/*TODO: replace with profile square component*/}
-                    <div className="grid place-items-center rounded text-white font-bold w-6 h-6 bg-blue-800">
+                    <div className="grid place-items-center rounded text-white font-bold w-6 h-6" style={profileColor}>
                         {currentUser?.name[0]}
                     </div>
                     <span className="text-lg text-black dark:text-white">{currentUser?.name}</span>

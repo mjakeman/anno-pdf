@@ -5,6 +5,7 @@ import {DarkModeContext} from "../../../../App";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import { generateUniqueColors } from "../../../public/ProfileHashUtil";
 
 interface ProfileDropdownProps {
     onOutsideClick: (params: any) => any,
@@ -21,6 +22,10 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
 
+    const {bgColor} = generateUniqueColors(currentUser!.email || "");
+    const profileColor = {
+        backgroundColor: bgColor,
+    }
     function turnOnDarkMode() {
         if (!isDarkMode) {
             setIsDarkMode(true);
@@ -38,7 +43,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
             <div className="flex flex-row gap-4 items-center pl-4 py-2  pr-12">
                 {/*TODO: replace with profile square component*/}
-                <div className="grid place-items-center rounded text-white font-bold h-10 w-10 text-2xl bg-blue-800">
+                <div className={"grid place-items-center rounded text-white font-bold h-10 w-10 text-2xl "} style={profileColor}>
                     {currentUser?.name[0]}
                 </div>
                 <div className="flex flex-col">
