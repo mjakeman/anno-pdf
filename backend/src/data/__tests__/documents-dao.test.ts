@@ -191,3 +191,12 @@ describe('Test documents-dao', () => {
         expect(dbDocument).toBeFalsy();
     })
 
+    it ('updateDocument updates Document from db', async () => {
+        await updateDocument('0001', {title: 'NewTitle'});
+
+        let dbDocument = await getDocument('0001');
+        
+        expect(dbDocument).toBeTruthy();
+        expect(dbDocument!.title).toBe('NewTitle');
+    })
+
