@@ -1,7 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
-import {backfill, saveAddition, saveModification, savePdf, saveRemoval} from "./canvas";
+import {backfill, loadPdf, saveAddition, saveModification, savePdf, saveRemoval} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -81,6 +81,11 @@ const on_connect = async (socket: socketio.Socket) => {
             // Set up document map
             if (documentMap[documentId] == undefined) {
                 documentMap[documentId] = Array(socket.id);
+
+                // LOAD DOCUMENT (ONLY DO THIS ONCE)
+                await loadPdf(documentId);
+
+                // Only now are we ready to backfill
             }
             else {
                 documentMap[documentId].push(socket.id);
@@ -89,13 +94,16 @@ const on_connect = async (socket: socketio.Socket) => {
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
 
             // Initialise canvas
-            // TODO: Backfill more than one page
-            const objects = backfill(documentId, 0);
-            for (let obj of objects) {
-                socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, obj);
-            }
-            console.log(`Pushed ${objects.length} backfill objects`);
+            const backfillMap = backfill(documentId);
+            console.log(`backfillMap`);
+            console.log(backfillMap);
 
+            for (let [pageNumber, annotations] of backfillMap) {
+                for (let obj of annotations) {
+                    socket.emit('peer-added', pageNumber, obj);
+                }
+                console.log(`Pushed ${annotations.length} backfill objects to page ${pageNumber}`);
+            }
 
         } catch (e) {
             disconnectWithError(socket, e.toString());
