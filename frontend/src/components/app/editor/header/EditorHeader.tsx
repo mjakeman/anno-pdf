@@ -142,8 +142,7 @@ export default function EditorHeader({ annoDocument } : Props) {
 
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
-                    {/* TODO: add edit function*/}
-                    <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
+                    <h1 className="truncate max-w-sm text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
                         {annoDocument.title}
                     </h1>
                     <p className="text-xs text-neutral-400 dark:text-white font-light self-start">
