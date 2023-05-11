@@ -39,7 +39,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
                 <button onClick={() => setShowProfileDropdown(true)} className="flex flex-row gap-4 items-center p-3 transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 rounded-xl">
                     {/*TODO: replace with profile square component*/}
                     <div className="grid place-items-center rounded text-white font-bold w-6 h-6 bg-blue-800">
-                        J
+                        {currentUser?.name[0]}
                     </div>
                     <span className="text-lg text-black dark:text-white">{currentUser?.name}</span>
                     <ChevronDownIcon className="text-slate-500 dark:text-white w-6 h-6" />
