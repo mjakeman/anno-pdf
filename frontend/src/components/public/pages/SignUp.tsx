@@ -8,6 +8,7 @@ import axios from "axios";
 import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
 import {signOut} from "firebase/auth";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
 
 export default function SignUp() {
 
@@ -22,6 +23,7 @@ export default function SignUp() {
 
     const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
     const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+    const {clearDocBuffer } = useContext(RecentContext);
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
 
@@ -72,6 +74,8 @@ export default function SignUp() {
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
             await signOut(auth);
+            clearDocBuffer();
+
         });
     }
 
