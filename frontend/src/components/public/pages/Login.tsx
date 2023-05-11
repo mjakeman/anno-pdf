@@ -8,12 +8,14 @@ import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {signOut} from "firebase/auth";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
 
 export default function Login() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const {clearDocBuffer } = useContext(RecentContext);
 
     const [signInWithGoogle, _googleUser, _googleLoading, _googleError] = useSignInWithGoogle(auth)
     const [signInWithEmailAndPassword, _user, _loading, _emailError] = useSignInWithEmailAndPassword(auth)
@@ -70,6 +72,7 @@ export default function Login() {
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
             await signOut(auth);
+            clearDocBuffer();
         });
     }
 

@@ -146,7 +146,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                 <div className="flex flex-col justify-start">
                     {/* TODO: add edit function*/}
                     <Tooltip text={annoDocument.title} position="bottom">
-                        <h1 className="text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
+                        <h1 className="truncate max-w-sm text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
                             {annoDocument.title}
                         </h1>
                     </Tooltip>
