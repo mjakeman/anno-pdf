@@ -16,7 +16,7 @@ export const useToast = () => useContext(ToastContext);
 
 export const ToastProvider: FC <({children: ReactNode})> = ({children}) => {
     const [toastList, setToastList] = useState<ToastProps[]>([]);
-    const [position, setPosition] = useState<ToastPoisition>("bottom-right");
+    const [position, setPosition] = useState<ToastPoisition>("bottom-middle");
 
     const add = (toast: Omit<ToastProps, "id">) => {
         if(toast.position){
