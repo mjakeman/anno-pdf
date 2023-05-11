@@ -51,7 +51,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
                     <span className="text-sm text-neutral-400 dark:text-white">{currentUser?.email}</span>
                 </div>
             </div>
-            <div onClick={()=>openSettingModal()} className="flex flex-row gap-4 px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-anno-space-800 rounded-xl">
+            <div onClick={()=>openSettingModal()} data-cy="open-settings" className="flex flex-row gap-4 px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-anno-space-800 rounded-xl">
                 <Cog6ToothIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
                 <span className="text-zinc-500 dark:text-white">My Account</span>
             </div>
