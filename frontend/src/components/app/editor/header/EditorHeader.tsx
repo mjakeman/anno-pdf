@@ -5,14 +5,14 @@ import ActiveUserBubbles from "./ActiveUserBubbles";
 import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
-import React, {useEffect, useState} from "react";
-import DarkModeToggleTest from "../../../DarkModeToggleTest";
+import React, {useState} from "react";
 import Logo from "../../../Logo";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContextProvider";
 import { useToast } from "../../../../hooks/useToast";
+import {DocumentContext} from "../Editor";
 import {AnnoDocument} from "../Models";
 import moment from "moment";
 
@@ -26,15 +26,8 @@ export default function EditorHeader({ annoDocument } : Props) {
     const {addToast} = useToast();
 
     const navigate = useNavigate();
-
-    // TODO: replace with the live set of active users which is changing.
-    const activeUsers = [
-        {id: 0, fullName: 'John Doe', email: 'johndoe@gmail.com',},
-        {id: 1, fullName: 'Alice Smith', email: 'alice@hotmail.com',},
-        {id: 2, fullName: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {id: 3, fullName: 'Bob Brown', email: 'bob@gmail.com',},
-        {id: 4, fullName: 'David Mannings', email: 'david@yahoo.com',},
-    ];
+    const [activeUsers] = useContext(DocumentContext);
+    const {currentUser} = useContext(AuthContext);
 
     function formatLastUpdated(dateUTC: string) {
         const localDate = moment.utc(dateUTC).local();
@@ -43,7 +36,6 @@ export default function EditorHeader({ annoDocument } : Props) {
     }
 
     const [showSharePopup, setShowSharePopup] = useState(false);
-
     const [fullScreen, setFullScreen] = useState(false);
 
     async function inviteUser(email: string){
@@ -71,9 +63,36 @@ export default function EditorHeader({ annoDocument } : Props) {
                 type: 'error'
             })
         });
-        
     }
 
+    async function deleteDocument() {
+        let token = await firebaseUserRef!.getIdToken();
+
+        await axios.delete(import.meta.env.VITE_BACKEND_URL + '/documents/' + documentUuid + '/delete', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+                if(response.status==200){
+
+                    navigate('/');
+
+                    addToast({
+                        position: 'top-left',
+                        message: 'Document deleted successfully',
+                        type: 'success'
+                    })
+                }
+            }
+        ).catch((error) => {
+            console.log(error);
+            addToast({
+                position: 'top-left',
+                message: 'Document deletion failed',
+                type: 'error'
+            })
+        });
+    }
 
     function fullScreenClick() {
         const elem = document.documentElement;
@@ -84,6 +103,32 @@ export default function EditorHeader({ annoDocument } : Props) {
             elem.requestFullscreen();
             setFullScreen(true);
         }
+    }
+
+    async function copyDocument(){
+        let token = await firebaseUserRef!.getIdToken();
+
+        await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' +documentUuid + '/copy', null,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }).then((response) => {
+            if(response.data){
+                addToast({
+                    position: 'top-left',
+                    message: 'Document copied successfully',
+                    type: 'success'
+                })
+                window.open('/document/' + response.data.uuid, '_blank')
+            }
+        }
+        ).catch((error) => {
+            addToast({
+                position: 'top-left',
+                message: 'Document copy failed',
+                type: 'error'
+            })
+        });
     }
 
     return (
@@ -106,9 +151,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     </p>
                 </div>
 
-                <ActionMenu onCopy={() => console.log('Copy pressed')} onDelete={() => console.log('Delete pressed')} onDownload={() => console.log('Download pressed')}/>
-
-                <DarkModeToggleTest/>
+                <ActionMenu onCopy={() => copyDocument()} onDelete={() => deleteDocument()} onDownload={() => console.log('Download pressed')} annoDoc={annoDocument}/>
 
             </div>
 
@@ -120,7 +163,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                 <Zoom />
 
                 {/* Active Users */}
-                <ActiveUserBubbles activeUsers={activeUsers} />
+                <ActiveUserBubbles activeUsers={[currentUser, ...activeUsers]} />
 
                 {/* Share button*/}
                 <div className="relative">

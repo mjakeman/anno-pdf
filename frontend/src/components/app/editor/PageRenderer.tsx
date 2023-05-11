@@ -4,7 +4,7 @@ import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 import * as pdfjs from "pdfjs-dist";
 import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
-import {Canvas, Object} from "fabric/fabric-impl";
+import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
 
 // Required configuration option for PDF.js
@@ -67,12 +67,17 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
             const socketClient = socketClientRef.current;
             socketClient.onObjectAdded(pageIndex, uuid, data.target!);
         });
+
+        // Setup Delete Event Handler
+        window.addEventListener('keyup',removeObjectOnDeleteKeyPress)
     }
 
     const disableEvents = (canvas: fabric.Canvas) => {
         // Setup event handlers
         canvas.off('object:modified');
         canvas.off('object:added');
+        canvas.off('object:selected')
+        window.removeEventListener('keyup', removeObjectOnDeleteKeyPress)
     }
 
     // Prevent loop feedback when processing events from the server (i.e. avoiding triggering
@@ -81,6 +86,26 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         disableEvents(canvas);
         fn();
         enableEvents(canvas);
+    }
+
+    const removeObjectOnDeleteKeyPress = (e: KeyboardEvent) => {
+        if (!canvas) return;
+        if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
+            canvas.getActiveObjects().forEach((obj) => {
+                canvas.remove(obj);
+            });
+            canvas.discardActiveObject().renderAll();
+        }
+    }
+
+    const removeOnDeleteIconClick = (e: KeyboardEvent) => {
+        if (!canvas) return;
+        if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
+            canvas.getActiveObjects().forEach((obj) => {
+                canvas.remove(obj);
+            });
+            canvas.discardActiveObject().renderAll();
+        }
     }
 
     // (3) Once the canvas is loaded, draw the actual image.
@@ -249,3 +274,39 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 });
 
 export default PageRenderer;
+
+// Delete Icon functionality - Adapted directly from http://fabricjs.com/custom-control-render
+let deleteIcon = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' id='Ebene_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='595.275px' height='595.275px' viewBox='200 215 230 470' xml:space='preserve'%3E%3Ccircle style='fill:%23F44336;' cx='299.76' cy='439.067' r='218.516'/%3E%3Cg%3E%3Crect x='267.162' y='307.978' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -222.6202 340.6915)' style='fill:white;' width='65.545' height='262.18'/%3E%3Crect x='266.988' y='308.153' transform='matrix(0.7071 0.7071 -0.7071 0.7071 398.3889 -83.3116)' style='fill:white;' width='65.544' height='262.179'/%3E%3C/g%3E%3C/svg%3E";
+
+let img = document.createElement('img');
+img.src = deleteIcon;
+
+fabric.Object.prototype.controls.deleteControl = new fabric.Control({
+    x: 0.5,
+    y: -0.5,
+    offsetY: -16,
+    offsetX: 16,
+    cursorStyle: 'pointer',
+    mouseUpHandler: deleteObject,
+    render: renderIcon,
+});
+function deleteObject(eventData: MouseEvent, transformData: Transform, x: number, y: number): boolean {
+    let target = transformData.target;
+    let canvas = target.canvas;
+    canvas?.getActiveObjects().forEach((obj) => {
+        canvas?.remove(obj);
+    });
+    canvas?.discardActiveObject().renderAll();
+    return true;
+}
+
+function renderIcon(ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: Object) {
+    let size = 20;
+    ctx.save();
+    ctx.translate(left, top);
+    if (fabricObject.angle != null) {
+        ctx.rotate(fabric.util.degreesToRadians(fabricObject.angle));
+    }
+    ctx.drawImage(img, -size/2, -size/2, size, size);
+    ctx.restore();
+}

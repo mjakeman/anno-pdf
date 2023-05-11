@@ -1,4 +1,4 @@
-import {Navigate, Route, Routes} from "react-router-dom";
+import {Navigate, Route, Routes, useNavigate, BrowserRouter} from "react-router-dom";
 import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
@@ -20,13 +20,19 @@ import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import {RecentContextProvider} from "./contexts/RecentContextProvider";
 import {DocContext, DocContextProvider} from "./contexts/DocContextProvider";
+import {AnnoUser} from "./components/app/editor/Models";
 
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
 
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
-    const [currentUser, setCurrentUser] = useLocalStorage('user', null);
+    const [currentUser, setCurrentUserInternal] = useLocalStorage('user', null);
     const [firebaseUserRef, setFirebaseUserRef] = useState<User | null>(null);
+
+    const setCurrentUser = (user: AnnoUser|null, firebaseRef: User|null) => {
+        setCurrentUserInternal(user);
+        setFirebaseUserRef(firebaseRef);
+    }
 
     async function validateWithBackend(token: string) {
         console.log("Performing common user fetch ");
@@ -36,7 +42,7 @@ export default function App() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                setCurrentUser({
+                setCurrentUserInternal({
                     uid: response.data.uid,
                     name: response.data.name,
                     email: response.data.email,
@@ -58,7 +64,7 @@ export default function App() {
         const unsubscribe = auth.onAuthStateChanged(async user => {
             if (user) {
                 if (currentUser) {
-                    setCurrentUser({
+                    setCurrentUserInternal({
                         uid: currentUser.uid,
                         name: currentUser.name,
                         email: currentUser.email,
@@ -74,7 +80,7 @@ export default function App() {
                         await signOut(auth);
                     });
             } else {
-                setCurrentUser(null);
+                setCurrentUserInternal(null);
                 setFirebaseUserRef(null);
             }
         });
@@ -82,6 +88,7 @@ export default function App() {
     }, []);
 
     return (
+        <BrowserRouter>
         <AuthContext.Provider value={{currentUser, setCurrentUser, firebaseUserRef}}>
             <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
                 <DocContextProvider>
@@ -112,5 +119,6 @@ export default function App() {
                 </DocContextProvider>
             </DarkModeContext.Provider>
         </AuthContext.Provider>
+        </BrowserRouter>
         );
 }

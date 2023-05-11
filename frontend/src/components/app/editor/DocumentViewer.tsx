@@ -1,18 +1,15 @@
 import * as pdfjs from "pdfjs-dist";
 import React, {useContext, useEffect, useRef, useState} from "react";
 import {PDFDocumentProxy} from "pdfjs-dist";
-import {v4 as uuidv4} from "uuid";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
+import {useToast} from "../../../hooks/useToast";
 import {AnnoDocument} from "./Models";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
 import {DocumentRecord} from "../dashboard/DashboardTable";
-
-
-const server = import.meta.env.VITE_BACKEND_URL;
 
 interface Props {
     onDocumentLoaded: () => void,
@@ -31,8 +28,9 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     const [pageLoaderCount, setPageLoaderCount] = useState<number>(0);
     const { addToBuffer } = useContext(RecentContext);
 
-    const navigate = useNavigate();
     const socketClient = useRef<SocketClient>(new SocketClient());
+
+    const {addToast} = useToast();
 
     // (1) Startup
     useEffect(() => {
@@ -87,14 +85,23 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
 
 
     useEffect(() => {
-        if (document.uuid) {
-            socketClient.current?.setup(uuidv4(), document.uuid);
+
+        const notify = (message: string) => {
+            addToast({
+                position: 'top-left',
+                message: message,
+                type: 'error'
+            })
+        }
+
+        if (document && currentUser) {
+            socketClient.current?.setup(currentUser.uid, document.uuid, notify);
         }
 
         return () => {
             socketClient.current?.teardown();
         }
-    }, []);
+    }, [currentUser]);
 
 
     function onPageLoaded(pageIndex: number) {
@@ -109,7 +116,7 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
                 {/* Only start the page rendering once we have a full list of pages */}
                 {pdfDocument && pdfPages.length === pdfDocument.numPages &&
                     pdfPages.map((page, index) => (
-                        <PageRenderer onLoad={(pageIndex)=> onPageLoaded(pageIndex)} key={index} page={page} pageIndex={index} socketClientRef={socketClient} />
+                        <PageRenderer onLoad={(pageIndex) => onPageLoaded(pageIndex)} key={index} page={page} pageIndex={index} socketClientRef={socketClient} />
                     ))
                 }
             </div>

@@ -54,18 +54,20 @@ export default function SignUp() {
             }
         }).then(function (response) {
             if (response.status == 200 || response.status == 201) {
-                setCurrentUser({
-                    uid: response.data.uid,
-                    name: response.data.name,
-                    email: response.data.email,
-                    firebaseUserRef: auth.currentUser!
-                });
-                if(location.state && location.state.redirect){
+                setCurrentUser(
+                    {
+                        uid: response.data.uid,
+                        name: response.data.name,
+                        email: response.data.email
+                    },
+                    auth.currentUser!
+                );
+                if (location.state && location.state.redirect){
                     navigate(location.state.redirect ? location.state.redirect:"/dash");
-                }else{
+                } else {
                     navigate("/dash");
                 }
-            
+
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);

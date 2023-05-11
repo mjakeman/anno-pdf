@@ -6,7 +6,8 @@ export interface SharedUser {
     email: string;
 }
 
-export interface Owner {
+// IMPORTANT: Match controller.ts in backend
+export interface AnnoUser {
     uid: string;
     name: string;
     email: string;
@@ -19,6 +20,6 @@ export interface AnnoDocument {
     updatedAt: string,
     base64File: string,
     sharedWith: SharedUser[] // Array of Users
-    owner: Owner
+    owner: AnnoUser
     annotations: fabric.Canvas[]
 }

@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import PublicFooterNavLink from "./PublicFooterNavLink";
-import DarkModeToggleTest from "../../../DarkModeToggleTest";
+import DarkModeToggle from "../../../DarkModeToggle";
 
 export default function PublicFooter() {
     return (
@@ -18,7 +18,9 @@ export default function PublicFooter() {
             <div className="flex flex-col">
                 <a href={"https://github.com/UOA-CS732-SE750-Students-2023/project-group-fearless-foxes"} target="_blank" className="transition-colors text-white hover:text-anno-pink-500">GitHub</a>
             </div>
-            <DarkModeToggleTest />
+            <div className="flex flex-col">
+                <DarkModeToggle />
+            </div>
         </footer>
     );
 }

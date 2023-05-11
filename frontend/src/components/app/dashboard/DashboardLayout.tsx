@@ -4,9 +4,6 @@ import DashboardFooter from "./DashboardFooter";
 import DashboardHeader from "./header/DashboardHeader";
 import CommandMenuDialog from "./header/commandmenu/dialog/CommandMenuDialog";
 import useDialogToggle from "../../../hooks/useDialogToggle";
-import {DocumentRecord} from "./DashboardTable";
-import {User} from "firebase/auth";
-import {CurrentUser} from "../../../contexts/AuthContextProvider";
 import {RecentContextProvider} from "../../../contexts/RecentContextProvider";
 
 export default function DashboardLayout() {
