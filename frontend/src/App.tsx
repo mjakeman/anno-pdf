@@ -10,7 +10,7 @@ import Terms from "./components/public/pages/Terms";
 import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
-import React, {createContext, useEffect, useState,} from "react";
+import React, {createContext, useContext, useEffect, useState,} from "react";
 import { ToastProvider } from "./hooks/useToast";
 import {AuthContext, } from "./contexts/AuthContextProvider";
 import {auth} from "./firebaseAuth";
@@ -18,7 +18,7 @@ import {signOut, User,} from "firebase/auth";
 import axios from "axios";
 import PageNotFound from "./components/public/pages/PageNotFound";
 import ProtectedRoute from "./ProtectedRoute";
-import {RecentContextProvider} from "./contexts/RecentContextProvider";
+import {RecentContext, RecentContextProvider} from "./contexts/RecentContextProvider";
 import {LoadedDocsContextProvider} from "./contexts/LoadedDocsContextProvider";
 import {AnnoUser} from "./components/app/editor/Models";
 
@@ -28,6 +28,7 @@ export default function App() {
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
     const [currentUser, setCurrentUserInternal] = useLocalStorage('user', null);
     const [firebaseUserRef, setFirebaseUserRef] = useState<User | null>(null);
+    const {clearDocBuffer } = useContext(RecentContext);
 
     const setCurrentUser = (user: AnnoUser|null, firebaseRef: User|null) => {
         setCurrentUserInternal(user);
@@ -52,6 +53,7 @@ export default function App() {
         }).catch(async function (error) {
             console.log(`Error: ${error.name} (${error.code})`);
             await signOut(auth);
+            clearDocBuffer();
         });
     }
 
@@ -78,6 +80,7 @@ export default function App() {
                     })
                     .catch(async error => {
                         await signOut(auth);
+                        clearDocBuffer();
                     });
             } else {
                 setCurrentUserInternal(null);

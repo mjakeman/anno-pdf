@@ -49,7 +49,6 @@ export default function EditorHeader({ annoDocument } : Props) {
         }).then((response) => {
             if(response.status==200){
                 addToast({
-                    position: 'top-left',
                     message: 'User invited successfully',
                     type: 'success'
                 })
@@ -58,7 +57,7 @@ export default function EditorHeader({ annoDocument } : Props) {
         ).catch((error) => {
             console.log(error);
             addToast({
-                position: 'top-left',
+                
                 message: 'User invite failed',
                 type: 'error'
             })
@@ -78,7 +77,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     navigate('/');
 
                     addToast({
-                        position: 'top-left',
+                        
                         message: 'Document deleted successfully',
                         type: 'success'
                     })
@@ -87,7 +86,7 @@ export default function EditorHeader({ annoDocument } : Props) {
         ).catch((error) => {
             console.log(error);
             addToast({
-                position: 'top-left',
+                
                 message: 'Document deletion failed',
                 type: 'error'
             })
@@ -115,7 +114,7 @@ export default function EditorHeader({ annoDocument } : Props) {
         }).then((response) => {
             if(response.data){
                 addToast({
-                    position: 'top-left',
+                    
                     message: 'Document copied successfully',
                     type: 'success'
                 })
@@ -124,7 +123,7 @@ export default function EditorHeader({ annoDocument } : Props) {
         }
         ).catch((error) => {
             addToast({
-                position: 'top-left',
+                
                 message: 'Document copy failed',
                 type: 'error'
             })
