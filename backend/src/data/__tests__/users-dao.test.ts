@@ -25,23 +25,47 @@ const user3 = {
 
 const users = [user1, user2, user3];
 
-beforeAll(async () => {
+const connectDB = async () => {
     mongod = await MongoMemoryServer.create();
-    const connectionString = mongod.getUri();
-    await mongoose.connect(connectionString).then(() => mongoose.connection.db.dropDatabase());
-});
+    const uri = mongod.getUri();
+    await mongoose.connect(uri);
+};
 
-beforeEach(async () => {
-    // Drop existing db
-    await mongoose.connection.db.dropDatabase().then(() => mongoose.connection.db.createCollection('users'));
-    await mongoose.connection.db.collection('users').insertMany(users);
+const dropDB = async () => {
+    if (mongod) {
+        await mongoose.connection.dropDatabase();
+        await mongoose.connection.close();
+        await mongod.stop();
+    }
+}
+
+const dropCollections = async () => {
+    if (mongod) {
+        const collections = await mongoose.connection.db.collections();
+        for (let collection of collections) {
+            await collection.drop();
+        }
+    }
+};
+
+beforeAll(async () => {
+    await connectDB();
 });
 
 afterAll(async () => {
-    await mongoose.connection.db.dropDatabase()
-    await mongoose.disconnect();
-    await mongod.stop();
+    await dropDB();
 });
+
+beforeEach(async () => {
+    try {
+        await mongoose.connection.db.collection('users').insertMany(users);
+    } catch (e) {
+        console.log(e);
+    }
+})
+afterEach(async () => {
+    await dropCollections();
+})
 
 describe('Test users-dao', () => {
 
