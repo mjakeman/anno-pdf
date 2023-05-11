@@ -6,7 +6,7 @@ import { toastIconMap, toastPositionsMap, ToastProps, toastStylesMap } from "../
 export default function Toast(props: ToastProps) {
     let { id, message, type, duration, position } = props;
     if (duration === undefined) duration = 5000;
-    if (position === undefined) position = 'bottom-right';
+    position = 'bottom-middle';
     const wrapperRef = useRef<HTMLDivElement>(null);
     const {remove} = useToast();
 

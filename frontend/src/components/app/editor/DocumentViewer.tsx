@@ -88,7 +88,6 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
 
         const notify = (message: string) => {
             addToast({
-                position: 'top-left',
                 message: message,
                 type: 'error'
             })
