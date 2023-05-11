@@ -27,7 +27,12 @@ async function deleteDocument(uuid: string) {
 }
 
 async function updateDocument(uuid: string, document: any) {
-    return Document.findOneAndUpdate({uuid: uuid}, document, {new: true});
+    try{
+        return Document.findOneAndUpdate({uuid: uuid}, document, {new: true});
+    } catch (e) {
+        console.log(e.message);
+        return null;
+    }
 }
 
 async function addSharedUser(uuid: string, email: String) {
