@@ -9,6 +9,7 @@ import Modal from "../../Modal"
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {signOut} from "firebase/auth";
+import {RecentContext} from "../../../contexts/RecentContextProvider";
 
 type SettingTabs = "account" | "settings"
 
@@ -20,6 +21,7 @@ interface SettingModalProps {
 export default function SettingModal({isVisible, onOutsideClick}: SettingModalProps) {
     const [activeTab, setActiveTab] = useState<SettingTabs>("account")
     const settingModal = useRef<HTMLDivElement>(null);
+    const {clearDocBuffer } = useContext(RecentContext);
 
     const isAccountActive = activeTab === "account" ? "bg-gray-300 dark:bg-anno-space-800" : ""
     const isSettingsActive = activeTab === "settings" ? "bg-gray-300 dark:bg-anno-space-800" : ""
@@ -52,12 +54,14 @@ function UserSettings() {
 
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
+    const {clearDocBuffer } = useContext(RecentContext);
 
     const currentUser = useContext(AuthContext);
 
     async function handleSignOut(){
         try {
             await signOut(auth);
+            clearDocBuffer();
             currentUser.setCurrentUser(null, null);
             navigate('/');
         } catch(error) {
