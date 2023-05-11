@@ -108,3 +108,28 @@ describe('Test documents-dao', () => {
         expect(dbDocument).toBeFalsy();
     })
 
+    it ('getDocuments returns documents owned by and shared to User', async () => {
+        let dbDocuments = await getDocuments({uid: '001', email: 'User1@email.com'});
+
+        expect(dbDocuments).toBeTruthy();
+        expect(dbDocuments.length).toBe(2);
+
+        expect(dbDocuments[0]!.owner!.uid).toBe(documents[0].owner.uid);
+        expect(dbDocuments[0]!.owner!.email).toBe(documents[0].owner.email);
+        expect(dbDocuments[0]!.owner!.name).toBe(documents[0].owner.name);
+
+        expect(dbDocuments[0]!.title).toBe(documents[0].title);
+        expect(dbDocuments[0]!.uuid).toBe(documents[0].uuid);
+        expect(dbDocuments[0]!.sharedWith).toStrictEqual(documents[0].sharedWith);
+        expect(dbDocuments[0]!.annotations).toMatchObject(documents[0].annotations);
+
+        expect(dbDocuments[1]!.owner!.uid).toBe(documents[1].owner.uid);
+        expect(dbDocuments[1]!.owner!.email).toBe(documents[1].owner.email);
+        expect(dbDocuments[1]!.owner!.name).toBe(documents[1].owner.name);
+
+        expect(dbDocuments[1]!.title).toBe(documents[1].title);
+        expect(dbDocuments[1]!.uuid).toBe(documents[1].uuid);
+        expect(dbDocuments[1]!.sharedWith).toStrictEqual(documents[1].sharedWith);
+        expect(dbDocuments[1]!.annotations).toMatchObject(documents[1].annotations);
+    })
+
