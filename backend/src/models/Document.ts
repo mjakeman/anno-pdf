@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
+const pageSchema = new Schema({
+    annotations: [Object]
+});
+
 const documentSchema = new Schema({
     owner: {
         uid: { type: String, required: true },
@@ -11,8 +15,8 @@ const documentSchema = new Schema({
     title: { type: String, required: true },
     sharedWith: [String],
     lastUpdatedBy: String,
-    annotations: [Object],
-    uuid: { type: String, required: true, unique: true }
+    uuid: { type: String, required: true, unique: true },
+    pages: { type: [pageSchema]}
 }, { timestamps: true });
 
 const Document = mongoose.model('Document', documentSchema);

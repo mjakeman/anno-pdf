@@ -6,6 +6,7 @@ import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
 import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
+import {MathAnnotation} from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -62,10 +63,10 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         canvas.on('object:added', data => {
             const uuid = uuidv4();
             // @ts-ignore
-            data.target['id'] = uuid;
+            data.target['uuid'] = uuid;
 
             const socketClient = socketClientRef.current;
-            socketClient.onObjectAdded(pageIndex, uuid, data.target!);
+            socketClient.onObjectAdded(pageIndex, data.target!);
         });
 
         // Setup Delete Event Handler
@@ -116,47 +117,60 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
 
         const socketClient = socketClientRef.current;
         socketClient.registerPage(pageIndex, {
-            objectAddedFunc: (uuid, data) => {
+            objectAddedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
-                    console.log("Addition received from peer")
-                    console.log(data);
-                    console.log(uuid);
-                    console.log('\n');
+                    try {
+                        if (data.type == 'MathItext') {
+                            console.log("adding maths");
+                            console.log(data);
+                            // convert to obj
+                            // TODO: SCALING !!!
+                            // @ts-ignore
+                            let text = new MathAnnotation(data['latex'], {
+                                left: data.left,
+                                top: data.top,
+                            });
+                            canvas.add(text);
+                            return;
+                        }
 
-                    // @ts-ignore
-                    data['id'] = uuid;
+                        console.log("Attempting to enliven object:");
+                        console.log(data);
+                        fabric.util.enlivenObjects([data], function (enlivenedObjects: any[]) {
 
-                    fabric.util.enlivenObjects([data], function (enlivenedObjects: fabric.Object[]) {
-                        const newObj = enlivenedObjects[0];
-                        newObj.opacity = 0;
-                        newObj.animate('opacity', 1, {
-                            duration: 500,
-                            onChange: canvas.renderAll.bind(canvas),
-                            easing: fabric.util.ease['easeInQuad']
-                        });
+                            const newObj = enlivenedObjects[0];
+                            newObj.opacity = 0;
+                            newObj.animate('opacity', 1, {
+                                duration: 500,
+                                onChange: canvas.renderAll.bind(canvas),
+                                easing: fabric.util.ease['easeInQuad']
+                            });
 
-                        canvas.add(newObj);
-                        canvas.renderAll();
-                    }, '', undefined);
+                            canvas.add(newObj);
+                            canvas.renderAll();
+
+                        }, '', undefined);
+                    } catch (error) {
+                        console.error(error);
+                    }
                     canvas.renderAll();
                 });
             },
-            objectModifiedFunc: (uuid, data) => {
+            objectModifiedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
                     console.log("Modification received from peer")
+
+                    const uuid = (data as any).uuid;
+
                     console.log(data);
                     console.log(uuid);
                     console.log('\n');
 
-                    var found = false;
+                    let found = false;
 
                     canvas.forEachObject(object => {
 
-                        // @ts-ignore
-                        const cmp_uuid = object['id'];
-                        console.log(cmp_uuid);
-
-                        if (uuid === cmp_uuid) {
+                        if ((object as any).uuid === uuid) {
 
                             const dummyFadeOut = fabric.util.object.clone(object);
                             object.set(data);
@@ -177,8 +191,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
                                 easing: fabric.util.ease['easeInQuad']
                             });
 
-                            // @ts-ignore
-                            object['id'] = uuid;
+                            (object as any).uuid = uuid;
 
                             object.setCoords();
                             canvas.renderAll();

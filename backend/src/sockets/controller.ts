@@ -1,6 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
+import {backfill, saveAddition, saveModification, savePdf} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -86,32 +87,53 @@ const on_connect = async (socket: socketio.Socket) => {
             }
 
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
+
+            // Initialise canvas
+            // TODO: Backfill more than one page
+            const objects = backfill(documentId, 0);
+            for (let obj of objects) {
+                socket.emit('peer-added', 0 /* TODO: PAGE NUMBER */, obj);
+            }
+            console.log(`Pushed ${objects.length} backfill objects`);
+
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
     });
 
-    socket.on("object-modified", (index: number, uuid: string, data: string) => {
+    socket.on("object-modified", (index: number, data: any) => {
         try {
             guard(socket);
 
             const documentId = socketMap[socket.id];
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-modified', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${data.uuid} of type ${data.type}`);
+            socket.to(documentId).emit('peer-modified', index, data);
+
+            saveModification(documentId, index, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
     });
 
-    socket.on('object-added', (index: number, uuid: string, data: string) => {
+    socket.on('object-added', (index: number, data: any) => {
         try {
             guard(socket);
 
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
+
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-added', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${data.uuid} of type ${data.type}`);
+            socket.to(documentId).emit('peer-added', index, data);
+
+            saveAddition(documentId, index, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
@@ -133,6 +155,10 @@ const on_connect = async (socket: socketio.Socket) => {
             delete documentMap[documentId][index];
 
             console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
+
+            // Save document
+            savePdf(documentId);
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }

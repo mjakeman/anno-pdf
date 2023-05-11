@@ -7,14 +7,15 @@ import {AnnoUser} from "../Models";
 const server = import.meta.env.VITE_BACKEND_URL;
 
 type PageCallback = {
-    objectAddedFunc: (uuid: string, data: fabric.Object) => void;
-    objectModifiedFunc: (uuid: string, data: fabric.Object) => void;
+    objectAddedFunc: (data: fabric.Object) => void;
+    objectModifiedFunc: (data: fabric.Object) => void;
 }
 
 export default class SocketClient {
 
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
+    backfillQueue = new Map<number, Array<fabric.Object>>();
     context = useContext(DocumentContext);
     notify?: Function;
 
@@ -52,6 +53,7 @@ export default class SocketClient {
 
     registerPage = (index: number, callback: PageCallback) => {
         this.map.set(index, callback);
+        this.doBackfill(index);
     }
 
     unregisterPage = (index: number) => {
@@ -92,35 +94,144 @@ export default class SocketClient {
         removeActiveUser(userId);
     }
 
-    peerObjectAdded = (index: number, uuid: string, data: fabric.Object) => {
-        console.log("Received page " + index + " addition from peer: " + data);
-        const callbacks = this.map.get(index);
-        callbacks?.objectAddedFunc(uuid, data);
+    pushBackfill = (index: number, data: fabric.Object) => {
+        let queue = this.backfillQueue.get(index);
+        if (!queue) {
+            queue = [];
+            this.backfillQueue.set(index, queue);
+        }
+
+        queue.push(data);
     }
 
-    peerObjectModified = (index: number, uuid: string, data: fabric.Object) => {
-        console.log("Received page " + index + " modification from peer: " + data);
+    doBackfill = (index: number) => {
+        const queue = this.backfillQueue.get(index);
+        if (queue) {
+            while (queue.length != 0) {
+                const item = queue.pop();
+                if (item) {
+                    const callbacks = this.map.get(index);
+                    callbacks?.objectAddedFunc(item);
+                }
+            }
+        }
+    }
+
+    safeConvertToPayload = (object: fabric.Object) => {
+        // This works. Don't touch it please
+        return object.toObject(["uuid", "latex"]);
+    }
+
+    peerObjectAdded = (index: number, data: Object) => {
+        console.log("Received page " + index + " addition from peer");
+        const parsed = data as fabric.Object;
         const callbacks = this.map.get(index);
-        callbacks?.objectModifiedFunc(uuid, data);
+        if (callbacks)
+            callbacks?.objectAddedFunc(parsed);
+        else
+            this.pushBackfill(index, parsed);
+    }
+
+    peerObjectModified = (index: number, data: Object) => {
+        console.log("Received page " + index + " modification from peer");
+        const parsed = data as fabric.Object;
+        const callbacks = this.map.get(index);
+        callbacks?.objectModifiedFunc(parsed);
     }
 
     onObjectModified = (index: number, data: fabric.IEvent) => {
-        console.log("modified: " + data);
+        console.log("modified: " + JSON.stringify(data));
         if (!this.socket) {
             console.error("Socket is null");
             return;
         }
-        // @ts-ignore
-        const uuid = data.target!.get('id');
-        this.socket.emit("object-modified", index, uuid, data.target!.toJSON());
+
+        // Check for event type
+        if (data.target instanceof fabric.ActiveSelection) {
+
+            const selection = data.target!;
+
+            let socket = this.socket;
+
+            const objects = selection.getObjects();
+
+            // Iterate over objects in selection, temporarily remove them
+            // to have normalised object coordinates, transmit the update, then
+            // re-add them to the selection. Brilliant API design. I love fabric <3
+            for (const obj of objects) {
+
+                try {
+                    if ((obj as any).transient) {
+                        console.info("Transient object, skipping...")
+                        return obj;
+                    }
+                } catch (e) {}
+
+                selection.removeWithUpdate(obj);
+
+                // Convert payload inside removeWithUpdate block
+                try {
+                    const json = this.safeConvertToPayload(obj)
+                    socket.emit("object-modified", index, json);
+                    console.log(`MODIFIED: ${obj.type} ${(obj as any).uuid}`);
+                } catch (e) {
+                    console.error(e);
+                }
+
+                selection.addWithUpdate(obj);
+            }
+
+        } else if (data.target instanceof fabric.Object) {
+
+            const obj = data.target!;
+
+            try {
+                if ((obj as any).transient) {
+                    console.info("Transient object, skipping...")
+                    return obj;
+                }
+            } catch (e) {}
+
+            const json = this.safeConvertToPayload(obj);
+            this.socket.emit("object-modified", index, json);
+            console.log(`ADDED: ${obj.type} ${(obj as any).uuid}`);
+        } else {
+            console.error("other! unprocessable");
+            console.error(data.target!);
+            return;
+        }
     }
 
-    onObjectAdded = (index: number, uuid: string, object: fabric.Object) => {
+    onObjectAdded = (index: number, object: fabric.Object) => {
+
+        if (object instanceof fabric.Group) {
+            console.info("Skipping group");
+            return;
+        }
+
+        try {
+            if ((object as any).transient) {
+                console.info("Transient object, skipping...")
+                return object;
+            }
+        } catch (e) {}
+
         if (!this.socket) {
             console.error("Socket is null");
             return;
         }
-        this.socket.emit("object-added", index, uuid, object.toJSON());
+
+        console.log(`ADDED: ${object.type} ${(object as any).uuid}`);
+
+        if (object.type === 'MathItext') {
+            console.info("Sending maths annotation");
+        }
+
+        const json = this.safeConvertToPayload(object);
+
+        // console.log(`Sending: ${json}`);
+
+        this.socket.emit("object-added", index, json);
     }
 
 };
