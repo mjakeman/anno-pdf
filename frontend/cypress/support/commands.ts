@@ -38,6 +38,22 @@
 import { mount } from 'cypress/react18'
 
 
-Cypress.Commands.add('mount', (component, options) => {
-  return mount(component, options)
-})
+// Cypress.Commands.add('mount', (component, options) => {
+//   return mount(component, options)
+// })
+
+Cypress.Commands.add('mount', mount)
+Cypress.Commands.add('login', (email, password) => {
+  cy.visit('http://localhost:5173/login');
+  cy.get('[data-cy="email-input"]').type(email);
+  cy.get('[data-cy="password-input"]').type(password);
+  cy.get('[data-cy="Login"]').click();
+});
+
+Cypress.Commands.add('logout', () => {
+  cy.visit('http://localhost:5173/dash');
+  cy.get('[data-cy="profile-toggle"]').click();
+  cy.get('[data-cy="open-settings"]').click();
+  cy.get('[data-cy="settings-tab"]').click();
+  cy.get('[data-cy="logout-button"]').click();
+});
