@@ -4,13 +4,23 @@ import {getDocuments} from "../data/documents/documents-dao";
 import {User} from "../models/User";
 import admin from "firebase-admin";
 
-
+/**
+ * Controller class for handling user-related endpoint operations
+ */
 class UserController {
 
+  /**
+   * Return a list of all users
+   */
   getUsers = async (_req: Request, res: Response) => {
     return res.json(await getUsers());
   }
 
+  /**
+   * Get a single user
+   *
+   * @param uid - path param representing the uid from firebase auth provider
+   */
   getUser = async (req: Request, res: Response) => {
     const dbUser = await getUser(req.params.uid);
 
@@ -21,6 +31,9 @@ class UserController {
     return res.status(404).send("Could not find user");
   }
 
+  /**
+   * Get all the documents for a user (owned and shared with them)
+   */
   getDocuments = async (req: Request, res: Response) => {
     let currentUserUid = req.user!.uid;
 
@@ -31,6 +44,9 @@ class UserController {
     return res.json(documents);
   }
 
+  /**
+   * Create a new user, or return the existing user record if they already exist
+   */
   createUser = async (req: Request, res: Response) => {
     const user = req.user!;
 
@@ -64,7 +80,11 @@ class UserController {
     return res.status(500).send('Could not create user');
   }
 
-  /** For cypress test cleanup only **/
+  /**
+   * [For cypress test cleanup only]
+   *
+   * Delete a user from mongoDB and the firebase auth provider by their email address.
+   **/
   deleteUser = async (req: Request, res: Response) => {
     const dbUser = await User.findOneAndDelete({ email: req.body.email });
 

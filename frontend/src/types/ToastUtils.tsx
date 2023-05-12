@@ -2,6 +2,11 @@ import {ReactNode, RefObject} from "react";
 import {ExclamationCircleIcon, InformationCircleIcon} from "@heroicons/react/24/solid";
 import {CheckIcon} from "@heroicons/react/20/solid";
 
+/**
+ * Provides utility functions and types for toast component.
+ *  
+ * */
+
 export type ToastProps = {
     id: number;
     message: string;

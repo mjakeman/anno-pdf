@@ -22,14 +22,17 @@ import {RecentContext, RecentContextProvider} from "./contexts/RecentContextProv
 import {LoadedDocsContextProvider} from "./contexts/LoadedDocsContextProvider";
 import {AnnoUser} from "./components/app/editor/Models";
 
+// Create a context for the dark mode state
 export const DarkModeContext = createContext<any[]>([]);
 export default function App() {
-
+    // Initialize state variables using the useLocalStorage hook
     const [isDarkMode, setIsDarkMode] = useLocalStorage('isDarkMode', false);
     const [currentUser, setCurrentUserInternal] = useLocalStorage('user', null);
     const [firebaseUserRef, setFirebaseUserRef] = useState<User | null>(null);
+    // Get the clearDocBuffer function from the RecentContext
     const {clearDocBuffer } = useContext(RecentContext);
 
+    // Define a function to set the current user and Firebase user reference
     const setCurrentUser = (user: AnnoUser|null, firebaseRef: User|null) => {
         setCurrentUserInternal(user);
         setFirebaseUserRef(firebaseRef);
@@ -63,6 +66,7 @@ export default function App() {
 
 
     useEffect(() => {
+        // When user logs in, set the current user
         const unsubscribe = auth.onAuthStateChanged(async user => {
             if (user) {
                 if (currentUser) {
@@ -75,6 +79,7 @@ export default function App() {
                     return;
                 }
             } else {
+                // User is signed out, so clear the user state
                 setCurrentUserInternal(null);
                 setFirebaseUserRef(null);
                 clearDocBuffer();

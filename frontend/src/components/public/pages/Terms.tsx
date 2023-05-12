@@ -6,7 +6,6 @@ export default function Terms() {
             <section className="my-12">
                 <p className="text-neutral-400 dark:text-white">Terms</p>
                 <h1 className="mt-2 text-4xl font-bold text-anno-red-primary dark:text-anno-pink-500">Terms of Use and Privacy Policy</h1>
-                {/*TODO: replace with actual policies */}
                 <div className="text-lg dark:text-white mt-12 text-justify">
                     <p>
                         <b>

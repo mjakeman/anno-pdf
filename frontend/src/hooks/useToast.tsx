@@ -9,7 +9,27 @@ export const ToastContext = createContext<ToastContextType>({
     position: "bottom-right"
 });
 
+/**
+ * A custom React hook that provides access to the ToastContext.
+ * @returns An object containing the addToast and remove functions.
+ */
+
 export const useToast = () => useContext(ToastContext);
+
+/**
+ * A component that provides a ToastContext to its children.
+ * 
+ * Props:
+ * - children: The child components to render.
+ * 
+ * State:
+ * - toastList: An array of ToastProps objects representing the current list of toasts.
+ * - position: The current toast position.
+ * 
+ * Functions:
+ * - add: Adds a new toast to the list.
+ * - remove: Removes a toast from the list.
+ */
 
 export const ToastProvider: FC <({children: ReactNode})> = ({children}) => {
     const [toastList, setToastList] = useState<ToastProps[]>([]);
