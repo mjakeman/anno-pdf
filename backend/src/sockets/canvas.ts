@@ -1,18 +1,31 @@
 import {Document} from "../models/Document";
 import {debugLog} from "./controller";
 
+/**
+ * Reference to a particular page in a particular document
+ */
 type DocumentPageRef = {documentId: string, pageNumber: number};
 
-// Maps DocumentPageRefs to fabric canvases
+/**
+ * Maps DocumentPageRefs to fabric canvases
+ */
 type CanvasMap = Map<string, Array<Object>>;
 
 const canvasMap: CanvasMap = new Map<string, Array<Object>>();
 
-// Keeps track of page numbers
+/**
+ * Keeps track of page numbers
+ */
 type PageCountMap = Map<string, number>;
 
 const pageCountMap: PageCountMap = new Map<string, number>();
 
+/**
+ * Retrieve the annotation map for a given page or create one if it
+ * doesn't exist.
+ *
+ * @param ref Document and page number reference
+ */
 const getCanvasPageMap = (ref: DocumentPageRef) => {
 
     // Store up-to-date page count
@@ -35,11 +48,20 @@ const getCanvasPageMap = (ref: DocumentPageRef) => {
     return objects;
 }
 
+/**
+ * Same as above, but overwrite it with a given value
+ * @param ref Document and page number reference
+ * @param objects Objects to overwrite with
+ */
 const setCanvasPageMap = (ref: DocumentPageRef, objects: Object[]) => {
     let string_ref = JSON.stringify(ref);
     canvasMap.set(string_ref, objects);
 }
 
+/**
+ * Retrieve backfill objects for a given document
+ * @param documentId Document id
+ */
 export const backfill = (documentId: string) => {
 
     const backfillMap = new Map<number, Object[]>();
@@ -53,7 +75,13 @@ export const backfill = (documentId: string) => {
     return backfillMap;
 }
 
-// ONLY run on first load -> use in-memory cache to avoid data loss
+/**
+ * Load a PDF from Mongo
+ *
+ * IMPORTANT: ONLY run on first load -> use in-memory cache to avoid data loss
+ *
+ * @param documentId Document id
+ */
 export const loadPdf = async (documentId: string) => {
     debugLog(`Loading document ${documentId}`);
 
@@ -72,6 +100,11 @@ export const loadPdf = async (documentId: string) => {
     pageCountMap.set(documentId, document.pages.length);
 }
 
+/**
+ * Persist the in-memory store to MongoDB
+ *
+ * @param documentId Document id
+ */
 export const savePdf = async (documentId: string) => {
     debugLog(`Persisting document ${documentId}`);
 
@@ -107,6 +140,12 @@ export const savePdf = async (documentId: string) => {
         })
 }
 
+/**
+ * Save modification to in-memory  store
+ * @param documentId Document id
+ * @param pageNumber Page number
+ * @param modification Modification to save
+ */
 export const saveModification = (documentId: string, pageNumber: number, modification: any) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
     debugLog("object:")
@@ -125,6 +164,12 @@ export const saveModification = (documentId: string, pageNumber: number, modific
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
+/**
+ * Save addition to in-memory store
+ * @param documentId Document id
+ * @param pageNumber Page number
+ * @param addition Addition to save
+ */
 export const saveAddition = (documentId: string, pageNumber: number, addition: any) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
 
@@ -134,6 +179,12 @@ export const saveAddition = (documentId: string, pageNumber: number, addition: a
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
+/**
+ * Action removal on in-memory store
+ * @param documentId Document id
+ * @param pageNumber Page number
+ * @param uuid Uuid of object to remove
+ */
 export const saveRemoval = (documentId: string, pageNumber: number, uuid: string) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
     debugLog("object:")
