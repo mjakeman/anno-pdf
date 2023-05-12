@@ -20,7 +20,7 @@ export default function Tooltip({ children, text, position }: Props) {
         >
             {children}
             {isHovered && (
-                <div className={"absolute bg-gray-800 text-white rounded py-1 px-2 text-xs whitespace-nowrap " + styles}>
+                <div className={"absolute bg-gray-800 text-white rounded py-1 px-2 text-xs whitespace-nowrap z-[9999] " + styles}>
                     {text}
                 </div>
             )}
