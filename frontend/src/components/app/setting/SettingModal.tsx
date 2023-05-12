@@ -17,6 +17,14 @@ interface SettingModalProps {
     onOutsideClick: (params: any) => any,
 }
 
+/**
+ * A component that displays a modal for user settings and account information.
+ * 
+ * State:
+ * - activeTab: The currently active tab ("account" or "settings").
+ * 
+ */
+
 export default function SettingModal({isVisible, onOutsideClick}: SettingModalProps) {
     const [activeTab, setActiveTab] = useState<SettingTabs>("account")
     const settingModal = useRef<HTMLDivElement>(null);
@@ -24,6 +32,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
     const currentUser = useContext(AuthContext);
     const navigate = useNavigate();
     const {addToast} = useToast();
+    // Styles for active tab
     const isAccountActive = activeTab === "account" ? "bg-neutral-200 dark:bg-anno-space-700 dark:hover:bg-anno-space-700" : ""
     const isSettingsActive = activeTab === "settings" ? "bg-neutral-200 dark:bg-anno-space-700 dark:hover:bg-anno-space-700" : ""
 

@@ -36,15 +36,21 @@ class TextModel extends Tool {
 
     draw(canvas: Canvas): void {
         canvas.on('mouse:down', (event) => {
+            // If we click the canvas (not an object):
             if (event.target === null) {
+
+                // Add the text object
                 let text = new fabric.IText('', {left: event.e.offsetX, top: event.e.offsetY, fill: this._color});
                 canvas.add(text);
                 canvas.setActiveObject(text);
+
+                // Make sure that when they edit, if the length of the text is 0, just remove the text object
                 text.on('editing:exited', () => {
                     if (text.text?.length === 0) {
                         canvas.remove(text);
                     }
                 });
+                // Then enter editing
                 text.enterEditing();
             }
         });

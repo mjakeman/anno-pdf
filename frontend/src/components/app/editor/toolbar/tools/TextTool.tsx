@@ -35,19 +35,19 @@ export default function TextTool({id} : Props) {
         setActiveToolData(textTool);
     }
 
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(textTool);
     }, [textTool]);
 
-
-
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full bg-white dark:bg-anno-space-700`}>
+            <span className={`transition-all duration-300 flex flex-row items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'}`}>
 
                 <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2' : 'border-transparent border hover:bg-gray-200 '} p-1 overflow-hidden rounded-full transition-colors dark:bg-anno-space-700`}>
                     <svg className="w-7 h-7" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -62,9 +62,13 @@ export default function TextTool({id} : Props) {
                     </button>
                 }
             </span>
+
+            {/* Options (color / stroke) */}
             {showOptions &&
                 <div ref={dropdown} className="absolute mt-4 rounded-3xl border-2 border-stone-300 bg-zinc-800 flex flex-col gap-4 p-4 w-72">
                     <div className="grid grid-cols-6 gap-2">
+
+                        {/* Color Palette */}
                         {textTool.allowedColors.map((color, idx) => (
                             <div key={idx} onClick={() => handleColorSelect(color)} className={`${textTool.color === color ? 'border-2 border-pink-300' : 'border-transparent border-2'} transition-all h-8 w-8 rounded-full`} style={{backgroundColor: color}}>
                             </div>

@@ -36,12 +36,13 @@ export default function RectangleTool({id} : Props) {
         setActiveToolData(rectTool);
     }
 
-
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(rectTool);
     }, [rectTool]);
 
@@ -50,7 +51,7 @@ export default function RectangleTool({id} : Props) {
         <span className="relative">
             <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-anno-space-700 p-1'}`}>
 
-                <button onClick={handleRectangleClick} type="button" className={`${isActiveTool ? 'border-2 ' : 'border-transparent border'} rounded-full`}>
+                <button onClick={handleRectangleClick} type="button" className={`${isActiveTool ? 'border-2 bg-white dark:bg-anno-space-700' : 'border-transparent border'} rounded-full`}>
                     <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="3.5" y="6.5" width="17" height="11" rx="1.5" fill="#FFEAED" stroke="#CA2D37"/>
                     </svg>
@@ -61,9 +62,12 @@ export default function RectangleTool({id} : Props) {
                     </button>
                 }
             </span>
+
+            {/* Options (color / stroke) */}
             {showOptions &&
                 <div ref={dropdown} className="absolute mt-4 rounded-3xl border-2 border-stone-300 bg-zinc-800 flex flex-col gap-4 p-4 w-72">
 
+                    {/* Color Palette */}
                     <div className="grid grid-cols-6 gap-2">
                         {rectTool.allowedColors.map((color: string, idx: number) => (
                             <div key={idx} onClick={() => handleFillColorSelect(color)} className={`${rectTool.color === color ? 'border-2 border-pink-300' : 'border-transparent border-2'} transition-all h-8 w-8 rounded-full`}  style={{backgroundColor: color}}>

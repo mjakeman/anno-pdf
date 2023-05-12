@@ -24,6 +24,8 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
     const profileColor = {
         backgroundColor: bgColor,
     }
+
+    //alter dark mode accordingly
     function turnOnDarkMode() {
         if (!isDarkMode) {
             setIsDarkMode(true);
@@ -38,7 +40,6 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     return (
         <div ref={profileDropdownRef} className=" drop-shadow-around rounded-lg bg-white px-2 py-2 flex flex-col gap-4 dark:bg-anno-space-700 relative z-[100]">
-
             <div className="flex flex-row gap-4 items-center pl-4 py-2  pr-12">
                 <div className={"grid place-items-center rounded text-white font-bold h-10 w-10 text-2xl "} style={profileColor}>
                     {currentUser?.name[0].toUpperCase()}
@@ -48,10 +49,12 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
                     <span className="text-sm text-neutral-400 dark:text-white">{currentUser?.email}</span>
                 </div>
             </div>
+            {/*To take user to settings*/}
             <div onClick={()=>openSettingModal()} data-cy="open-settings" className="flex flex-row gap-4 px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-anno-space-800 rounded-xl">
                 <Cog6ToothIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
                 <span className="text-zinc-500 dark:text-white">My Account</span>
             </div>
+            {/*Display toggle depending on mode theme*/}
             <div className=" flex flex-row gap-4 items-center px-4 py-2 ">
                 { isDarkMode ? <MoonIcon className="w-6 h-6 text-zinc-500 dark:text-white" /> : <SunIcon className="w-6 h-6 text-zinc-500 dark:text-white" />}
                 <span className="text-zinc-500 dark:text-white">Theme</span>

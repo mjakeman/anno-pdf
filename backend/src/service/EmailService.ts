@@ -1,6 +1,7 @@
 import Config from "../util/Config";
 import nodeMailer from "nodemailer";
 
+// Setup node mailer with account information
 const transporter = nodeMailer.createTransport({
     service: 'gmail',
     auth: {
@@ -9,7 +10,14 @@ const transporter = nodeMailer.createTransport({
     }
 });
 
+/**
+ * Class used for email sending functionality
+ * */
 class EmailService {
+
+    /**
+     * Send an invite email to a specified address when a document is shared with it.
+     * */
     async sendEmail(documentUuid: string, toEmail: string, fromEmail: string) {
         const documentUrl = `${Config.FRONTEND_BASE_URL}/document/${documentUuid}`;
         const html = this.getHtmlTemplate(documentUrl, fromEmail);
@@ -30,6 +38,7 @@ class EmailService {
         return emailSent;
     }
 
+    // Formatted html for invite emails
     private getHtmlTemplate(documentUrl: string, fromEmail: string) : string {
         return `
         <!DOCTYPE html>
