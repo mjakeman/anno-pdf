@@ -1,5 +1,5 @@
 import {fabric} from "fabric";
-import React, {useRef} from "react";
+import React from "react";
 import TeXToSVG from 'tex-to-svg';
 
 

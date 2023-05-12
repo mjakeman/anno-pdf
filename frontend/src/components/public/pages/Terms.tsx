@@ -1,4 +1,3 @@
-import PrimaryButton from "../../PrimaryButton";
 import Container from "../../Container";
 
 export default function Terms() {

@@ -1,17 +1,17 @@
 import React from "react";
-import { generateUniqueColors } from "./public/ProfileHashUtil";
+import {generateUniqueColors} from "./public/ProfileHashUtil";
 
 export enum ProfileBubbleSizes {
     Small = "w-10 h-10 text-lg",
     Large = "w-12 h-12 text-xl"
 }
 
-interface Props {
+interface ProfileBubbleProps {
     size: ProfileBubbleSizes,
     email: string,
 }
 
-export default function ProfileBubble({size, email} : Props) {
+export default function ProfileBubble({size, email} : ProfileBubbleProps) {
 
     // Use styling generated from a name
     const {bgColor, borderColor} = generateUniqueColors(email);

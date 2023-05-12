@@ -1,17 +1,4 @@
-import EditorHeader from "./header/EditorHeader";
-import Toolbar from "./toolbar/Toolbar";
-import AnimatedSpinner from "../AnimatedSpinner";
-import DocumentViewer from "./DocumentViewer";
 import React from "react";
-import Logo from "../../Logo";
-import ActionMenu from "./header/ActionMenu";
-import DarkModeToggle from "../../DarkModeToggle";
-import Fullscreen from "./header/Fullscreen";
-import Zoom from "./header/Zoom";
-import ActiveUserBubbles from "./header/ActiveUserBubbles";
-import PrimaryButton from "../../PrimaryButton";
-import {UserPlusIcon} from "@heroicons/react/24/outline";
-import SharePopup from "../share/popup/SharePopup";
 
 export default function EditorSkeleton() {
     return (

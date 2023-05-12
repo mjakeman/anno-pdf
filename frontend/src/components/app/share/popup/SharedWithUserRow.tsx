@@ -1,8 +1,9 @@
 import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import {TrashIcon, XMarkIcon} from "@heroicons/react/24/solid"
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
-interface Props {
+
+interface SharedWithUserRowProps {
     ownerUid: string,
     userUid: string | null,
     name: string, // Will be set to 'New User'
@@ -13,7 +14,7 @@ interface Props {
 
 
 }
-export default function SharedWithUserRow({ownerUid, userUid, name, email, onConfirmRemove} : Props) {
+export default function SharedWithUserRow({ownerUid, userUid, name, email, onConfirmRemove} : SharedWithUserRowProps) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const {currentUser} = useContext(AuthContext);

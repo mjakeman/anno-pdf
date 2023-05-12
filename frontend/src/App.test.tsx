@@ -1,11 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import App from './App';
-import { describe, it, expect } from 'vitest'
-import DashboardTable from './components/app/dashboard/DashboardTable';
+import {describe, expect, it} from 'vitest'
 import '@testing-library/jest-dom'
-import About from './components/public/pages/About';
 import Login from './components/public/pages/Login';
-import { BrowserRouter } from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 
 describe('App', () => {
     it('Jest equivalent test', () => {

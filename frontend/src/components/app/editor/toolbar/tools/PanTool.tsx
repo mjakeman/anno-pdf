@@ -3,6 +3,7 @@ import {useContext, useEffect, useState} from "react";
 import {ToolContext} from "../../Editor";
 import Pan from "../model/tools/Pan";
 import {useIsMount} from "../../../../../hooks/useIsMount";
+
 interface Props {
     id: string
 }

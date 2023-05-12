@@ -1,4 +1,3 @@
-import DashboardHeader from "../../app/dashboard/header/DashboardHeader";
 import {Outlet} from "react-router-dom";
 import React from "react";
 import PublicFooter from "./footer/PublicFooter";
