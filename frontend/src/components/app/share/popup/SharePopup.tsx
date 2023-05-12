@@ -37,7 +37,6 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
             const indexOfObject = peopleList.findIndex(object => {
                 return object.email === emailOfPersonToBeRemoved;
             });
-            // TODO: This is where we query!
             setSharedWithUsers([
                 ...peopleList.slice(0, indexOfObject),
                 ...peopleList.slice(indexOfObject + 1),

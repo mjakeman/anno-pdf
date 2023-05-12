@@ -46,7 +46,6 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         }
 
         // Otherwise, if the canvas is NOT already set, then we need to create a new canvas
-        // TODO: Here we add the API call to get the canvas object from backend.
         const newCanvas = new fabric.Canvas(canvasRef.current, {
             width: pageImg.width,
             height: pageImg.height,
