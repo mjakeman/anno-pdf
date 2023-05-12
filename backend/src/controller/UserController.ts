@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {getUsers, getUser, createUser} from "../data/users/users-dao";
 import {getDocuments} from "../data/documents/documents-dao";
 import {User} from "../models/User";
+import admin from "firebase-admin";
 
 
 class UserController {
@@ -61,6 +62,25 @@ class UserController {
 
     // Didn't work - give up
     return res.status(500).send('Could not create user');
+  }
+
+  /** For cypress test cleanup only **/
+  deleteUser = async (req: Request, res: Response) => {
+    const dbUser = await User.findOneAndDelete({ email: req.body.email });
+
+    if (dbUser) {
+      // delete from firebase
+      try {
+        await admin.auth().deleteUser(dbUser.uid);
+      } catch (e) {
+        console.log(e);
+        return res.status(500).send()
+      }
+
+      return res.status(200).send("Deleted user successfully");
+    }
+
+    return res.status(404).send("Could not find user");
   }
 }
 
