@@ -9,7 +9,6 @@ import {useToast} from "../../../hooks/useToast";
 import {AnnoDocument} from "./Models";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
 import {DocumentRecord} from "../dashboard/DashboardTable";
-import * as jspdf from "jspdf";
 
 interface Props {
     onDocumentLoaded: () => void,
