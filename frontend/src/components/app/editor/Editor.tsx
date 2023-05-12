@@ -10,6 +10,7 @@ import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {AnnoDocument, AnnoUser} from "./Models";
 import axios from "axios";
 import AnimatedSpinner from "../AnimatedSpinner";
+import Select from "./toolbar/model/tools/Select";
 import {useToast} from "../../../hooks/useToast";
 
 export const ToolContext = React.createContext<any[]>([]);
@@ -18,7 +19,7 @@ export const DocumentContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
-    const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
+    const [activeToolData, setActiveToolData] = useState<Tool>(new Select("select"));
     const [zoom, setZoom] = useState(100); // Initial Zoom
     let  { documentUuid } = useParams();
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
@@ -75,7 +76,7 @@ export default function Editor() {
     const [sharedUsers, setSharedUsers] = useState<AnnoUser[]>(testUsers);
 
     useEffect(() => {
-        setActiveToolData(new Pan("pan"));
+        setActiveToolData(new Select("select"));
     }, []);
 
     const addActiveUser = (user: AnnoUser) => {

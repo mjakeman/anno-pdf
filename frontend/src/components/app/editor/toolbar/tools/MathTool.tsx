@@ -2,12 +2,13 @@ import {useContext, useEffect, useState} from "react";
 import {ToolContext} from "../../Editor";
 import Pan from "../model/tools/Pan";
 import Maths from "../model/tools/Maths";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string
 }
 export default function MathTool({id} : Props) {
-
+    const isMount = useIsMount();
     const [mathTool, setMathTool] = useState<Maths>(new Maths(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -23,7 +24,7 @@ export default function MathTool({id} : Props) {
 
 
     useEffect(() => {
-        setActiveToolData(mathTool);
+        if (!isMount) setActiveToolData(mathTool);
     }, [mathTool]);
 
 

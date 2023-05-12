@@ -4,12 +4,14 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 import Pen from "../model/tools/Pen";
 import {ToolContext} from "../../Editor";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string
 }
 export default function PenTool({ id } : Props) {
 
+    const isMount = useIsMount();
     const [pen, setPen] = useState<Pen>(new Pen(id, 2, '#000000'));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -46,7 +48,7 @@ export default function PenTool({ id } : Props) {
     }, [activeToolData.id]);
 
     useEffect(() => {
-        setActiveToolData(pen);
+        if (!isMount) setActiveToolData(pen);
     }, [pen]);
 
     return (

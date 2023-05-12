@@ -3,12 +3,14 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 import {ToolContext} from "../../Editor";
 import Highlighter from "../model/tools/Highlighter";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string
 }
 export default function HighlighterTool({ id } : Props) {
 
+    const isMount = useIsMount();
     const [highlighter, setHighlighter] = useState<Highlighter>(new Highlighter(id, 12,'#dff000'));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -45,7 +47,7 @@ export default function HighlighterTool({ id } : Props) {
     }, [activeToolData.id]);
 
     useEffect(() => {
-        setActiveToolData(highlighter);
+        if (!isMount) setActiveToolData(highlighter);
     }, [highlighter]);
 
 
