@@ -32,9 +32,17 @@ export default function SignUp() {
 
     useEffect(() => {
         if (currentUser) {
-            navigate(location.state?.redirect ? location.state.redirect : "/dash");
-        }
-    }, []);
+            if(location.state){
+                if(location.state.redirect=="/login" || location.state.redirect=="/signup"){
+                    navigate("/dash");
+                }else{
+                navigate(location.state?.redirect ? location.state.redirect : "/dash");
+                }
+            }
+            else{
+                navigate("/dash");
+            }        }
+    }, [currentUser]);
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
@@ -64,12 +72,7 @@ export default function SignUp() {
                     },
                     auth.currentUser!
                 );
-                if (location.state && location.state.redirect){
-                    navigate(location.state.redirect ? location.state.redirect:"/dash");
-                } else {
-                    navigate("/dash");
-                }
-
+        
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);

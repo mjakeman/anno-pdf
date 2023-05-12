@@ -28,14 +28,18 @@ export default function Login() {
 
     useEffect(() => {
         if (currentUser) {
-            console.log(location)
-            if(location.state){
-                navigate(location.state.redirect ? location.state.redirect : "/dash");
-            }else{
+        if(location.state){
+            if(location.state.redirect=="/login" || location.state.redirect=="/signup"){
                 navigate("/dash");
+            }else{
+            navigate(location.state?.redirect ? location.state.redirect : "/dash");
             }
         }
-    }, []);
+        else{
+            navigate("/dash");
+        }
+    }
+    }, [currentUser]);
 
     async function validateWithBackend(token: string, displayName: string|null = null) {
         console.log("Performing common sign up method");
@@ -61,11 +65,7 @@ export default function Login() {
                     },
                     auth.currentUser!,
                 );
-                if(location.state && location.state.redirect){
-                    navigate(location.state.redirect ? location.state.redirect:"/dash");
-                }else{
-                    navigate("/dash");
-                }
+                
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
