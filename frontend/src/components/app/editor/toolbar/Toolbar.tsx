@@ -4,7 +4,6 @@ import PenTool from "./tools/PenTool";
 import HighlighterTool from "./tools/HighlighterTool";
 import RectangleTool from "./tools/RectangleTool";
 import TextTool from "./tools/TextTool";
-import MathTool from "./tools/MathTool";
 import Tooltip from "../../../Tooltip";
 import ClearAllButton from "./tools/ClearAllButton";
 
@@ -15,7 +14,7 @@ export default function Toolbar() {
         <Tooltip text="Select" position="bottom">
             <SelectTool id={'select'} />
         </Tooltip>
-        <span className="h-4 border border-l-2 border-zinc-400 rounded-full dark:border-white translate-x-1/2 mx-2"></span>
+        <span className="h-10 border border-l-2 border-zinc-400 rounded-full dark:border-white translate-x-1/2 mx-2"></span>
         <Tooltip text="Pen" position="bottom">
             <PenTool id={'pen-1'}/>
         </Tooltip>
@@ -28,13 +27,10 @@ export default function Toolbar() {
         <Tooltip text="Text" position="bottom">
             <TextTool id={'text'} />
         </Tooltip>
-        <Tooltip text="Equation" position="bottom">
-            <MathTool id={'math'} />
-        </Tooltip>
         <Tooltip text="Rectangle" position="bottom">
             <RectangleTool id={'rect'} />
         </Tooltip>
-        <span className="h-4 border border-l-2 border-zinc-400 rounded-full dark:border-white translate-x-1/2 mx-2"></span>
+        <span className="h-10 border border-l-2 border-zinc-400 rounded-full dark:border-white translate-x-1/2 mx-2"></span>
         <Tooltip text="Clear Annotations" position="bottom">
             <ClearAllButton />
         </Tooltip>

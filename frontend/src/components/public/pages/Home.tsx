@@ -86,8 +86,8 @@ export default function Home() {
                                     <h1>All sorts of annotations.</h1>
                                 </span>
                             <span className="text-lg text-neutral-400 dark:text-white">
-                                    <p>Anno features many different types of annotations - including, for the first time ever, ✨<b>Math annotations</b>✨.</p>
-                               </span>
+                                <p>Anno features many different types of annotations. From drawing to typing, Anno is built for the way you work.</p>
+                            </span>
                         </div>
                         <div className="relative rounded-md basis-3/4">
                             <img className="relative z-40 w-full h-[32rem] rounded-xl object-cover" src={annotationImg} alt="Laptop and coffee"/>

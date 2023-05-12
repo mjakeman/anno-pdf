@@ -123,22 +123,9 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
             objectAddedFunc: data => {
                 runWithEventsFrozen(canvas, () => {
                     try {
-                        if (data.type == 'MathItext') {
-                            console.log("adding maths");
-                            console.log(data);
-                            // convert to obj
-                            // TODO: SCALING !!!
-                            // @ts-ignore
-                            let text = new MathAnnotation(data['latex'], {
-                                left: data.left,
-                                top: data.top,
-                            });
-                            canvas.add(text);
-                            return;
-                        }
-
                         console.log("Attempting to enliven object:");
                         console.log(data);
+
                         fabric.util.enlivenObjects([data], function (enlivenedObjects: any[]) {
 
                             const newObj = enlivenedObjects[0];
@@ -327,7 +314,7 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
     mouseUpHandler: deleteObject,
     render: renderIcon,
 });
-function deleteObject(eventData: MouseEvent, transformData: Transform, x: number, y: number): boolean {
+function deleteObject(eventData: MouseEvent, transformData: Transform): boolean {
     let target = transformData.target;
     let canvas = target.canvas;
     canvas?.getActiveObjects().forEach((obj) => {

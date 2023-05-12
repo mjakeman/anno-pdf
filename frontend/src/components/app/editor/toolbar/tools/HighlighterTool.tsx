@@ -53,9 +53,9 @@ export default function HighlighterTool({ id } : Props) {
 
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'} p-1 `}>
+            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'} p-1'}`}>
 
-                <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'}  p-1 rounded-full transition-colors dark:hover:bg-anno-space-700`}>
+                <button onClick={handleClick} type="button" className={`bg-white dark:bg-anno-space-700 ${isActiveTool ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'}  rounded-full transition-colors dark:hover:bg-anno-space-700 p-1`}>
                     <svg className="w-7 h-7 stroke-0.5" style={{fill: highlighter.color, stroke:  "black"}} viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="2.5" y="17.5" width="8" height="4"/>
                             <g clipPath="url(#clip0_100_553)">
