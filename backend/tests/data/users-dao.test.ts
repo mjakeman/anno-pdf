@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import {createUser, getUser, getUserByEmail, getUsers, getUsersByEmailList} from "../users/users-dao";
-import {User} from "../../models/User";
+import {createUser, getUser, getUserByEmail, getUsers, getUsersByEmailList} from "../../src/data/users/users-dao";
+import {User} from "../../src/models/User";
 
 let mongod: MongoMemoryServer;
 

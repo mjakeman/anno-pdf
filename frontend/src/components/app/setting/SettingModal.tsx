@@ -80,6 +80,8 @@ function UserSettings() {
 
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
+    const {addToast} = useToast();
+
     function turnOnDarkMode() {
         if (!isDarkMode) {
             setIsDarkMode(true);

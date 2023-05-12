@@ -53,7 +53,6 @@ export default function Editor() {
                     addToast({
                         message: 'Failed to fetch document',
                         type: 'error',
-                        position: 'top-left'
                     })
                 });
             })
