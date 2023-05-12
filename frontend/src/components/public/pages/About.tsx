@@ -21,20 +21,17 @@ export default function About() {
                         <div className="w-1/2 text-lg dark:text-white text-justify">
                             {/*TODO: Change this text */}
                             <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam cursus ut libero a imperdiet.
-                                Nunc libero metus, porttitor ac est ut, tempor consequat est. Proin nec mauris turpis.
-                                Maecenas finibus sem sed purus efficitur, quis sagittis enim pharetra. Fusce eleifend
-                                euismod iaculis. Donec tortor nulla, sagittis pellentesque hendrerit a, rutrum ac nisl.
-                                Sed dictum molestie laoreet. Aliquam id tincidunt dui. Donec rutrum, magna in bibendum lacinia,
-                                diam libero varius metus, nec egestas libero est vel tortor.
+                                Our journey began with a simple problem: quickly annotating lecture notes and slides at university was a huge headache.
+                                It would either cost money, take too long, or miss features like collaborative editing. And after scouring the internet for
+                                a tool that would be <b>reliable and free</b>, we discovered a hard-to-swallow truth - there was no such thing. So, the next move was clear -
+                                we were going to build one.
                             </p>
                             <br />
                             <p>
-                                Aenean vitae tempor libero. Sed ac finibus elit. Duis ut pretium massa. Quisque varius lacus
-                                a sapien lobortis, quis semper lorem vehicula. Cras erat purus, vulputate eu scelerisque non,
-                                pulvinar ullamcorper urna. Nam lectus nibh, malesuada in tempor id, sagittis non turpis. Aenean
-                                mattis dui luctus ornare blandit. Duis laoreet pharetra erat sit amet suscipit. Quisque et tortor
-                                felis. Nam id eleifend ex. Donec vehicula sodales massa at imperdiet.
+                                As Software Engineering students in our final year - driven by a passion for high quality software
+                                and design, the 6 of us put our heads together to develop the first iteration of Anno; which is what
+                                you see here today. As we continue to iterate, design and develop, our goal is clear: to empower
+                                individuals, teams, and organisations to easily collaborate on PDF documents.
                             </p>
                         </div>
                     </div>
@@ -57,22 +54,18 @@ export default function About() {
                 <section className="my-12">
                     <div className="mt-8 flex flex-row gap-12 items-center">
                         <div className="w-1/2 text-lg dark:text-white text-justify">
-                            {/*TODO: Change this text */}
                             <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam cursus ut libero a imperdiet.
-                                Nunc libero metus, porttitor ac est ut, tempor consequat est. Proin nec mauris turpis.
-                                Maecenas finibus sem sed purus efficitur, quis sagittis enim pharetra. Fusce eleifend
-                                euismod iaculis. Donec tortor nulla, sagittis pellentesque hendrerit a, rutrum ac nisl.
-                                Sed dictum molestie laoreet. Aliquam id tincidunt dui. Donec rutrum, magna in bibendum lacinia,
-                                diam libero varius metus, nec egestas libero est vel tortor.
+                                At the heart of Anno, lies a team of 6 engineers - and each of us are working to bring a unique
+                                set of skills and expertise as we build this tool for the world to use. Broken up into backend
+                                and frontend, our focus is to build a product which not only works well - but is enjoyable
+                                to use.
                             </p>
                             <br />
                             <p>
-                                Aenean vitae tempor libero. Sed ac finibus elit. Duis ut pretium massa. Quisque varius lacus
-                                a sapien lobortis, quis semper lorem vehicula. Cras erat purus, vulputate eu scelerisque non,
-                                pulvinar ullamcorper urna. Nam lectus nibh, malesuada in tempor id, sagittis non turpis. Aenean
-                                mattis dui luctus ornare blandit. Duis laoreet pharetra erat sit amet suscipit. Quisque et tortor
-                                felis. Nam id eleifend ex. Donec vehicula sodales massa at imperdiet.
+                                So come along with us as we embark on this journey of revolutionised PDF editing. We hope that
+                                as you use it you realise it's not just a PDF editor; it's a testament to our unwavering determination to tackle
+                                real-world challenges, and continuous strive to create software which makes annotating
+                                PDFs fast, easy and above all else - collaborative.
                             </p>
                         </div>
                         <img className="w-1/2 object-cover h-112 rounded-xl" src={bookImg} alt="Holding a light bulb"/>
