@@ -57,10 +57,36 @@ Cypress.Commands.add('logout', () => {
   cy.get('[data-cy="logout-button"]').click();
 });
 
+Cypress.Commands.add('deleteUser', (email) => {
+  var token='';
+  cy.request('POST', 
+  `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${Cypress.env('API_TOKEN')}`
+  , {
+      email: "postmanuser@email.com",
+      password: "password",
+      returnSecureToken: true
+  }).then((response) => {
+      token = response.body.idToken;
+
+      cy.request({
+          method: 'DELETE',
+          url: `http://localhost:8080/user`,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: {
+            email: email
+          }
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        });
+  });
+  
+});
 Cypress.Commands.add('deleteFile', (documentId) => {
   var token='';
   cy.request('POST', 
-  `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyA3gTfsWuuEoLZktxhjBRwg1DqsaBbL_OE`
+  `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${Cypress.env('API_TOKEN')}`
   , {
       email: "postmanuser@email.com",
       password: "password",
