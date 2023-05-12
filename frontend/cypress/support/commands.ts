@@ -54,7 +54,6 @@ Cypress.Commands.add('logout', () => {
   cy.visit('http://localhost:5173/dash');
   cy.get('[data-cy="profile-toggle"]').click();
   cy.get('[data-cy="open-settings"]').click();
-  cy.get('[data-cy="settings-tab"]').click();
   cy.get('[data-cy="logout-button"]').click();
 });
 
