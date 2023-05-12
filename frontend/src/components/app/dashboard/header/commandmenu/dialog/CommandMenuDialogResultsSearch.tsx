@@ -26,6 +26,7 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
         setGroupedResults(results);
     }, [searchResults]);
 
+    //display this for blank results
     if (Object.keys(groupedResults).length === 0) {
         return (
             <div className="flex items-center justify-center w-full h-full">
@@ -35,6 +36,7 @@ export default function CommandMenuDialogResultsSearch( {searchResults, searchIn
     }
     return (
         <>
+            {/*Display results from search*/}
             {Object.keys(groupedResults).map((category) => (
                 <div key={category} className="flex flex-col gap-2 w-full">
                     <h1 className="text-neutral-400 text-lg dark:text-white">

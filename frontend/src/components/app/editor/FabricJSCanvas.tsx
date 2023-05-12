@@ -25,7 +25,7 @@ export default function FabricJSCanvas( {width, height} : Props ) {
         let c = new fabric.Canvas(canvasEl.current, {
             width: width,
             height: height,
-            backgroundColor: 'white', // TODO REMOVE BG COLOR
+            backgroundColor: 'white',
         });
         setCanvas(c);
     }, []);
@@ -51,7 +51,7 @@ export default function FabricJSCanvas( {width, height} : Props ) {
                 case activeToolData instanceof Highlighter:
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush.width = activeToolData.size;
-                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`; // TODO: see https://stackoverflow.com/questions/23201134/transparent-argb-hex-value
+                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`;
                     break;
                 case activeToolData instanceof TextModel:
                     canvas.on('mouse:down', drawText);
@@ -64,7 +64,6 @@ export default function FabricJSCanvas( {width, height} : Props ) {
 
     }, [activeToolData]);
 
-    // TODO: Double check
     function pan(options: any) {
         canvas.isDragging = true;
         canvas.selection = false;
