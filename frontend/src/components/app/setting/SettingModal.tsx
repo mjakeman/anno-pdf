@@ -11,6 +11,7 @@ import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {signOut} from "firebase/auth";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
 import {DarkModeContext} from "../../../App";
+import {ArrowRightOnRectangleIcon} from "@heroicons/react/24/outline";
 
 type SettingTabs = "account" | "settings"
 
@@ -24,25 +25,33 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
     const settingModal = useRef<HTMLDivElement>(null);
     const {clearDocBuffer } = useContext(RecentContext);
 
-    const isAccountActive = activeTab === "account" ? "bg-gray-300 dark:bg-anno-space-800" : ""
-    const isSettingsActive = activeTab === "settings" ? "bg-gray-300 dark:bg-anno-space-800" : ""
+    const isAccountActive = activeTab === "account" ? "bg-neutral-200 dark:bg-anno-space-800" : ""
+    const isSettingsActive = activeTab === "settings" ? "bg-neutral-200 dark:bg-anno-space-800" : ""
 
     return(
         <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
-        <div ref={settingModal} className="grid grid-cols-10 bg-white h-[90vh] rounded-md dark:bg-anno-space-100">
-            <div className="col-span-3 bg-gray-200 h-full rounded-md dark:bg-anno-space-700">
-                <div className="flex flex-col gap-4 p-2">
-                    <span onClick={()=>setActiveTab("account")} className={"flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg " + isAccountActive}>
-                        <UserCircleIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
-                        <span className="text-zinc-500 dark:text-white">My Account</span>
-                    </span>
-                    <span onClick={()=>setActiveTab("settings")} data-cy="settings-tab" className={"flex flex-row gap-4 items-center px-4 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 rounded-lg " + isSettingsActive}>
-                        <Cog6ToothIcon className="text-zinc-500 w-6 h-6 dark:text-white"/>
-                        <span className="text-zinc-500 dark:text-white">Settings</span>
-                    </span>
+        <div ref={settingModal} className="grid grid-cols-12 bg-white h-[90vh] rounded-md dark:bg-anno-space-100">
+            <div className="col-span-3 mr-9 bg-neutral-100 h-full rounded-tl-md rounded-bl-md dark:bg-anno-space-700">
+                <div className="flex flex-col justify-between h-full">
+                   <div className="flex flex-col mt-8 gap-2">
+                       <span onClick={()=>setActiveTab("account")} className={"cursor-pointer flex flex-row gap-4 items-center text-zinc-800 dark:text-white font-bold px-8 py-2 transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 " + isAccountActive}>
+                            <UserCircleIcon className="text-zinc-800 w-6 h-6 dark:text-white"/>
+                        <span>My Account</span>
+                        </span>
+                       <span onClick={()=>setActiveTab("settings")} data-cy="settings-tab" className={"cursor-pointer flex flex-row gap-4 items-center px-8 py-2 font-bold transition-colors hover:bg-gray-300 dark:hover:bg-anno-space-800 " + isSettingsActive}>
+                            <Cog6ToothIcon className="w-6 h-6"/>
+                            <span>Settings</span>
+                        </span>
+                   </div>
+                    <div className="mb-8">
+                        <span onClick={()=>console.log('out')} className={"cursor-pointer flex flex-row gap-4 items-center px-8 py-2 text-zinc-800 dark:text-white font-bold transition-colors hover:bg-neutral-200 dark:hover:bg-anno-space-800 "}>
+                            <ArrowRightOnRectangleIcon className="w-6 h-6"/>
+                            <span>Logout</span>
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div className="col-span-7 p-5 rounded-md ">
+            <div className="col-span-7 p-5 rounded-md pl-4">
                 {activeTab === "account" && <AccountContent/>}
                 {activeTab === "settings" && <UserSettings/>}
             </div>
@@ -86,8 +95,8 @@ function UserSettings() {
     }
 
     return (
-        <div className="flex flex-col gap-4 h-800">
-            <h1 className="text-2xl font-bold text-anno-red-primary">My Account</h1>
+        <div className="flex flex-col gap-4 mt-4">
+            <h1 className="text-4xl font-bold text-anno-red-primary">Settings</h1>
             <div className=" flex flex-row gap-4 items-center px-4 py-2 ">
                 { isDarkMode ? <MoonIcon className="w-6 h-6 text-zinc-500 dark:text-white" /> : <SunIcon className="w-6 h-6 text-zinc-500 dark:text-white" />}
                 <span className="text-zinc-500 dark:text-white">Theme</span>
@@ -99,7 +108,8 @@ function UserSettings() {
                         </div>
                     </div>
                 </div>
-            </div>            <button data-cy="logout-button" className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
+            </div>
+            <button data-cy="logout-button" className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
                 Sign Out
             </button>
             {errorMessage != '' && <div
@@ -130,8 +140,8 @@ function AccountContent() {
 
 
     return (
-        <div className="flex flex-col gap-12">
-        <h1 className="text-2xl font-bold text-anno-red-primary">My Account</h1>
+        <div className="flex flex-col gap-12 mt-4">
+        <h1 className="text-4xl font-bold text-anno-red-primary">My Account</h1>
         <div className="flex flex-col gap-4 ">
             <h2 className="text-lg font-medium dark:text-white">Personal Information</h2>
             <div className="flex flex-col gap-4">
