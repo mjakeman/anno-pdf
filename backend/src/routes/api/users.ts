@@ -8,7 +8,7 @@ const userController = new UserController();
 // Create new user in database (if they don't already exist)
 router.post('/', userController.createUser);
 
-// Delete user
+// Delete user (only called by frontend automated test framework)
 router.delete('/', userController.deleteUser);
 
 // Get all users

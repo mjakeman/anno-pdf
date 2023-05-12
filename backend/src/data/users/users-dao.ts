@@ -1,5 +1,9 @@
 import {User} from '../../models/User';
 
+/**
+ * This module is responsible for mongo queries related to the Document model.
+ */
+
 async function getUsers() {
     return User.find();
 }
