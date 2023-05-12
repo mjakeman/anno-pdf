@@ -1,13 +1,13 @@
 import { XMarkIcon } from "@heroicons/react/20/solid"
 import ReactDOM from "react-dom"
 
-interface ModalProps {
+interface Props {
     isVisible: boolean,
     onOutsideClick: (params: any) => any,
     children: React.ReactNode
 }
 
-export default function Modal({isVisible, onOutsideClick, children}: ModalProps) {
+export default function Modal({isVisible, onOutsideClick, children}: Props) {
     if(!isVisible) return null
 
 return ReactDOM.createPortal(

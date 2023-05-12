@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
 
-interface CommandMenuButtonProps {
+interface Props {
     onClick: (params: any) => any,
 }
-export default function CommandMenuButton( { onClick } : CommandMenuButtonProps) {
+export default function CommandMenuButton( { onClick } : Props) {
 
     const [os, setOS] = useState<string | null>(null);
 
