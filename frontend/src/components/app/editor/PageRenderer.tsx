@@ -6,6 +6,7 @@ import useTools from "../../../hooks/useTools";
 import SocketClient from "./socket/client";
 import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
+import {AnnoDocument} from "./Models";
 import {MathAnnotation} from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
@@ -15,9 +16,10 @@ interface Props {
     onLoad: (pageNumber: number) => void
     page: PDFPageProxy;
     pageIndex: number;
+    doc: AnnoDocument;
     socketClientRef: MutableRefObject<SocketClient>;
 }
-const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : Props) => {
+const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef } : Props) => {
 
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -49,6 +51,9 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
             width: pageImg.width,
             height: pageImg.height,
         });
+
+        doc.pages[pageIndex] = newCanvas;
+
         setCanvas(newCanvas);
         onLoad(pageIndex);
 
@@ -97,7 +102,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
         if (!canvas) return;
         if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
             const activeObj = canvas.getActiveObject();
-            
+
             if (activeObj instanceof fabric.IText && activeObj.isEditing) return;
 
             canvas.getActiveObjects().forEach((obj) => {
