@@ -18,9 +18,18 @@ export default function Home() {
 
     useEffect(() => {
         if (currentUser) {
-            navigate(location.state?.redirect ? location.state.redirect : "/dash");
+            if(location.state){
+                if(location.state.redirect=="/login" || location.state.redirect=="/signup"){
+                    navigate("/dash");
+                }else{
+                navigate(location.state?.redirect ? location.state.redirect : "/dash");
+                }
+            }
+            else{
+                navigate("/dash");
+            }
         }
-    }, []);
+    }, [currentUser]);
 
     return (
         <>
