@@ -17,17 +17,14 @@ export default function ClearAllButton() {
         const result = confirm('Are you sure you want to clear all annotations?');
         if (result) {
             console.log("Clearing annotations!");
-            console.log(document);
+            console.log(document.pages);
             const canvasArray = document.pages as fabric.Canvas[];
             for (const canvas of canvasArray) {
-                canvas.getActiveObjects().forEach((obj) => {
+                canvas.getObjects().forEach((obj) => {
                     canvas.remove(obj);
                 });
                 canvas.discardActiveObject().renderAll();
             }
-
-            // Refresh page and load from cache
-            navigate(0);
         }
     }
 
