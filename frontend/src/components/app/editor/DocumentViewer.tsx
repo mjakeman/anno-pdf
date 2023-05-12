@@ -18,16 +18,34 @@ interface Props {
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
+/**
+ * The core interactive whiteboard canvas component
+ *
+ * @param onDocumentLoaded Callback when the document is ready
+ * @param document Document to load
+ */
 export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
 
+    /**
+     * PDF.js state for memoisation
+     */
     const [pdfDocument, setPdfDocument] = useState<PDFDocumentProxy>();
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
+
+    /**
+     * Handle authorisation
+     */
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
 
-    const { addToBuffer } = useContext(RecentContext);
-
+    /**
+     * The socket client is responsible for all communication between
+     * the client and server. This is responsible for signalling the server
+     * when a change occurs and receiving change events from the server originating
+     * from other peers.
+     */
     const socketClient = useRef<SocketClient>(new SocketClient());
 
+    const {addToBuffer} = useContext(RecentContext);
     const {addToast} = useToast();
 
     // (1) Startup
@@ -84,6 +102,12 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
 
     useEffect(() => {
 
+        /**
+         * Notify callback we pass to socket client so errors on the backend can
+         * be communicated to users. We could look at tidying this up so errors are
+         * less technical, but some errors are better than none.
+         * @param message Message to display
+         */
         const notify = (message: string) => {
             addToast({
                 message: message,
@@ -92,19 +116,26 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
         }
 
         if (document && currentUser) {
+            // IMPORTANT: Perform handshake with server and send user and document
+            // information. This sets up the client to receive socket messages from
+            // the backend.
             socketClient.current?.setup(currentUser.uid, document.uuid, notify);
         }
 
         return () => {
+            // Opposite of setup() above
             socketClient.current?.teardown();
         }
     }, [currentUser]);
 
 
+    /**
+     * Notify parent element via onDocumentLoaded() callback
+     * @param pageIndex Index of page that has loaded
+     */
     function onPageLoaded(pageIndex: number) {
         if (pageIndex === pdfDocument!.numPages - 1) onDocumentLoaded();
     }
-
 
     return (
         <div className="w-full h-full overflow-y-auto bg-zinc-300 dark:bg-anno-space-700 ">

@@ -12,22 +12,52 @@ import AnimatedSpinner from "../AnimatedSpinner";
 import Select from "./toolbar/model/tools/Select";
 import {useToast} from "../../../hooks/useToast";
 
+/**
+ * Main contexts we want available to all elements in the editor
+ *  - ToolContext: Stores currently active tool(s)
+ *  - ZoomContext: Stores pan and zoom data (currently unused)
+ *  - DocumentContext: Stores a reference to document session data (e.g. active users)
+ */
 export const ToolContext = React.createContext<any[]>([]);
 export const ZoomContext = React.createContext<any[]>([]);
 export const DocumentContext = React.createContext<any[]>([]);
 
+/**
+ * The core editor component. Think of it as a 'bucket' for editor
+ * related functionality.
+ *
+ * Look at #EditorHeader and #DocumentViewer
+ */
 export default function Editor() {
 
+    /**
+     * ToolContext
+     */
     const [activeToolData, setActiveToolData] = useState<Tool>(new Select("select"));
+
+    /**
+     * Zoom Context
+     */
     const [zoom, setZoom] = useState(100); // Initial Zoom
+
+    /**
+     * Document Context
+     */
+    const [activeUsers, setActiveUsers] = useState<AnnoUser[]>([]);
+
+    /**
+     * Misc
+     */
     let  { documentUuid } = useParams();
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
     const [document, setDocument] = useState<AnnoDocument | null>(null);
     const {addToast} = useToast();
-
     const [isLoaded, setIsLoaded] = useState(false);
     const navigate = useNavigate();
 
+    /**
+     * Handle authorised document retrieval
+     */
     useEffect(() => {
         if (!firebaseUserRef) return;
         firebaseUserRef!.getIdToken()
@@ -60,12 +90,14 @@ export default function Editor() {
             });
     }, [currentUser]);
 
-    const [activeUsers, setActiveUsers] = useState<AnnoUser[]>([]);
-
     useEffect(() => {
         setActiveToolData(new Select("select"));
     }, []);
 
+    /**
+     * A peer has joined the session
+     * @param user Joining user
+     */
     const addActiveUser = (user: AnnoUser) => {
         setActiveUsers(users => {
             console.log(`pushed user, now: ${JSON.stringify([...users, user])}`);
@@ -73,6 +105,10 @@ export default function Editor() {
         });
     };
 
+    /**
+     * A peer has left the session
+     * @param userId UserId of leaving user
+     */
     const removeActiveUser = (userId: string) => {
         setActiveUsers(users => {
             const new_users = users.filter(obj => obj.uid !== userId);
@@ -81,6 +117,10 @@ export default function Editor() {
         });
     };
 
+    /**
+     * Clear all users in the session. Run this
+     * when reconnecting/resetting the session.
+     */
     const resetActiveUsers = () => {
         setActiveUsers([]);
     }
@@ -92,9 +132,10 @@ export default function Editor() {
                     {document ?
                         <div className="h-screen flex flex-col">
 
+                            {/* The top bar with title, document options, active users, and sharing controls */}
                             <EditorHeader annoDocument={document}/>
 
-                            {/* Toolbar */}
+                            {/* Floating Toolbar */}
                             <div className="fixed translate-y-2/3 left-1/2 -translate-x-1/2 overflow-visible z-50">
                                 <Toolbar/>
                             </div>
@@ -108,7 +149,9 @@ export default function Editor() {
                                     </div>
                                 }
                                 <span className={`${isLoaded ? "block" : "hidden"} `}>
-                                    <DocumentViewer onDocumentLoaded={() => setIsLoaded(true)} document={document} />
+
+                                {/* Collaborative Whiteboard */}
+                                <DocumentViewer onDocumentLoaded={() => setIsLoaded(true)} document={document} />
                             </span>
                             </main>
                         </div>

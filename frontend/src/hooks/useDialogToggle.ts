@@ -20,6 +20,7 @@ export default function useDialogToggle(exitKey: string, toggleKey: string) : [b
 
         };
         document.addEventListener('keydown', handleKeyDown);
+        // Remove event listeners on cleanup
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };

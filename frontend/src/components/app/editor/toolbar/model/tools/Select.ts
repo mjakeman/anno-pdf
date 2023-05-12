@@ -8,6 +8,7 @@ class Select extends Tool {
     }
 
     draw(canvas: Canvas): void {
+        // No implementation required
     }
 
 

@@ -51,7 +51,9 @@ export default function EditorHeader({ annoDocument } : Props) {
                 addToast({
                     message: 'User invited successfully',
                     type: 'success'
-                })
+                });
+                // Refresh to get the new users into the share popup. 
+                navigate(0);
             }
         }
         ).catch((error) => {
