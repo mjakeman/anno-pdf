@@ -4,32 +4,56 @@ import {useContext} from "react";
 import {DocumentContext} from "../Editor";
 import {AnnoUser} from "../Models";
 
+/**
+ * URL of socket.io server (equivalent to backend, for now)
+ */
 const server = import.meta.env.VITE_BACKEND_URL;
 
+/**
+ * Required callbacks to handle incoming events from other
+ * peers through the backend.
+ *
+ * The consumer should provide the socket client with an instance
+ * of this type.
+ */
 type PageCallback = {
     objectAddedFunc: (data: fabric.Object) => void;
     objectModifiedFunc: (data: fabric.Object) => void;
     objectRemovedFunc: (uuid: string) => void;
 }
 
+/**
+ * The socket client is the gateway between clients and the
+ * real time communication system. It sends out and receives
+ * change events to and from the backend.
+ */
 export default class SocketClient {
-
     socket: Socket | null = null;
     map: Map<number, PageCallback> = new Map<number, PageCallback>();
     backfillQueue = new Map<number, Array<fabric.Object>>();
     context = useContext(DocumentContext);
     notify?: Function;
 
+    /**
+     * Entry point to the socket client. Perform a handshake with the server
+     * and prepare to receive events.
+     *
+     * @param userId ID of currently logged-in user
+     * @param documentId ID of active document
+     * @param notify Callback to notify in case of error
+     */
     setup = (userId: string, documentId: string, notify?: Function) => {
         this.socket = socketio(server);
         this.notify = notify;
 
+        // Events from other clients (peers)
         this.socket.on('peer-added', this.peerObjectAdded);
         this.socket.on('peer-modified', this.peerObjectModified);
         this.socket.on('peer-removed', this.peerObjectRemoved);
         this.socket.on('peer-connected', this.peerConnected);
         this.socket.on('peer-disconnected', this.peerDisconnected);
 
+        // Events pertaining to this client
         this.socket.on('connect', () => this.sendInitialData(userId, documentId));
         this.socket.on('reconnect', () => this.sendInitialData(userId, documentId));
         this.socket.on('error', (message) => {
@@ -37,10 +61,21 @@ export default class SocketClient {
         });
     }
 
+    /**
+     * Gracefully terminate the socket connection
+     */
     teardown = () => {
         this.socket?.disconnect();
     }
 
+    /**
+     * This is the handshake itself. We send our initialisation data to the
+     * server and identify ourselves. This allows the server to initialise any
+     * relevant resources to the active document and start up an editing session.
+     *
+     * @param userId Current user id
+     * @param documentId Current document id
+     */
     sendInitialData = (userId: string, documentId: string) => {
         if (!userId || !documentId) {
             this.notify?.call(null, "Either userId (" + userId + ") or documentId (" + documentId + ") is not valid");
@@ -53,15 +88,32 @@ export default class SocketClient {
         this.socket?.emit('initial-data', userId, documentId);
     }
 
+    /**
+     * A PageRenderer will identify itself to the socket client
+     * using this method.
+     *
+     * @param index Page number of the renderer
+     * @param callback Group of callbacks associated with this page
+     */
     registerPage = (index: number, callback: PageCallback) => {
         this.map.set(index, callback);
         this.doBackfill(index);
     }
 
+    /**
+     * Teardown counterpart of above.
+     *
+     * @param index Page number of renderer
+     */
     unregisterPage = (index: number) => {
         this.map.delete(index);
     }
 
+    /**
+     * Peer has connected to the document. Add to active users.
+     *
+     * @param userData User data received from server (name, id, email)
+     */
     peerConnected = (userData: AnnoUser) => {
         const [_active, addActiveUser] = this.context;
 
@@ -88,6 +140,11 @@ export default class SocketClient {
         addActiveUser(userData);
     }
 
+    /**
+     * Teardown equivalent of above. Remove from active user bubbles.
+     *
+     * @param userId User id of leaving peer
+     */
     peerDisconnected = (userId: string) => {
 
         console.log("Peer disconnected: " + JSON.stringify(userId));
@@ -96,6 +153,13 @@ export default class SocketClient {
         removeActiveUser(userId);
     }
 
+    /**
+     * Store backfill annotations if the client is not ready yet. Process
+     * them later once we're initialised
+     *
+     * @param index Page index
+     * @param data Data to store
+     */
     pushBackfill = (index: number, data: fabric.Object) => {
         let queue = this.backfillQueue.get(index);
         if (!queue) {
@@ -106,6 +170,10 @@ export default class SocketClient {
         queue.push(data);
     }
 
+    /**
+     * Clear the backfill queue for a given page. Apply the objects.
+     * @param index Page index for backfill queue
+     */
     doBackfill = (index: number) => {
         const queue = this.backfillQueue.get(index);
         if (queue) {
@@ -119,11 +187,21 @@ export default class SocketClient {
         }
     }
 
+    /**
+     * Convert payload to JS Object so we can send it over the wire with
+     * relevant attributes attached.
+     * @param object Object to convert
+     */
     safeConvertToPayload = (object: fabric.Object) => {
         // This works. Don't touch it please
         return object.toObject(["uuid", "latex"]);
     }
 
+    /**
+     * Peer has added an object
+     * @param index Page of addition
+     * @param data Data added
+     */
     peerObjectAdded = (index: number, data: Object) => {
         console.log("Received page " + index + " addition from peer");
         const parsed = data as fabric.Object;
@@ -134,6 +212,11 @@ export default class SocketClient {
             this.pushBackfill(index, parsed);
     }
 
+    /**
+     * Peer has modified an object
+     * @param index Page of modification
+     * @param data New data to update with
+     */
     peerObjectModified = (index: number, data: Object) => {
         console.log("Received page " + index + " modification from peer");
         const parsed = data as fabric.Object;
@@ -141,12 +224,22 @@ export default class SocketClient {
         callbacks?.objectModifiedFunc(parsed);
     }
 
+    /**
+     * Peer has removed an object
+     * @param index Page of removal
+     * @param uuid Uuid of removed object
+     */
     peerObjectRemoved = (index: number, uuid: string) => {
         console.log("Received page " + index + " removal from peer");
         const callbacks = this.map.get(index);
         callbacks?.objectRemovedFunc(uuid);
     }
 
+    /**
+     * Send an object modified event to the server
+     * @param index Page index
+     * @param data Modified data
+     */
     onObjectModified = (index: number, data: fabric.IEvent) => {
         console.log("modified: " + JSON.stringify(data));
         if (!this.socket) {
@@ -210,6 +303,11 @@ export default class SocketClient {
         }
     }
 
+    /**
+     * Send an object added event to the server
+     * @param index Page index
+     * @param object Added objcet
+     */
     onObjectAdded = (index: number, object: fabric.Object) => {
 
         if (object instanceof fabric.Group) {
@@ -238,6 +336,11 @@ export default class SocketClient {
         this.socket.emit("object-added", index, json);
     }
 
+    /**
+     * Send an object removed event to the server
+     * @param index Page index
+     * @param object Object removed
+     */
     onObjectRemoved = (index: number, object: fabric.Object) => {
 
         if (!this.socket) {
