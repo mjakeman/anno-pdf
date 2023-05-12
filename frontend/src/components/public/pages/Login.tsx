@@ -24,8 +24,6 @@ export default function Login() {
 
     const location = useLocation();
 
-    const errorMessage = 'Error whilst logging in. Please try again';
-
     const {currentUser, setCurrentUser} = useContext(AuthContext);
 
     useEffect(() => {
@@ -108,14 +106,14 @@ export default function Login() {
                     className="my-8 px-24 py-12 flex flex-col gap-6 bg-white dark:bg-anno-space-900 drop-shadow-around border-2 dark:border-anno-space-100 rounded-xl">
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="email-input" data-cy="email-input">Email:</label>
-                        <input onChange={e => setEmail(e.target.value)} value={email} type="email" id="email-input"
+                        <input onChange={e => setEmail(e.target.value)} value={email} type="email" id="email-input" onKeyDown={e => {if (e.key === 'Enter') { handleSignInWithEmailAndPassword(); }}}
                                placeholder="Enter your email address here..."
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
                     <div className="w-96">
                         <label className="mb-2 text-neutral-400 dark:text-white"
                                htmlFor="password-input">Password:</label>
-                        <input onChange={e => setPassword(e.target.value)} value={password} type="password"
+                        <input onChange={e => setPassword(e.target.value)} value={password} type="password" onKeyDown={e => {if (e.key === 'Enter') { handleSignInWithEmailAndPassword(); }}}
                                id="password-input" placeholder="Enter your password here..."
                                data-cy="password-input"
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
