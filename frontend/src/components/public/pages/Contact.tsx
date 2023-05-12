@@ -13,7 +13,7 @@ export default function Contact() {
             message: 'This feature is coming soon!',
         })
     }
-    
+
     return (
       <Container>
           <section className="mt-12">
