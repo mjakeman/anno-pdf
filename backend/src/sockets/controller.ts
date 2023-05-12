@@ -10,47 +10,76 @@ export const debugLog = (content: any) => {
     } 
 }
 
-// Match Editor.tsx in frontend
+/**
+ * User data structure
+ *
+ * IMPORTANT: Match Editor.tsx in frontend
+ */
 interface UserData {
     uid: string,
     name: string,
     email: string,
 }
 
-// Maps socketIds to documents
+/**
+ * Maps socketIds to documentIds
+ */
 type SocketMap = {
     [socketId: string]: string;
 }
 
-// Maps documents to socketIds
+/**
+ * Maps documents to socketIds
+ */
 type DocumentMap = {
     [documentId: string]: Array<string>;
 }
 
-// Maps socketIds to userIds
+/**
+ * Maps socketIds to userIds
+ */
 type UserMap = {
     [socketId: string]: UserData;
 }
 
+/**
+ * Global map stores
+ */
 const socketMap: SocketMap = {};
 const documentMap: DocumentMap = {};
 const userMap: UserMap = {};
 
+/**
+ * User has connected
+ * @param socket Socket instance for user
+ */
 const on_connect = async (socket: socketio.Socket) => {
     debugLog(socket.id + " user connected");
 
+    /**
+     * Guard against invalid user connections (i.e. not handshaked)
+     * @param socket Socket instance
+     */
     const guard = (socket: socketio.Socket) => {
         if (socketMap[socket.id] == undefined || userMap[socket.id] == undefined) {
             console.error(`ERROR: ${socket.id} reconnected without sending data!`);
         }
     };
 
+    /**
+     * Terminate with an error message which we display to the client
+     * @param socket Socket instance
+     * @param message Error message
+     */
     const disconnectWithError = (socket: socketio.Socket, message: string) => {
         console.error(message);
         socket.emit('error', message);
         socket.disconnect();
     }
 
+    /**
+     * Client has initiated a handshake
+     */
     socket.on('initial-data', async (userId: string, documentId: string) => {
         try {
             if (!userId || !documentId) {
@@ -117,6 +146,9 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
+    /**
+     * Client has modified an object
+     */
     socket.on("object-modified", (index: number, data: any) => {
         try {
             guard(socket);
@@ -135,6 +167,9 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
+    /**
+     * Client has added an object
+     */
     socket.on('object-added', (index: number, data: any) => {
         try {
             guard(socket);
@@ -154,6 +189,9 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
+    /**
+     * Client has removed an object
+     */
     socket.on('object-removed', (index: number, uuid: string) => {
         try {
             guard(socket);
@@ -173,6 +211,10 @@ const on_connect = async (socket: socketio.Socket) => {
         }
     });
 
+    /**
+     * Client has disconnected. Clean up relevant data and
+     * clean references from maps
+     */
     socket.on('disconnect', () => {
         try {
             guard(socket);
@@ -199,6 +241,10 @@ const on_connect = async (socket: socketio.Socket) => {
     });
 }
 
+/**
+ * Export a hook for the server to integrate
+ * @param server HTTP Server
+ */
 export default (server: http.Server) => {
     const io = new socketio.Server(server, {
         cors: {
