@@ -47,7 +47,7 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
 
                     <h1 className="text-2xl text-center dark:text-white">Drag & drop</h1>
                     <p className="text-2xl text-center dark:text-white">or <button onClick={()=>input.current?.click()} className="underline underline-offset-4 text-blue-500 hover:text-blue-800 transition-colors dark:text-anno-red-secondary dark:hover:text-anno-red-primary">browse</button></p>
-                    <input type="file" id="file" name="file" onChange={handleFileUpload} accept="application/pdf" ref={input} className="hidden"/>
+                    <input type="file" data-cy="upload-file" id="file" name="file" onChange={handleFileUpload} accept="application/pdf" ref={input} className="hidden"/>
                     <p className="text-center text-zinc-400 dark:text-white">{uploadedFileName}</p>
                 </div>
             </div>

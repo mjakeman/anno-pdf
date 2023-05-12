@@ -57,3 +57,5 @@ Cypress.Commands.add('logout', () => {
   cy.get('[data-cy="settings-tab"]').click();
   cy.get('[data-cy="logout-button"]').click();
 });
+
+
