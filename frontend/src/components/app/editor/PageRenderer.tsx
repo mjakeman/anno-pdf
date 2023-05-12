@@ -327,7 +327,7 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
     mouseUpHandler: deleteObject,
     render: renderIcon,
 });
-function deleteObject(eventData: MouseEvent, transformData: Transform, x: number, y: number): boolean {
+function deleteObject(eventData: MouseEvent, transformData: Transform): boolean {
     let target = transformData.target;
     let canvas = target.canvas;
     canvas?.getActiveObjects().forEach((obj) => {

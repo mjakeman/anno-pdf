@@ -9,7 +9,7 @@ interface Props {
 export default function SelectTool({ id } : Props) {
 
     const isMount = useIsMount();
-    const [selectTool, setSelectTool] = useState<Select>(new Select(id));
+    const [selectTool] = useState<Select>(new Select(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
     const [isActiveTool, setIsActiveTool] = useState(false);

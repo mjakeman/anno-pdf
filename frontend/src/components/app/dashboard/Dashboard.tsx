@@ -55,7 +55,3 @@ export default function Dashboard() {
 
     );
 }
-
-function uploadPDF() {
-    console.log("Upload PDF")
-}

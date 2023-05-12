@@ -3,9 +3,8 @@ import {useToast} from "../hooks/useToast";
 import {toastIconMap, ToastProps, toastStylesMap} from "../types/ToastUtils";
 
 export default function Toast(props: ToastProps) {
-    let { id, message, type, duration, position } = props;
+    let { id, message, type, duration } = props;
     if (duration === undefined) duration = 5000;
-    position = 'bottom-middle';
     const wrapperRef = useRef<HTMLDivElement>(null);
     const {remove} = useToast();
 
