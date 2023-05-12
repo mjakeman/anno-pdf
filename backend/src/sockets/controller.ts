@@ -2,6 +2,13 @@ import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
 import {backfill, loadPdf, saveAddition, saveModification, savePdf, saveRemoval} from "./canvas";
+import Config from "../util/Config";
+
+export const debugLog = (content: any) => {
+    if (Config.ENVIRONMENT == 'DEBUG') {
+        console.log(content)
+    } 
+}
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -30,7 +37,7 @@ const documentMap: DocumentMap = {};
 const userMap: UserMap = {};
 
 const on_connect = async (socket: socketio.Socket) => {
-    console.log(socket.id + " user connected");
+    debugLog(socket.id + " user connected");
 
     const guard = (socket: socketio.Socket) => {
         if (socketMap[socket.id] == undefined || userMap[socket.id] == undefined) {
@@ -61,7 +68,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             userMap[socket.id] = { uid: userId, name: user.get('name'), email: user.get('email') };
 
-            console.log("broadcasting: " + JSON.stringify(userMap[socket.id]));
+            debugLog("broadcasting: " + JSON.stringify(userMap[socket.id]));
 
             socket.join(documentId);
             socket.to(documentId).emit('peer-connected', userMap[socket.id]);
@@ -70,7 +77,7 @@ const on_connect = async (socket: socketio.Socket) => {
             socket.in(documentId).fetchSockets().then((peers) => {
                 for (const peerSocket of peers) {
                     const peerUserData = userMap[peerSocket.id];
-                    console.log("backfill: " + JSON.stringify(peerUserData));
+                    debugLog("backfill: " + JSON.stringify(peerUserData));
                     socket.emit('peer-connected', peerUserData);
                 }
             });
@@ -91,18 +98,18 @@ const on_connect = async (socket: socketio.Socket) => {
                 documentMap[documentId].push(socket.id);
             }
 
-            console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
+            debugLog(`[${documentId}] ${socket.id}: joined room ${documentId}`);
 
             // Initialise canvas
             const backfillMap = backfill(documentId);
-            console.log(`backfillMap`);
-            console.log(backfillMap);
+            debugLog(`backfillMap`);
+            debugLog(backfillMap);
 
             for (let [pageNumber, annotations] of backfillMap) {
                 for (let obj of annotations) {
                     socket.emit('peer-added', pageNumber, obj);
                 }
-                console.log(`Pushed ${annotations.length} backfill objects to page ${pageNumber}`);
+                debugLog(`Pushed ${annotations.length} backfill objects to page ${pageNumber}`);
             }
 
         } catch (e) {
@@ -119,7 +126,7 @@ const on_connect = async (socket: socketio.Socket) => {
                 throw Error("No uuid detected on object. Ignoring");
             }
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${data.uuid} of type ${data.type}`);
+            debugLog(`[${documentId}] ${socket.id}: on page ${index} modified object ${data.uuid} of type ${data.type}`);
             socket.to(documentId).emit('peer-modified', index, data);
 
             saveModification(documentId, index, data);
@@ -138,7 +145,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${data.uuid} of type ${data.type}`);
+            debugLog(`[${documentId}] ${socket.id}: on page ${index} added object ${data.uuid} of type ${data.type}`);
             socket.to(documentId).emit('peer-added', index, data);
 
             saveAddition(documentId, index, data);
@@ -157,7 +164,7 @@ const on_connect = async (socket: socketio.Socket) => {
 
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} removed object ${uuid}`);
+            debugLog(`[${documentId}] ${socket.id}: on page ${index} removed object ${uuid}`);
             socket.to(documentId).emit('peer-removed', index, uuid);
 
             saveRemoval(documentId, index, uuid);
@@ -181,7 +188,7 @@ const on_connect = async (socket: socketio.Socket) => {
             const index = documentMap[documentId].indexOf(socket.id);
             delete documentMap[documentId][index];
 
-            console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
+            debugLog(`[${documentId}] ${socket.id}: left room ${documentId}`);
 
             // Save document
             savePdf(documentId);
