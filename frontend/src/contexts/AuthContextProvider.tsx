@@ -1,5 +1,5 @@
 import React from 'react'
-import { User } from 'firebase/auth';
+import {User} from 'firebase/auth';
 import {AnnoUser} from "../components/app/editor/Models";
 
 interface AuthContext {

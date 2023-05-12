@@ -1,6 +1,5 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import Container from "../../Container";
-import PrimaryButton from "../../PrimaryButton";
 
 export default function PageNotFound(){
     const navigate = useNavigate();

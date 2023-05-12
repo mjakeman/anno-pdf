@@ -1,10 +1,9 @@
 import * as pdfjs from "pdfjs-dist";
-import React, {useContext, useEffect, useRef, useState} from "react";
 import {PDFDocumentProxy} from "pdfjs-dist";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import PageRenderer from "./PageRenderer";
 import SocketClient from "./socket/client";
-import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {useToast} from "../../../hooks/useToast";
 import {AnnoDocument} from "./Models";

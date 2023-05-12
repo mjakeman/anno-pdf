@@ -2,9 +2,7 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {ChevronDownIcon, ChevronUpIcon} from "@heroicons/react/24/solid";
 import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 import {ToolContext} from "../../Editor";
-import Highlighter from "../model/tools/Highlighter";
 import Rectangle from "../model/tools/Rectangle";
-import Pen from "../model/tools/Pen";
 import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {

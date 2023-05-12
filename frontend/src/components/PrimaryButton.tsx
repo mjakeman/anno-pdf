@@ -1,13 +1,13 @@
 import React from "react";
 
-interface PrimaryButtonProps {
+interface Props {
     onClick:  (params: any) => any;
     label: string,
     icon?: React.ReactNode,
 
 }
 
-export default function PrimaryButton({onClick, label, icon} : PrimaryButtonProps) {
+export default function PrimaryButton({onClick, label, icon} : Props) {
     return (
         <button type="button"
                 onClick={onClick}

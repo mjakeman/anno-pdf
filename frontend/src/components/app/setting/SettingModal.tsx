@@ -1,10 +1,7 @@
-import {MoonIcon, SunIcon, UserCircleIcon} from "@heroicons/react/24/solid"
-import { Cog6ToothIcon } from "@heroicons/react/24/solid"
-import React, {useContext, useRef} from "react"
-import { useState } from "react"
-import { auth } from "../../../firebaseAuth"
-import { useToast } from "../../../hooks/useToast"
-import DarkModeToggle from "../../DarkModeToggle"
+import {Cog6ToothIcon, MoonIcon, SunIcon, UserCircleIcon} from "@heroicons/react/24/solid"
+import React, {useContext, useRef, useState} from "react"
+import {auth} from "../../../firebaseAuth"
+import {useToast} from "../../../hooks/useToast"
 import Modal from "../../Modal"
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";

@@ -4,10 +4,10 @@ import ActiveUserBubble from "./ActiveUserBubble";
 import {ChevronUpIcon} from "@heroicons/react/24/solid";
 import {AnnoUser} from "../Models";
 
-interface ActiveUserBubblesProps {
+interface Props {
     activeUsers: AnnoUser[],
 }
-export default function ActiveUserBubbles({activeUsers} : ActiveUserBubblesProps) {
+export default function ActiveUserBubbles({activeUsers} : Props) {
 
     // TODO: Can change this value - might be good to change based on screen size in the future?
     const maxBubblesToDisplay = 3;

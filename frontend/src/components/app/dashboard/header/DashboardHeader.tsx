@@ -1,15 +1,11 @@
 import CommandMenuButton from "./commandmenu/CommandMenuButton";
 import React, {useContext, useState} from "react";
 import Logo from "../../../Logo";
-import {ChevronDownIcon, Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
-import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
-import {Link} from "react-router-dom";
+import {ChevronDownIcon} from "@heroicons/react/24/solid";
 import ProfileDropdown from "./ProfileDropdown";
 import SettingModal from "../../setting/SettingModal";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
-import { generateUniqueColors } from "../../../public/ProfileHashUtil";
+import {generateUniqueColors} from "../../../public/ProfileHashUtil";
 
 interface DashboardHeaderProps {
     onCommandMenuClicked: (params: any) => any,

@@ -1,6 +1,5 @@
 import {useContext, useEffect, useState} from "react";
 import {ToolContext} from "../../Editor";
-import Pan from "../model/tools/Pan";
 import Select from "../model/tools/Select";
 import {useIsMount} from "../../../../../hooks/useIsMount";
 

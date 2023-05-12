@@ -96,6 +96,10 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, socketClientRef } : 
     const removeObjectOnDeleteKeyPress = (e: KeyboardEvent) => {
         if (!canvas) return;
         if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
+            const activeObj = canvas.getActiveObject();
+            
+            if (activeObj instanceof fabric.IText && activeObj.isEditing) return;
+
             canvas.getActiveObjects().forEach((obj) => {
                 canvas.remove(obj);
             });

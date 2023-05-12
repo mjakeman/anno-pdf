@@ -1,6 +1,4 @@
 import Tool from "./Tool";
-import {PencilIcon} from "@heroicons/react/24/outline";
-import React from "react";
 import {Canvas} from "fabric/fabric-impl";
 
 class Highlighter extends Tool {

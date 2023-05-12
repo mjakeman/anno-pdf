@@ -1,18 +1,16 @@
 import {Cog6ToothIcon, MoonIcon, SunIcon} from "@heroicons/react/24/solid";
-import React, {useContext, useRef, useState} from "react";
+import React, {useContext, useRef} from "react";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
 import {DarkModeContext} from "../../../../App";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
-import { generateUniqueColors } from "../../../public/ProfileHashUtil";
+import {generateUniqueColors} from "../../../public/ProfileHashUtil";
 
-interface ProfileDropdownProps {
+interface Props {
     onOutsideClick: (params: any) => any,
     onAccountSettingsClicked: () => any,
 }
 
-export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClicked } : ProfileDropdownProps) {
+export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClicked } : Props) {
 
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 

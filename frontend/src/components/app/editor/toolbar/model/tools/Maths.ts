@@ -2,7 +2,6 @@ import Tool from "./Tool";
 import {Canvas, IObjectOptions, Object} from "fabric/fabric-impl";
 import {fabric} from "fabric";
 import TeXToSVG from "tex-to-svg";
-import PageRenderer from "../../../PageRenderer";
 
 class Maths extends Tool {
 

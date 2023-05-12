@@ -1,6 +1,6 @@
 import React from "react";
 
-interface FilterButtonProps {
+interface Props {
     onClick:  (params: any) => any;
     label: string,
     icon?: React.ReactNode,
@@ -9,7 +9,7 @@ interface FilterButtonProps {
 
 const selectedStyle = "bg-violet-200 border-indigo-400 text-indigo-700 hover:bg-violet-200 dark:bg-anno-pink-100 dark:border-anno-red-secondary dark:text-anno-red-secondary dark:hover:bg-anno-pink-100 dark:text-gray-500"
 
-export default function FilterButton({onClick, label, icon, isSelected} : FilterButtonProps) {
+export default function FilterButton({onClick, label, icon, isSelected} : Props) {
     return (
         <button type="button"
                 onClick={onClick}

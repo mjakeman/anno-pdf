@@ -5,7 +5,7 @@ import {auth} from "../../../firebaseAuth";
 import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import axios from "axios";
-import {useSignInWithGoogle, useCreateUserWithEmailAndPassword} from "react-firebase-hooks/auth";
+import {useCreateUserWithEmailAndPassword, useSignInWithGoogle} from "react-firebase-hooks/auth";
 import {signOut} from "firebase/auth";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
