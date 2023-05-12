@@ -14,7 +14,7 @@ interface Props {
 export default function PanTool({id} : Props) {
 
     const isMount = useIsMount();
-    const [panTool, setPanTool] = useState<Pan>(new Pan(id));
+    const [panTool] = useState<Pan>(new Pan(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
     const [isActiveTool, setIsActiveTool] = useState(false);

@@ -24,7 +24,6 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
     const [pdfPages, setPdfPages] = useState<PDFPageProxy[]>([]);
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
 
-    const [pageLoaderCount, setPageLoaderCount] = useState<number>(0);
     const { addToBuffer } = useContext(RecentContext);
 
     const socketClient = useRef<SocketClient>(new SocketClient());

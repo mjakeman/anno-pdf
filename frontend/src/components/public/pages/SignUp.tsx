@@ -21,8 +21,8 @@ export default function SignUp() {
 
     const [error, setError] = useState('');
 
-    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+    const [signInWithGoogle] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
     const {clearDocBuffer } = useContext(RecentContext);
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
