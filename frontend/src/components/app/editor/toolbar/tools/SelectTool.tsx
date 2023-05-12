@@ -19,11 +19,13 @@ export default function SelectTool({ id } : Props) {
         setActiveToolData(selectTool);
     }
 
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(selectTool);
     }, [selectTool]);
 
