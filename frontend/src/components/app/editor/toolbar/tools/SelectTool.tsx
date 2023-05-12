@@ -2,12 +2,14 @@ import {useContext, useEffect, useState} from "react";
 import {ToolContext} from "../../Editor";
 import Pan from "../model/tools/Pan";
 import Select from "../model/tools/Select";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string
 }
 export default function SelectTool({ id } : Props) {
 
+    const isMount = useIsMount();
     const [selectTool, setSelectTool] = useState<Select>(new Select(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -23,7 +25,7 @@ export default function SelectTool({ id } : Props) {
     }, [activeToolData.id]);
 
     useEffect(() => {
-        setActiveToolData(selectTool);
+        if (!isMount) setActiveToolData(selectTool);
     }, [selectTool]);
 
     return (

@@ -4,13 +4,14 @@ import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 import {ToolContext} from "../../Editor";
 import TextModel from "../model/tools/TextModel";
 import Rectangle from "../model/tools/Rectangle";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string,
 }
 export default function TextTool({id} : Props) {
     const [textTool, setTextTool] = useState<TextModel>(new TextModel(id, '#000000'));
-
+    const isMount = useIsMount();
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
     const [isActiveTool, setIsActiveTool] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -40,7 +41,7 @@ export default function TextTool({id} : Props) {
     }, [activeToolData.id]);
 
     useEffect(() => {
-        setActiveToolData(textTool);
+        if (!isMount) setActiveToolData(textTool);
     }, [textTool]);
 
 

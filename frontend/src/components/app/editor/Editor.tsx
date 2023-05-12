@@ -4,12 +4,14 @@ import EditorHeader from "./header/EditorHeader";
 import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import EditorSkeleton from "./EditorSkeleton";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {AnnoDocument, AnnoUser} from "./Models";
 import axios from "axios";
 import AnimatedSpinner from "../AnimatedSpinner";
+import Select from "./toolbar/model/tools/Select";
+import {useToast} from "../../../hooks/useToast";
 
 export const ToolContext = React.createContext<any[]>([]);
 export const ZoomContext = React.createContext<any[]>([]);
@@ -17,13 +19,15 @@ export const DocumentContext = React.createContext<any[]>([]);
 
 export default function Editor() {
 
-    const [activeToolData, setActiveToolData] = useState<Tool>(new Pan("pan"));
+    const [activeToolData, setActiveToolData] = useState<Tool>(new Select("select"));
     const [zoom, setZoom] = useState(100); // Initial Zoom
     let  { documentUuid } = useParams();
     const {currentUser, firebaseUserRef} = useContext(AuthContext);
     const [document, setDocument] = useState<AnnoDocument | null>(null);
+    const {addToast} = useToast();
 
     const [isLoaded, setIsLoaded] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!firebaseUserRef) return;
@@ -45,7 +49,11 @@ export default function Editor() {
                         annotations: response.data.annotations,
                     });
                 }).catch(function (error) {
-                    console.log(error);
+                    navigate('/');
+                    addToast({
+                        message: 'Failed to fetch document',
+                        type: 'error',
+                    })
                 });
             })
             .catch((error) => {
@@ -67,7 +75,7 @@ export default function Editor() {
     const [sharedUsers, setSharedUsers] = useState<AnnoUser[]>(testUsers);
 
     useEffect(() => {
-        setActiveToolData(new Pan("pan"));
+        setActiveToolData(new Select("select"));
     }, []);
 
     const addActiveUser = (user: AnnoUser) => {
