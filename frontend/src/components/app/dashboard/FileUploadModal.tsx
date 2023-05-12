@@ -1,12 +1,9 @@
 import React, {useContext, useRef, useState} from "react";
 import Modal from "../../Modal";
 import axios from "axios";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {auth} from "../../../firebaseAuth";
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
 import {DocumentArrowUpIcon} from "@heroicons/react/24/solid";
-import PrimaryButton from "../../PrimaryButton";
 import {useToast} from "../../../hooks/useToast";
 import AnimatedSpinner from "../AnimatedSpinner";
 

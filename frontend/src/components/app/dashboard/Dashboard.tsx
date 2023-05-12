@@ -2,7 +2,7 @@ import DashboardTable, {DocumentRecord} from "./DashboardTable";
 import {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
-import { LoadedDocContext} from "../../../contexts/LoadedDocsContextProvider";
+import {LoadedDocContext} from "../../../contexts/LoadedDocsContextProvider";
 import AnimatedSpinner from "../AnimatedSpinner";
 
 

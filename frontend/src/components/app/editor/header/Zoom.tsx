@@ -2,8 +2,8 @@ import {ChangeEvent, FocusEvent, useContext, useEffect, useRef, useState} from "
 import {MinusCircleIcon, PlusCircleIcon} from "@heroicons/react/24/outline";
 import {ZoomContext} from "../Editor";
 
-// TODO - probably want to prevent being able to enter > 200 or less than 0
-// TODO - change icons to non-circles, use CSS to make circles. 
+// NOTE: Not in use unfortunately due to executive decision
+
 export default function Zoom() {
 
     const [zoom, setZoom] = useContext(ZoomContext);

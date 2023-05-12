@@ -1,7 +1,6 @@
 import Toolbar from "./toolbar/Toolbar";
 import React, {useContext, useEffect, useState} from "react";
 import EditorHeader from "./header/EditorHeader";
-import Pan from "./toolbar/model/tools/Pan";
 import Tool from "./toolbar/model/tools/Tool";
 import DocumentViewer from "./DocumentViewer";
 import {useNavigate, useParams} from "react-router-dom";

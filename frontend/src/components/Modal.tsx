@@ -1,4 +1,4 @@
-import { XMarkIcon } from "@heroicons/react/20/solid"
+import {XMarkIcon} from "@heroicons/react/20/solid"
 import ReactDOM from "react-dom"
 
 interface ModalProps {

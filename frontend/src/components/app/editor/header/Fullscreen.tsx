@@ -1,5 +1,6 @@
 import React from "react";
 import {ArrowsPointingOutIcon} from "@heroicons/react/24/solid";
+
 interface FullscreenButtonProps {
     onClick:  (params: any) => any;
     label?: string,

@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import {useEffect, useRef} from 'react';
 
 /**
  * Hook to detect initial mount / render.

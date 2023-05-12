@@ -8,7 +8,6 @@ import TextModel from "./toolbar/model/tools/TextModel";
 import Pan from "./toolbar/model/tools/Pan";
 import Select from "./toolbar/model/tools/Select";
 import Maths from "./toolbar/model/tools/Maths";
-import {v4 as uuidv4} from "uuid";
 
 interface Props {
     width: number,

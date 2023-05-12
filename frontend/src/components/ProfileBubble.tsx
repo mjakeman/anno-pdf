@@ -1,5 +1,5 @@
 import React from "react";
-import { generateUniqueColors } from "./public/ProfileHashUtil";
+import {generateUniqueColors} from "./public/ProfileHashUtil";
 
 export enum ProfileBubbleSizes {
     Small = "w-10 h-10 text-lg",

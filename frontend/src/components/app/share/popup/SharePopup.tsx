@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
 import SharedWithUserRow from "./SharedWithUserRow";
 import useDetectOutsideClick from "../../../../hooks/useDetectOutsideClick";
-import {AnnoDocument, SharedUser, AnnoUser} from "../../editor/Models";
+import {AnnoDocument, AnnoUser, SharedUser} from "../../editor/Models";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import axios from "axios";
 import {useToast} from "../../../../hooks/useToast";

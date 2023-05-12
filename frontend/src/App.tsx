@@ -1,4 +1,4 @@
-import {Navigate, Route, Routes, useNavigate, BrowserRouter} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Editor from "./components/app/editor/Editor";
 import DashboardLayout from "./components/app/dashboard/DashboardLayout";
 import Dashboard from "./components/app/dashboard/Dashboard";
@@ -11,8 +11,8 @@ import Login from "./components/public/pages/Login";
 import SignUp from "./components/public/pages/SignUp";
 import useLocalStorage from "./hooks/useLocalStorage";
 import React, {createContext, useContext, useEffect, useState,} from "react";
-import { ToastProvider } from "./hooks/useToast";
-import {AuthContext, } from "./contexts/AuthContextProvider";
+import {ToastProvider} from "./hooks/useToast";
+import {AuthContext,} from "./contexts/AuthContextProvider";
 import {auth} from "./firebaseAuth";
 import {signOut, User,} from "firebase/auth";
 import axios from "axios";

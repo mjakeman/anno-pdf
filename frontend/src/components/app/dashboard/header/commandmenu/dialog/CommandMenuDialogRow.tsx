@@ -1,5 +1,10 @@
 import {CommandOption} from "./CommandMenuDialog";
-import {Cog6ToothIcon, DocumentIcon, DocumentMagnifyingGlassIcon, InformationCircleIcon} from "@heroicons/react/24/solid";
+import {
+    Cog6ToothIcon,
+    DocumentIcon,
+    DocumentMagnifyingGlassIcon,
+    InformationCircleIcon
+} from "@heroicons/react/24/solid";
 import {Link} from "react-router-dom";
 
 export default function CommandMenuDialogRow( { category, text, to, newTab } : CommandOption) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 
 type position = "top" | "right" | "bottom" | "left";
 

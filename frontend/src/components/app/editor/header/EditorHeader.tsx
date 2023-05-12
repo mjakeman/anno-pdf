@@ -1,17 +1,15 @@
 import ActionMenu from "./ActionMenu";
 import Fullscreen from "./Fullscreen";
-import Zoom from "./Zoom";
 import ActiveUserBubbles from "./ActiveUserBubbles";
 import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
 import SharePopup from "../../share/popup/SharePopup";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Logo from "../../../Logo";
-import { useNavigate, useParams } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
-import { useContext } from "react";
-import { AuthContext } from "../../../../contexts/AuthContextProvider";
-import { useToast } from "../../../../hooks/useToast";
+import {AuthContext} from "../../../../contexts/AuthContextProvider";
+import {useToast} from "../../../../hooks/useToast";
 import {DocumentContext} from "../Editor";
 import {AnnoDocument} from "../Models";
 import moment from "moment";
@@ -167,8 +165,6 @@ export default function EditorHeader({ annoDocument } : Props) {
                 <Tooltip text="Fullscreen" position="bottom">
                     <Fullscreen onClick={() => fullScreenClick()}/>
                 </Tooltip>
-
-                <Zoom />
 
                 {/* Active Users */}
                 <ActiveUserBubbles activeUsers={[currentUser, ...activeUsers]} />

@@ -1,5 +1,4 @@
 import React from 'react';
-import PanTool from "./tools/PanTool";
 import SelectTool from "./tools/SelectTool";
 import PenTool from "./tools/PenTool";
 import HighlighterTool from "./tools/HighlighterTool";

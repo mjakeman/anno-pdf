@@ -1,8 +1,8 @@
 import {useContext, useState} from "react";
-import {EllipsisHorizontalIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
-import { XMarkIcon } from "@heroicons/react/20/solid";
+import {ArrowDownTrayIcon, EllipsisHorizontalIcon} from "@heroicons/react/24/solid";
+import {XMarkIcon} from "@heroicons/react/20/solid";
 
-import {DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {DocumentDuplicateIcon, TrashIcon} from "@heroicons/react/24/outline";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import {AnnoDocument} from "../Models";
 import Tooltip from "../../../Tooltip";

@@ -1,9 +1,5 @@
-import React, {createContext, useContext, useEffect, useState} from 'react'
-import { auth } from '../firebaseAuth';
-import { User } from 'firebase/auth';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import React, {createContext, useState} from 'react'
 import {DocumentRecord} from "../components/app/dashboard/DashboardTable";
-import useLocalStorage from "../hooks/useLocalStorage";
 
 interface LoadedDocContext {
     documents: DocumentRecord[] | null;
