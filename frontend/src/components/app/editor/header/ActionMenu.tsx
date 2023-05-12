@@ -15,6 +15,15 @@ interface ActionMenuProps {
 
     annoDoc: AnnoDocument
 }
+
+/**
+ * Represents the action menu in the editor
+ * @param onDownload
+ * @param onCopy
+ * @param onDelete
+ * @param annoDoc
+ * @constructor
+ */
 export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : ActionMenuProps ) {
 
     const [showExpandedMenu, setShowExpandedMenu] = useState(false);
@@ -32,6 +41,8 @@ export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Act
                     {showExpandedMenu ? <XMarkIcon className="w-5 h-5 text-white" /> : <EllipsisHorizontalIcon className="w-8 h-8 text-white"/> }
                 </button>
             </Tooltip>
+
+            {/* If we've clicked the 3 dots ... */}
             {showExpandedMenu &&
                 <div className="-ml-4 flex rounded-r-xl border-y-2 border-r-2 border-anno-red-primary dark:border-anno-red-secondary">
                     <div className="flex flex-row ml-6 mr-2 gap-2 items-stretch justify-center">
