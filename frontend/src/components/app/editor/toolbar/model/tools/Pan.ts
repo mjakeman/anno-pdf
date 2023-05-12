@@ -8,6 +8,7 @@ class Pan extends Tool {
     }
 
     draw(canvas: Canvas): void {
+        // No implementation required
     }
 
 }
