@@ -1,9 +1,5 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
-import {ChevronDownIcon, ChevronUpIcon} from "@heroicons/react/24/solid";
-import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
-import {DocumentContext, ToolContext} from "../../Editor";
-import Rectangle from "../model/tools/Rectangle";
-import {useIsMount} from "../../../../../hooks/useIsMount";
+import React, {useContext} from "react";
+import {DocumentContext} from "../../Editor";
 import {fabric} from "fabric";
 import {useNavigate} from "react-router-dom";
 

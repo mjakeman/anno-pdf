@@ -7,7 +7,6 @@ import {Dispatch, SetStateAction, useEffect, useState} from "react";
  */
 export default function useDialogToggle(exitKey: string, toggleKey: string) : [boolean, Dispatch<SetStateAction<boolean>>]{
 
-    // TODO: refactor to context?
     const [showDialog, setShowDialog] = useState(false);
 
     useEffect(() => {
