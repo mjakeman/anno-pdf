@@ -157,7 +157,13 @@ npm run dev
 ```
 
 ### Testing
-To run the frontend and backend tests, run `npm test` in the respective directories. Ensure your environment is configured as described above.
+Ensure your environment is configured as described above.
+
+To run the backend api and schema tests, run `npm test` in the backend directory.
+
+To run the frontend cypress tests (locally), ensure both the backend server and frontend are running (following the instructions above in the [compilation](#compilation) section).
+Then, in a new terminal in the frontend directory - run `npm test`. When the cypress window opens, follow the setup prompts if any, then select End-to-End testing and Chrome as the browser.
+This will take you to the spec files, where you can select an End-to-End test to run.
 
 ## Project Management
 The team decided on using Jira for project management, as it is a powerful and widely used issue tracker solution which the team is experienced with. This is used as our 'source of truth' for task allocations.
