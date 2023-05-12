@@ -16,8 +16,17 @@ import {getUser, getUsersByEmailList} from "../data/users/users-dao";
 
 const emailService = new EmailService();
 
+/**
+ * Controller for handling document-related operations
+ */
 class DocumentController {
 
+    /**
+     * Deletes a document from the database and S3 bucket
+     *
+     * @param req - Express request object containing document UUID in URL params
+     * @param res - Express response object
+     */
     deleteDocument = async (req: Request, res: Response) => {
         const currentUserUid = req.user!.uid;
 
@@ -26,6 +35,7 @@ class DocumentController {
             return res.status(404).send('Document not found');
         }
 
+        // Check if the current user is the owner of the document
         if (dbDoc.owner!.uid !== currentUserUid) {
             return res.status(403).send('You do not have the permissions to delete this document');
         }
@@ -47,7 +57,14 @@ class DocumentController {
         return res.status(200).send('Document deleted from mongo and s3 - Title: ' + dbDoc.title);
     }
 
+    /**
+     * Retrieves a document from the database and S3 bucket, and sends it as a response with base64-encoded PDF
+     *
+     * @param req - Express request object containing document UUID in URL params
+     * @param res - Express response object
+     */
     getDocument = async (req: Request, res: Response) => {
+        // Retrieve document from the database
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
@@ -64,9 +81,12 @@ class DocumentController {
             const s3Document = await s3.getObject(params).promise();
             if (!s3Document.Body) throw Error("s3 document 'Data' was null");
 
+            // Convert the PDF to base64 and add it to the document JSON
             const base64pdf = s3Document.Body.toString('base64');
             const documentJson = JSON.parse(JSON.stringify(dbDoc));
             documentJson['base64file'] = base64pdf;
+
+            // Retrieve the list of users that the document is shared with
             documentJson['sharedWith'] = await getUsersByEmailList(documentJson.sharedWith);
             return res.send(documentJson);
         } catch (e) {
@@ -75,7 +95,15 @@ class DocumentController {
         }
     }
 
+
+    /**
+     * Updates a document in MongoDB and returns the updated document
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @returns {Object} - The updated document or an error response
+     */
     updateDocument = async (req: Request, res: Response) => {
+        // Get the document from MongoDB
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
@@ -92,6 +120,13 @@ class DocumentController {
         return res.status(404).send('Document not found');
     }
 
+
+    /**
+     * Creates a new document and uploads it to Amazon S3 and MongoDB
+     * @param {Object} req - Express request object
+     * @param {Object} res - Express response object
+     * @returns {Object} - The created document or an error response
+     */
     createAndUploadDocument = async (req: Request, res: Response) => {
         const dbUser = await getUser(req.user!.uid);
         if (!dbUser) {
@@ -143,7 +178,13 @@ class DocumentController {
 
         return req.pipe(busboy);
     }
-
+    
+    /**
+        Copies a document to a new UUID and adds it to the MongoDB database and Amazon S3 bucket.
+        @param {Request} req - The HTTP request object containing the user's Firebase UID and the UUID of the document to copy.
+        @param {Response} res - The HTTP response object that will be returned to the client.
+        @returns {Response} - Returns a response with a JSON object containing the UUID and metadata of the new document, or a status code and error message if there was an issue.
+    */
     copyDocument = async (req: Request, res: Response) =>  {
         const dbUser = await getUser(req.user!.uid);
         if (!dbUser) {
@@ -190,6 +231,12 @@ class DocumentController {
         return res.sendStatus(422);
     }
 
+    /**
+        Shares a document with a user by adding their email to the "sharedWith" array in MongoDB and sending them an email invite.
+        @param {Request} req - The HTTP request object containing the user's Firebase UID, the UUID of the document to share, and the email address of the user to share with.
+        @param {Response} res - The HTTP response object that will be returned to the client.
+        @returns {Response} - Returns a response with a JSON object containing the updated document metadata, or a status code and error message if there was an issue.
+    */
     shareDocument = async (req: Request, res: Response) => {
         if (!req.body.email) {
             return res.status(400).send('"email" field is required in the request body');

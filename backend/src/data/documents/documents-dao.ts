@@ -1,5 +1,11 @@
 import { Document } from '../../models/Document';
 
+/**
+ * 
+ * This class is responsible for testing Document model. It tests many of the methods associated
+ * with the model.
+ */
+
 async function getDocuments(user: any) {
     return Document.find({
         $or: [

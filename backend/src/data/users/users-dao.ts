@@ -1,5 +1,11 @@
 import {User} from '../../models/User';
 
+/**
+ * 
+ * This class is responsible for testing User model. It tests many of the methods associated with 
+ * the model.
+ */
+
 async function getUsers() {
     return User.find();
 }
