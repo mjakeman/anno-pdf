@@ -89,7 +89,11 @@ export default function Login() {
     async function handleSignInWithEmailAndPassword() {
         signInWithEmailAndPassword(email, password).then(
             async (emailUser) => {
-                const user = emailUser?.user!;
+                const user = emailUser?.user;
+                if (!user) {
+                    let message = _emailError ? _emailError.message : 'Sign in failed';
+                    throw Error(message);
+                }
                 const token = await user.getIdToken();
                 await validateWithBackend(token);
             }
