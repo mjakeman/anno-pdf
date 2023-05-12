@@ -48,7 +48,7 @@ export default function RectangleTool({id} : Props) {
 
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:hover:bg-anno-space-700 dark:bg-anno-space-100 border-2 border-transparent p-1'}`}>
+            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-anno-space-700 p-1'}`}>
 
                 <button onClick={handleRectangleClick} type="button" className={`${isActiveTool ? 'border-2 ' : 'border-transparent border'} rounded-full`}>
                     <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
