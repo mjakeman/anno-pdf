@@ -7,7 +7,6 @@ import SocketClient from "./socket/client";
 import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
 import {AnnoDocument} from "./Models";
-import {MathAnnotation} from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
