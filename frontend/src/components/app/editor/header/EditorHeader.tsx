@@ -106,6 +106,10 @@ export default function EditorHeader({ annoDocument } : Props) {
     }
 
     async function copyDocument(){
+        addToast({
+            message: 'Copying document...',
+            type: 'info'
+        })
         let token = await firebaseUserRef!.getIdToken();
 
         await axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/' +documentUuid + '/copy', null,{
@@ -115,7 +119,6 @@ export default function EditorHeader({ annoDocument } : Props) {
         }).then((response) => {
             if(response.data){
                 addToast({
-                    
                     message: 'Document copied successfully',
                     type: 'success'
                 })
@@ -124,7 +127,6 @@ export default function EditorHeader({ annoDocument } : Props) {
         }
         ).catch((error) => {
             addToast({
-                
                 message: 'Document copy failed',
                 type: 'error'
             })
