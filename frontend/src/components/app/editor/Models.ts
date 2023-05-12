@@ -20,6 +20,6 @@ export interface AnnoDocument {
     updatedAt: string,
     base64File: string,
     sharedWith: SharedUser[] // Array of Users
-    owner: AnnoUser
-    annotations: fabric.Canvas[]
+    owner: AnnoUser,
+    pages: fabric.Canvas[]
 }

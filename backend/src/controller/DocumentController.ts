@@ -226,30 +226,30 @@ class DocumentController {
     }
 
     checkDocumentViewingPermissions = async (req: Request, res: Response, next: NextFunction) => {
-        const { uid, email } = req.user!;
-
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
+        const { uid, email } = req.user!;
         if (!this.hasViewingPermissions(dbDoc, uid, email)) {
-            return res.status(403).send('Insufficient permissions');
+            console.log('User does not have viewing perms');
+            return res.status(403).send('Insufficient permissions (Viewing)');
         }
 
         return next();
     }
 
     checkDocumentOwnerPermissions = async (req: Request, res: Response, next: NextFunction) => {
-        const uid = req.user!.uid;
-
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
             return res.status(404).send('Document not found');
         }
 
+        const uid = req.user!.uid;
         if (dbDoc.owner!.uid !== uid) {
-            return res.status(403).send('Insufficient permissions');
+            console.log('User does not have owner perm');
+            return res.status(403).send('Insufficient permissions (Owner)');
         }
 
         return next();

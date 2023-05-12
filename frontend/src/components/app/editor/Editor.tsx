@@ -45,7 +45,7 @@ export default function Editor() {
                         base64File: response.data.base64file,
                         sharedWith: response.data.sharedWith, // Array of Users
                         owner: response.data.owner,
-                        annotations: response.data.annotations,
+                        pages: []
                     });
                 }).catch(function (error) {
                     navigate('/');
