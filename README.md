@@ -114,6 +114,14 @@ VITE_BACKEND_URL=http://localhost:8080
 VITE_FRONTEND_URL=http://localhost:5173
 ```
 
+Additionally, create another file at `/frontend/Cypress.env.json` and enter:
+
+```json
+{
+    "API_TOKEN": "AIzaSyA3gTfsWuuEoLZktxhjBRwg1DqsaBbL_OE"
+}
+```
+
 ### Running Locally
 With the S3 Bucket and MongoDB instance configured as above, the project is now ready to be run locally.
 
@@ -147,6 +155,9 @@ npm install
 # Run backend app
 npm run dev
 ```
+
+### Testing
+To run the frontend and backend tests, run `npm test` in the respective directories. Ensure your environment is configured as described above.
 
 ## Project Management
 The team decided on using Jira for project management, as it is a powerful and widely used issue tracker solution which the team is experienced with. This is used as our 'source of truth' for task allocations.
