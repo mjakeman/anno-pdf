@@ -11,11 +11,11 @@ import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import { generateUniqueColors } from "../../../public/ProfileHashUtil";
 
-interface DashboardHeaderProps {
+interface Props {
     onCommandMenuClicked: (params: any) => any,
 }
 
-export default function DashboardHeader({  onCommandMenuClicked } : DashboardHeaderProps) {
+export default function DashboardHeader({  onCommandMenuClicked } : Props) {
 
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 

@@ -2,11 +2,11 @@ import ProfileBubble, {ProfileBubbleSizes} from "../../../ProfileBubble";
 import React, {useState} from "react";
 import {AnnoUser} from "../Models";
 
-interface ActiveUserBubbleProps {
+interface Props {
     user: AnnoUser;
 }
 
-export default function ActiveUserBubble({user} : ActiveUserBubbleProps) {
+export default function ActiveUserBubble({user} : Props) {
 
     const [showUserInfoCard, setShowUserInfoCard] = useState(false);
 

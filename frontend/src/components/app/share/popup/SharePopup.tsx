@@ -6,7 +6,7 @@ import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import axios from "axios";
 import {useToast} from "../../../../hooks/useToast";
 
-interface SharePopupProps {
+interface Props {
     owner: AnnoUser,
     annoDocument: AnnoDocument,
     onSharePress:  (params: any) => any;
@@ -14,7 +14,7 @@ interface SharePopupProps {
     peopleSharedWith: SharedUser[],
     onOutsideClick: (params: any) => any;
 }
-export default function SharePopup({owner, annoDocument, onSharePress, peopleSharedWith, onOutsideClick } : SharePopupProps) {
+export default function SharePopup({owner, annoDocument, onSharePress, peopleSharedWith, onOutsideClick } : Props) {
 
     const {firebaseUserRef} = useContext(AuthContext);
     const shareDropdown = useRef<HTMLDivElement>(null);

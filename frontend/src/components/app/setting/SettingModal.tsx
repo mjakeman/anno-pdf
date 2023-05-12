@@ -15,12 +15,12 @@ import {ArrowRightOnRectangleIcon, InformationCircleIcon} from "@heroicons/react
 
 type SettingTabs = "account" | "settings"
 
-interface SettingModalProps {
+interface Props {
     isVisible: boolean,
     onOutsideClick: (params: any) => any,
 }
 
-export default function SettingModal({isVisible, onOutsideClick}: SettingModalProps) {
+export default function SettingModal({isVisible, onOutsideClick}: Props) {
     const [activeTab, setActiveTab] = useState<SettingTabs>("account")
     const settingModal = useRef<HTMLDivElement>(null);
     const {clearDocBuffer } = useContext(RecentContext);
