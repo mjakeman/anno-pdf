@@ -52,12 +52,12 @@ It is composed of two modules: the
  * **Express** is the web framework powering the Anno backend. It allows for efficient iteration and compatibility with the data structures used in the frontend.
  * **Mongoose** is our ORM for persisting application state to MongoDB. It provides a helpful convenience layer over Mongo.
  * **Jest** is the JavaScript testing framework used to create the backend test fixtures.
+ * **Supertest** allows for the easy creation of test servers and is used to verify the functionality of our express-based backend. 
  * **Nodemailer** provides email sending capabilities for the invitation system.
 
 ### Auxiliary Technologies
  * **Heroku** is the cloud service platform used to deploy Anno. We achieve continuous deployment for every commit on the `main` branch.
  * **MongoDB** provides data persistence for users, documents, and annotations. This allows for annotations to be stored across restarts of the backend server.
- * **Mailgun** is the service provider for email notifications.
  * **Firebase** provides authentication and token functionality which is integrated into our backend. Requests are secured to prevent data leakage.
  * **Amazon S3** stores uploaded documents and enables the application to fetch them on-demand. We use Amazon's highly performant CDN to provide fast and efficient document retrieval.
  * **GitHub Actions** provided continuous integration to the project. Four build checks (for the frontend and backend across the latest Node.js and the Node.js LTS) and two deployment tasks (for frontend and backend deployment to Heroku) were used.
