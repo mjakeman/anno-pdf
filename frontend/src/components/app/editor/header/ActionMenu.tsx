@@ -27,7 +27,7 @@ export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Act
 
     return (
         <div className="flex flex-row items-center">
-            <Tooltip text={actionText} position="bottom">
+            <Tooltip text={actionText} position={showExpandedMenu ? "bottom" : "right"}>
                 <button onClick={() => setShowExpandedMenu(!showExpandedMenu)} type="button" className="z-50 bg-anno-red-primary dark:bg-anno-red-secondary w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-anno-red-secondary dark:hover:bg-anno-pink-500">
                     {showExpandedMenu ? <XMarkIcon className="w-5 h-5 text-white" /> : <EllipsisHorizontalIcon className="w-8 h-8 text-white"/> }
                 </button>
