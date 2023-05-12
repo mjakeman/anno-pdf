@@ -8,14 +8,14 @@ import {AnnoDocument} from "../Models";
 import Tooltip from "../../../Tooltip";
 
 
-interface ActionMenuProps {
+interface Props {
     onDownload:  (params: any) => any,
     onCopy:  (params: any) => any,
     onDelete:  (params: any) => any,
 
     annoDoc: AnnoDocument
 }
-export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : ActionMenuProps ) {
+export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Props ) {
 
     const [showExpandedMenu, setShowExpandedMenu] = useState(false);
 

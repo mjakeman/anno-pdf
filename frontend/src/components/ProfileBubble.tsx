@@ -6,12 +6,12 @@ export enum ProfileBubbleSizes {
     Large = "w-12 h-12 text-xl"
 }
 
-interface ProfileBubbleProps {
+interface Props {
     size: ProfileBubbleSizes,
     email: string,
 }
 
-export default function ProfileBubble({size, email} : ProfileBubbleProps) {
+export default function ProfileBubble({size, email} : Props) {
 
     // Use styling generated from a name
     const {bgColor, borderColor} = generateUniqueColors(email);

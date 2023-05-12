@@ -2,10 +2,10 @@ import {CommandOption} from "./CommandMenuDialog";
 import CommandMenuDialogRow from "./CommandMenuDialogRow";
 import React from "react";
 
-interface CommandMenuDialogResultsRecentProps {
+interface Props {
     recent: CommandOption[]
 }
-export default function CommandMenuDialogResultsRecent( { recent } : CommandMenuDialogResultsRecentProps ) {
+export default function CommandMenuDialogResultsRecent( { recent } : Props ) {
 
     if (recent.length === 0) {
         return (

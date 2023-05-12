@@ -7,12 +7,12 @@ import {auth} from "../../../../firebaseAuth";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import { generateUniqueColors } from "../../../public/ProfileHashUtil";
 
-interface ProfileDropdownProps {
+interface Props {
     onOutsideClick: (params: any) => any,
     onAccountSettingsClicked: () => any,
 }
 
-export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClicked } : ProfileDropdownProps) {
+export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClicked } : Props) {
 
     const profileDropdownRef = useRef<HTMLDivElement>(null);
 
