@@ -27,6 +27,7 @@ export default function HighlighterTool({ id } : Props) {
     function handleColorSelect(selectedColor: string) {
         setHighlighter((prevHighlighter : Highlighter) => {
             const newPen = new Highlighter(prevHighlighter.id, prevHighlighter.size, prevHighlighter.color);
+
             // Watch for error (when we assign a color which isn't allowed)
             try {
                 newPen.color = selectedColor;
@@ -42,11 +43,14 @@ export default function HighlighterTool({ id } : Props) {
         setHighlighter(new Highlighter(highlighter.id, newSize, highlighter.color));
     }
 
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
+
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(highlighter);
     }, [highlighter]);
 

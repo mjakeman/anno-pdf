@@ -24,12 +24,14 @@ export default function PanTool({id} : Props) {
         setActiveToolData(panTool);
     }
 
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData]);
 
 
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(panTool);
     }, [panTool]);
 

@@ -36,12 +36,13 @@ export default function RectangleTool({id} : Props) {
         setActiveToolData(rectTool);
     }
 
-
+    // Keep track of when the active tool is this tool
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
     useEffect(() => {
+        // Only set the active tool if this useEffect was NOT triggered by initial render
         if (!isMount) setActiveToolData(rectTool);
     }, [rectTool]);
 
@@ -61,9 +62,12 @@ export default function RectangleTool({id} : Props) {
                     </button>
                 }
             </span>
+
+            {/* Options (color / stroke) */}
             {showOptions &&
                 <div ref={dropdown} className="absolute mt-4 rounded-3xl border-2 border-stone-300 bg-zinc-800 flex flex-col gap-4 p-4 w-72">
 
+                    {/* Color Palette */}
                     <div className="grid grid-cols-6 gap-2">
                         {rectTool.allowedColors.map((color: string, idx: number) => (
                             <div key={idx} onClick={() => handleFillColorSelect(color)} className={`${rectTool.color === color ? 'border-2 border-pink-300' : 'border-transparent border-2'} transition-all h-8 w-8 rounded-full`}  style={{backgroundColor: color}}>
