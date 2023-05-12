@@ -18,11 +18,24 @@ interface Props {
     doc: AnnoDocument;
     socketClientRef: MutableRefObject<SocketClient>;
 }
+
+/**
+ * PageRenderer is a "container" for fabric.js. It corresponds to a single
+ * page of the PDF document and handles all annotation updates, input, output,
+ * etc.
+ */
 const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef } : Props) => {
 
+    // Fabric Canvas which this element owns
     const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+
+    // HTML Canvas (i.e. NOT fabric) which we render to
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+    // Fabric background image. Cached to prevent re-rendering which is expensive.
     const [pageImg, setPageImg] = useState<fabric.Image | null>(null);
+
+    // Import the tool context
     useTools(canvas);
 
     // (1) Startup - Load the Image
@@ -50,6 +63,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
             height: pageImg.height,
         });
 
+        // Update the AnnoDocument instance so we can export later
         doc.pages[pageIndex] = newCanvas;
 
         setCanvas(newCanvas);
@@ -57,6 +71,11 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
 
     }, [pageImg]);
 
+    /**
+     * Turn on event handling for the canvas.
+     *
+     * @param canvas fabric canvas
+     */
     const enableEvents = (canvas: fabric.Canvas) => {
         // Setup event handlers
         canvas.on('object:modified', data => {
@@ -80,6 +99,11 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         window.addEventListener('keyup',removeObjectOnDeleteKeyPress)
     }
 
+    /**
+     * Turn off event handling for the canvas
+     *
+     * @param canvas fabric canvas
+     */
     const disableEvents = (canvas: fabric.Canvas) => {
         // Setup event handlers
         canvas.off('object:modified');
@@ -88,26 +112,140 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         window.removeEventListener('keyup', removeObjectOnDeleteKeyPress)
     }
 
-    // Prevent loop feedback when processing events from the server (i.e. avoiding triggering
-    // an object:added event ourselves, which will recursively call the server and so on).
+    /**
+     * Prevent loop feedback when processing events from the server (i.e. avoiding triggering
+     * an object:added event ourselves, which will recursively call the server and so on).
+     *
+     * @param canvas fabric canvas
+     * @param fn callback to run while events are off
+     */
     const runWithEventsFrozen = (canvas: Canvas, fn: () => void) => {
         disableEvents(canvas);
         fn();
         enableEvents(canvas);
     }
 
+    /**
+     * Removes an object from the canvas
+     *
+     * @param e fabric keyboard event
+     */
     const removeObjectOnDeleteKeyPress = (e: KeyboardEvent) => {
         if (!canvas) return;
+
+        // Handle any kind of delete or backspace combination
         if ( e.key == 'Delete' || e.code == 'Delete' || e.key == 'Backspace') {
             const activeObj = canvas.getActiveObject();
 
+            // Let text editing still work
             if (activeObj instanceof fabric.IText && activeObj.isEditing) return;
 
+            // Delete the active objects
             canvas.getActiveObjects().forEach((obj) => {
                 canvas.remove(obj);
             });
+
+            // Discard the active selection
             canvas.discardActiveObject().renderAll();
         }
+    }
+
+    const handleObjectAdded = (canvas: fabric.Canvas, data: fabric.Object) => {
+        runWithEventsFrozen(canvas, () => {
+            try {
+                console.log("Attempting to enliven object:");
+                console.log(data);
+
+                fabric.util.enlivenObjects([data], function (enlivenedObjects: any[]) {
+
+                    const newObj = enlivenedObjects[0];
+                    newObj.opacity = 0;
+                    newObj.animate('opacity', 1, {
+                        duration: 500,
+                        onChange: canvas.renderAll.bind(canvas),
+                        easing: fabric.util.ease['easeInQuad']
+                    });
+
+                    canvas.add(newObj);
+                    canvas.renderAll();
+
+                }, '', undefined);
+            } catch (error) {
+                console.error(error);
+            }
+            canvas.renderAll();
+        });
+    }
+
+    const handleObjectModified = (canvas: fabric.Canvas, data: fabric.Object) => {
+        runWithEventsFrozen(canvas, () => {
+            console.log("Modification received from peer")
+
+            const uuid = (data as any).uuid;
+
+            console.log(data);
+            console.log(uuid);
+            console.log('\n');
+
+            let found = false;
+
+            canvas.forEachObject(object => {
+
+                if ((object as any).uuid === uuid) {
+
+                    const dummyFadeOut = fabric.util.object.clone(object);
+                    object.set(data);
+
+                    dummyFadeOut.opacity = 1;
+                    object.opacity = 0;
+
+                    dummyFadeOut.animate('opacity', 0, {
+                        duration: 500,
+                        onChange: canvas.renderAll.bind(canvas),
+                        onComplete: canvas.remove.bind(dummyFadeOut),
+                        easing: fabric.util.ease['easeInQuad']
+                    });
+
+                    object.animate('opacity', 1, {
+                        duration: 300,
+                        onChange: canvas.renderAll.bind(canvas),
+                        easing: fabric.util.ease['easeInQuad']
+                    });
+
+                    (object as any).uuid = uuid;
+
+                    object.setCoords();
+                    canvas.renderAll();
+
+                    found = true;
+                }
+            });
+
+            if (!found)
+                console.error("Did not find object to modify - lost data?");
+        });
+    }
+
+    const handleObjectRemoved = (canvas: fabric.Canvas, uuid: string) => {
+        runWithEventsFrozen(canvas, () => {
+            console.log("Removal received from peer")
+
+            let found = false;
+
+            canvas.forEachObject(object => {
+
+                if ((object as any).uuid === uuid) {
+
+                    canvas.remove(object);
+                    canvas.renderAll();
+
+                    found = true;
+                }
+            });
+
+            if (!found)
+                console.error("Did not find object to remove - lost data?");
+        });
     }
 
     // (3) Once the canvas is loaded, draw the actual image.
@@ -117,102 +255,13 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         if (!canvas) return;
 
         const socketClient = socketClientRef.current;
+
+        // Register a 'page callback' object with the socket client
+        // It will call us back whenever it receives an event from the server
         socketClient.registerPage(pageIndex, {
-            objectAddedFunc: data => {
-                runWithEventsFrozen(canvas, () => {
-                    try {
-                        console.log("Attempting to enliven object:");
-                        console.log(data);
-
-                        fabric.util.enlivenObjects([data], function (enlivenedObjects: any[]) {
-
-                            const newObj = enlivenedObjects[0];
-                            newObj.opacity = 0;
-                            newObj.animate('opacity', 1, {
-                                duration: 500,
-                                onChange: canvas.renderAll.bind(canvas),
-                                easing: fabric.util.ease['easeInQuad']
-                            });
-
-                            canvas.add(newObj);
-                            canvas.renderAll();
-
-                        }, '', undefined);
-                    } catch (error) {
-                        console.error(error);
-                    }
-                    canvas.renderAll();
-                });
-            },
-            objectModifiedFunc: data => {
-                runWithEventsFrozen(canvas, () => {
-                    console.log("Modification received from peer")
-
-                    const uuid = (data as any).uuid;
-
-                    console.log(data);
-                    console.log(uuid);
-                    console.log('\n');
-
-                    let found = false;
-
-                    canvas.forEachObject(object => {
-
-                        if ((object as any).uuid === uuid) {
-
-                            const dummyFadeOut = fabric.util.object.clone(object);
-                            object.set(data);
-
-                            dummyFadeOut.opacity = 1;
-                            object.opacity = 0;
-
-                            dummyFadeOut.animate('opacity', 0, {
-                                duration: 500,
-                                onChange: canvas.renderAll.bind(canvas),
-                                onComplete: canvas.remove.bind(dummyFadeOut),
-                                easing: fabric.util.ease['easeInQuad']
-                            });
-
-                            object.animate('opacity', 1, {
-                                duration: 300,
-                                onChange: canvas.renderAll.bind(canvas),
-                                easing: fabric.util.ease['easeInQuad']
-                            });
-
-                            (object as any).uuid = uuid;
-
-                            object.setCoords();
-                            canvas.renderAll();
-
-                            found = true;
-                        }
-                    });
-
-                    if (!found)
-                        console.error("Did not find object to modify - lost data?");
-                });
-            },
-            objectRemovedFunc: uuid => {
-                runWithEventsFrozen(canvas, () => {
-                    console.log("Removal received from peer")
-
-                    let found = false;
-
-                    canvas.forEachObject(object => {
-
-                        if ((object as any).uuid === uuid) {
-
-                            canvas.remove(object);
-                            canvas.renderAll();
-
-                            found = true;
-                        }
-                    });
-
-                    if (!found)
-                        console.error("Did not find object to remove - lost data?");
-                });
-            },
+            objectAddedFunc: data => handleObjectAdded(canvas, data),
+            objectModifiedFunc: data => handleObjectModified(canvas, data),
+            objectRemovedFunc: uuid => handleObjectRemoved(canvas, uuid),
         });
 
         canvas.stateful = true;
@@ -220,6 +269,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         // Setup event handlers
         enableEvents(canvas);
 
+        // Set background image to PDF page
         canvas.setBackgroundImage(pageImg, canvas.renderAll.bind(canvas), {});
         requestAnimationFrame(draw);
 
@@ -241,13 +291,18 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         canvas.renderAll();
     };
 
-    // Function to render the page to a texture
+    /**
+     * Render the page to a texture
+     * @param page Page from PDF.js
+     */
     const renderPageToTexture = async (page: PDFPageProxy) => {
         // Create an offscreen canvas
         const canvas = document.createElement('canvas');
+
         // Obtain the PDF page's scale
         const scale = 1.0;
         const viewport = page.getViewport({ scale: scale, });
+
         // Perform some transformations to support HiDPI screens
         const outputScale = window.devicePixelRatio || 1;
 
@@ -260,8 +315,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
             ? [outputScale, 0, 0, outputScale, 0, 0]
             : null;
 
-        // Retrieve the drawing context from the canvas. This is similar to how we
-        // get a WebGL context, but in this case we want a plain 2d one.
+        // Retrieve the drawing context from the canvas.
         const context = canvas.getContext('2d');
 
         // Construct a PDF.js render context
@@ -291,7 +345,7 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
     };
 
     return (
-            <canvas className="drop-shadow-around" ref={canvasRef} />
+        <canvas className="drop-shadow-around" ref={canvasRef} />
     )
 });
 
@@ -312,6 +366,7 @@ fabric.Object.prototype.controls.deleteControl = new fabric.Control({
     mouseUpHandler: deleteObject,
     render: renderIcon,
 });
+
 function deleteObject(eventData: MouseEvent, transformData: Transform): boolean {
     let target = transformData.target;
     let canvas = target.canvas;
