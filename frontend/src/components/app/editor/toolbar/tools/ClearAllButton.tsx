@@ -1,13 +1,14 @@
 import React, {useContext} from "react";
 import {DocumentContext} from "../../Editor";
 import {fabric} from "fabric";
-import {useNavigate} from "react-router-dom";
 
+/**
+ * This component clears all the annotations on the canvas, rendering within the toolbar.
+ * @constructor
+ */
 export default function ClearAllButton() {
 
     const [_users, _add, _remove, _shared, _reset, document] = useContext(DocumentContext);
-
-    const navigate = useNavigate();
 
     const handleClearAllClick = () => {
         const result = confirm('Are you sure you want to clear all annotations?');
@@ -26,7 +27,7 @@ export default function ClearAllButton() {
 
     return (
         <span className="relative flex items-center justify-center">
-            <button onClick={handleClearAllClick} type="button" className={`bg-anno-space-100 border-transparent border active:bg-gray-300 rounded-full transition-colors p-2`}>
+            <button onClick={handleClearAllClick} type="button" className={`bg-gray-200 dark:bg-anno-space-100 border-transparent border active:bg-gray-300 rounded-full transition-colors p-2`}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                      stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round"

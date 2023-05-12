@@ -19,6 +19,7 @@ export default function CommandMenuDialogResultsRecent( { recent } : Props ) {
             <h1 className="text-neutral-400 text-lg dark:text-white">
                 Recent
             </h1>
+            {/*Display recent documents or searches*/}
             <div className={"flex flex-col"}>
                 {recent.map((command: CommandOption, index: number) => (
                     <CommandMenuDialogRow text={command.text} category={command.category} newTab={command.newTab} to={command.to} key={index} />

@@ -3,7 +3,6 @@ import {MinusCircleIcon, PlusCircleIcon} from "@heroicons/react/24/outline";
 import {ZoomContext} from "../Editor";
 
 // NOTE: Not in use unfortunately due to executive decision
-
 export default function Zoom() {
 
     const [zoom, setZoom] = useContext(ZoomContext);

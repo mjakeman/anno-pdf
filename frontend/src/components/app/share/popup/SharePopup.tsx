@@ -27,7 +27,7 @@ export default function SharePopup({owner, annoDocument, onSharePress, peopleSha
     const [sharedWithUsers, setSharedWithUsers] = useState(peopleSharedWith);
 
     async function removeFromPeople(emailOfPersonToBeRemoved: string, peopleList: SharedUser[]) {
-
+        // Remove the user from the backend
         let token = await firebaseUserRef!.getIdToken();
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/documents/${annoDocument.uuid}/removeUser`, {email: emailOfPersonToBeRemoved}, {
             headers: {
