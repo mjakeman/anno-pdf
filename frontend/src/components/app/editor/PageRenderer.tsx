@@ -7,7 +7,6 @@ import SocketClient from "./socket/client";
 import {Canvas, Object, Transform} from "fabric/fabric-impl";
 import {v4 as uuidv4} from "uuid";
 import {AnnoDocument} from "./Models";
-import {MathAnnotation} from "./toolbar/model/tools/Maths";
 
 // Required configuration option for PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -46,7 +45,6 @@ const PageRenderer = React.memo(({ onLoad, page, pageIndex, doc, socketClientRef
         }
 
         // Otherwise, if the canvas is NOT already set, then we need to create a new canvas
-        // TODO: Here we add the API call to get the canvas object from backend.
         const newCanvas = new fabric.Canvas(canvasRef.current, {
             width: pageImg.width,
             height: pageImg.height,

@@ -7,7 +7,6 @@ import useDialogToggle from "../../../hooks/useDialogToggle";
 
 export default function DashboardLayout() {
 
-    // TODO: refactor to context?
     const [showSearchDialog, setShowSearchDialog] = useDialogToggle('Escape', 'k');
 
     return (

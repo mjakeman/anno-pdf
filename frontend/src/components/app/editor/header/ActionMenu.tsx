@@ -40,10 +40,8 @@ export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Act
                             <ArrowDownTrayIcon className="w-5 h-5 text-anno-red-primary dark:text-anno-pink-500" />
                         </button>
 
-                        {/* TODO: maybe make this a component? */}
                         <div className="border-l-2 border-anno-pink-500 dark:border-pink-100 my-1.5 translate-x-1/2"></div>
 
-                        {/* TODO maybe maybe each option a component?*/}
                         <button onClick={onCopy} type="button" className="rounded-lg px-2 hover:bg-zinc-200 dark:hover:bg-anno-space-700 transition-colors">
                             <DocumentDuplicateIcon className="w-4 h-4 text-anno-red-primary dark:text-anno-pink-500" />
                         </button>
