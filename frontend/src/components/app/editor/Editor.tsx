@@ -60,18 +60,7 @@ export default function Editor() {
             });
     }, [currentUser]);
 
-    // TODO: replace with API call in (the parent component maybe, once the bigger 'Share' in top right of screen is clicked?)
-    const testUsers = [
-        {uid: '0', name: 'John Doe', email: 'johndoe@gmail.com',},
-        {uid: '1', name: 'Alice Smith', email: 'alice@hotmail.com',},
-        {uid: '2', name: 'Charlie Hopkins', email: 'charlie@yahoo.com',},
-        {uid: '3', name: 'Bob Brown', email: 'bob@gmail.com',},
-        {uid: '4', name: 'David Mannings', email: 'david@yahoo.com',},
-        {uid: '5', name: 'Eve Post', email: 'eve@hotmail.com',},
-    ];
-
     const [activeUsers, setActiveUsers] = useState<AnnoUser[]>([]);
-    const [sharedUsers, setSharedUsers] = useState<AnnoUser[]>(testUsers);
 
     useEffect(() => {
         setActiveToolData(new Select("select"));
@@ -97,7 +86,7 @@ export default function Editor() {
     }
 
     return (
-        <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, sharedUsers, resetActiveUsers]}>
+        <DocumentContext.Provider value={[activeUsers, addActiveUser, removeActiveUser, null, resetActiveUsers, document]}>
             <ToolContext.Provider value={[activeToolData, setActiveToolData]}>
                 <ZoomContext.Provider value={[zoom, setZoom]}>
                     {document ?
