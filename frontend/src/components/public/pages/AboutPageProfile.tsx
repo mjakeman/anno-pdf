@@ -1,5 +1,3 @@
-import matthewDp from "../../../assets/images/aboutpage/profiles/mj.jpeg";
-
 interface Props {
     name: string,
     role: string,

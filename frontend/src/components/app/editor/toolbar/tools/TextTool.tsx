@@ -3,7 +3,6 @@ import {ChevronDownIcon, ChevronUpIcon} from "@heroicons/react/24/solid";
 import useDetectOutsideClick from "../../../../../hooks/useDetectOutsideClick";
 import {ToolContext} from "../../Editor";
 import TextModel from "../model/tools/TextModel";
-import Rectangle from "../model/tools/Rectangle";
 import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {

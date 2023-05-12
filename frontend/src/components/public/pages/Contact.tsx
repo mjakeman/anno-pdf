@@ -1,5 +1,4 @@
 import Container from "../../Container";
-import heroImg from "../../../assets/images/aboutpage/hero.jpg";
 import PrimaryButton from "../../PrimaryButton";
 import {useToast} from "../../../hooks/useToast";
 

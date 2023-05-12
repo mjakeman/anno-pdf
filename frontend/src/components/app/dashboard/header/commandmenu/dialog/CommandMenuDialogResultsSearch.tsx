@@ -1,5 +1,5 @@
 import CommandMenuDialogRow from "./CommandMenuDialogRow";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {CommandOption} from "./CommandMenuDialog";
 
 interface Props {

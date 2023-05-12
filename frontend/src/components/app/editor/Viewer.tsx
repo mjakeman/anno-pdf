@@ -1,14 +1,12 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
 import * as pdfjs from 'pdfjs-dist';
-import {PDFDocumentProxy} from "pdfjs-dist";
+import {PDFDocumentProxy} from 'pdfjs-dist';
 import {PDFPageProxy} from "pdfjs-dist/types/src/display/api";
 import {useHotkeys} from "react-hotkeys-hook";
 import {ToolContext} from "./Editor";
 import {fabric} from "fabric";
 import MathObject from "./MathObject";
 import {IEvent} from "fabric/fabric-impl";
-import Pan from "./toolbar/model/tools/Pan";
-import Select from "./toolbar/model/tools/Select";
 import Pen from "./toolbar/model/tools/Pen";
 import Highlighter from "./toolbar/model/tools/Highlighter";
 import TextModel from "./toolbar/model/tools/TextModel";

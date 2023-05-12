@@ -1,10 +1,7 @@
-import {MoonIcon, SunIcon, UserCircleIcon} from "@heroicons/react/24/solid"
-import { Cog6ToothIcon } from "@heroicons/react/24/solid"
-import React, {useContext, useRef} from "react"
-import { useState } from "react"
-import { auth } from "../../../firebaseAuth"
-import { useToast } from "../../../hooks/useToast"
-import DarkModeToggle from "../../DarkModeToggle"
+import {Cog6ToothIcon, MoonIcon, SunIcon, UserCircleIcon} from "@heroicons/react/24/solid"
+import React, {useContext, useRef, useState} from "react"
+import {auth} from "../../../firebaseAuth"
+import {useToast} from "../../../hooks/useToast"
 import Modal from "../../Modal"
 import {useNavigate} from "react-router-dom";
 import {AuthContext} from "../../../contexts/AuthContextProvider";
@@ -15,12 +12,12 @@ import {ArrowRightOnRectangleIcon, InformationCircleIcon} from "@heroicons/react
 
 type SettingTabs = "account" | "settings"
 
-interface Props {
+interface SettingModalProps {
     isVisible: boolean,
     onOutsideClick: (params: any) => any,
 }
 
-export default function SettingModal({isVisible, onOutsideClick}: Props) {
+export default function SettingModal({isVisible, onOutsideClick}: SettingModalProps) {
     const [activeTab, setActiveTab] = useState<SettingTabs>("account")
     const settingModal = useRef<HTMLDivElement>(null);
     const {clearDocBuffer } = useContext(RecentContext);

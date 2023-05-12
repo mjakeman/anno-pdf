@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useState} from "react";
+import {useCallback, useState} from "react";
 import PrimaryButton from "../../PrimaryButton";
 import FilterButton from "./FilterButton";
 import {ArrowsUpDownIcon, UserGroupIcon, UserIcon} from "@heroicons/react/24/outline";
@@ -6,8 +6,6 @@ import {DocumentIcon} from "@heroicons/react/24/solid";
 import {useNavigate} from "react-router-dom";
 import Tooltip from "../../Tooltip";
 import FileUploadModal from "./FileUploadModal";
-import { AuthContext } from "../../../contexts/AuthContextProvider";
-import {RecentContext} from "../../../contexts/RecentContextProvider";
 import moment from "moment";
 
 

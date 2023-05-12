@@ -1,21 +1,21 @@
 import {useContext, useState} from "react";
-import {EllipsisHorizontalIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
-import { XMarkIcon } from "@heroicons/react/20/solid";
+import {ArrowDownTrayIcon, EllipsisHorizontalIcon} from "@heroicons/react/24/solid";
+import {XMarkIcon} from "@heroicons/react/20/solid";
 
-import {DocumentDuplicateIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {DocumentDuplicateIcon, TrashIcon} from "@heroicons/react/24/outline";
 import {AuthContext} from "../../../../contexts/AuthContextProvider";
 import {AnnoDocument} from "../Models";
 import Tooltip from "../../../Tooltip";
 
 
-interface Props {
+interface ActionMenuProps {
     onDownload:  (params: any) => any,
     onCopy:  (params: any) => any,
     onDelete:  (params: any) => any,
 
     annoDoc: AnnoDocument
 }
-export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : Props ) {
+export default function ActionMenu({onDownload, onCopy, onDelete, annoDoc} : ActionMenuProps ) {
 
     const [showExpandedMenu, setShowExpandedMenu] = useState(false);
 
