@@ -1,6 +1,12 @@
 # Anno
 A collaborative PDF annotation suite for the web.
 
+![Screenshot of Homepage](screenshot.png)
+
+![Screenshot of Editor](screenshot2.png)
+
+
+
 Created for SOFTENG 750 at the University of Auckland.
 
 ## About
