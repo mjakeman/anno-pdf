@@ -15,6 +15,7 @@ export default function Toolbar() {
         <Tooltip text="Select" position="bottom">
             <SelectTool id={'select'} />
         </Tooltip>
+        <span className="h-4 border border-l-2 border-zinc-400 rounded-full dark:border-white translate-x-1/2 mx-2"></span>
         <Tooltip text="Pen" position="bottom">
             <PenTool id={'pen-1'}/>
         </Tooltip>
