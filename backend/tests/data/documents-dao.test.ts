@@ -1,42 +1,10 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import {getDocument, createDocument, deleteDocument, updateDocument, addSharedUser, removeSharedUser, getDocuments} from "../documents/documents-dao";
-import {Document} from "../../models/Document";
+import {getDocument, createDocument, deleteDocument, updateDocument, addSharedUser, removeSharedUser, getDocuments} from "../../src/data/documents/documents-dao";
+import {Document} from "../../src/models/Document";
+import {document1, document2, document3, user1, user4} from "../testingData";
 
 let mongod: MongoMemoryServer;
-
-const document1 = {
-    owner: {
-        uid: '001',
-        email: 'User1@email.com',
-        name: 'User1'
-    },
-    title: 'Document1',
-    uuid: '0001',
-    sharedWith: ['shared1@email.com'],
-}
-
-const document2 = {
-    owner: {
-        uid: '002',
-        email: 'User2@email.com',
-        name: 'User2'
-    },
-    title: 'Document2',
-    uuid: '0002',
-    sharedWith: ['User1@email.com'],
-}
-
-const document3 = {
-    owner: {
-        uid: '003',
-        email: 'User3@email.com',
-        name: 'User3'
-    },
-    title: 'Document3',
-    uuid: '0003',
-    sharedWith: ['shared3@email.com'],
-}
 
 const documents = [document1, document2, document3];
 
@@ -105,7 +73,7 @@ describe('Test documents-dao', () => {
     })
 
     it ('getDocuments returns documents owned by and shared to User', async () => {
-        let dbDocuments = await getDocuments({uid: '001', email: 'User1@email.com'});
+        let dbDocuments = await getDocuments(user1);
 
         expect(dbDocuments).toBeTruthy();
         expect(dbDocuments.length).toBe(2);
@@ -129,11 +97,7 @@ describe('Test documents-dao', () => {
 
     it ('createDocument adds Document to db', async () => {
         const newDocument = new Document({
-            owner: {
-                uid: '004',
-                email: 'User4@email.com',
-                name: 'User4'
-            },
+            owner: user4,
             title: 'Document4',
             uuid: '0004',
             sharedWith: [],
@@ -159,7 +123,7 @@ describe('Test documents-dao', () => {
     it ('createDocument fails when missing a field', async () => {
         const newDocument = new Document({
             owner: {
-                uid: '005',
+                uid: '0005',
                 email: 'User5@email.com',
                 name: 'User5'
             },
