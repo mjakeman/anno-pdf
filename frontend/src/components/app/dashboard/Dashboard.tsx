@@ -13,6 +13,9 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
+
+        //check user is logged in and retrieve all of their documents
+
         if (!firebaseUserRef) return;
             firebaseUserRef!.getIdToken().then((token) => {
                 axios.get(`${import.meta.env.VITE_BACKEND_URL}/user/documents`, {
@@ -41,6 +44,8 @@ export default function Dashboard() {
     }, [firebaseUserRef, currentUser]);
 
     return (
+
+        //Display dashboard table
         <div className="mx-12 flex flex-col gap-4" id="portal-destination">
             <h1 className="text-anno-red-primary text-4xl font-bold dark:text-anno-pink-500">Documents</h1>
             {documents && !loading

@@ -64,6 +64,7 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
     }
     
     function drop(event: React.DragEvent<HTMLDivElement>) {
+        //for uploading via drag
         dragLeave(event);
         const files = event.dataTransfer?.files;
         if (files && files[0] instanceof File) {
@@ -73,16 +74,23 @@ export default function FileUploadModal({isVisible, onOutsideClick}: Props){
     }
 
     function handleFileUpload(event: any) {
+        //for uploading via folder
         const file = event.target.files[0];
         importFile(file);
     }
 
     async function importFile(file: File) {
+
+        //set up file data to send to backend
         setUploadedFileName(file.name);
         setIsUploading(true);
         let formData = new FormData();
         formData.append("file", file);
+
+        //check user is logged in
         let token = await firebaseUserRef!.getIdToken();
+
+        //create document in backend
         axios.post(import.meta.env.VITE_BACKEND_URL + '/documents/create',formData, {
             headers: {
                 Authorization: `Bearer ${token}`
