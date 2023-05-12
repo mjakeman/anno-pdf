@@ -10,6 +10,8 @@ declare global {
       mount: typeof mount
       login: (email: string, password: string) =>Chainable<void>;
       logout: () => Chainable<void>;
+      deleteFile: (documentId: string) => Chainable<void>;
+      deleteUser: (email: string) => Chainable<void>;
     }
   }
 }

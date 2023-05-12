@@ -9,7 +9,7 @@ interface Props {
 export default function SelectTool({ id } : Props) {
 
     const isMount = useIsMount();
-    const [selectTool, setSelectTool] = useState<Select>(new Select(id));
+    const [selectTool] = useState<Select>(new Select(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
     const [isActiveTool, setIsActiveTool] = useState(false);
@@ -28,7 +28,7 @@ export default function SelectTool({ id } : Props) {
     }, [selectTool]);
 
     return (
-        <button onClick={handleClick} type="button" className={`${isActiveTool ? 'bg-gray-200 dark:bg-anno-space-900' : 'bg-white hover:bg-gray-200 dark:bg-anno-space-800 dark:hover:bg-anno-space-700'}  p-2 rounded-full transition-colors`}>
+        <button onClick={handleClick} type="button" className={`${isActiveTool ? 'bg-gray-200 dark:bg-anno-space-100' : 'bg-white hover:bg-gray-200 dark:bg-anno-space-100 dark:hover:bg-anno-space-700'}  p-2 rounded-full transition-colors`}>
             <svg className="w-7 h-7" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_49_872)">
                     <g filter="url(#filter0_d_49_872)">

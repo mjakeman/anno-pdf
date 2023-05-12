@@ -18,7 +18,7 @@ export default function ProfileDropdown({ onOutsideClick, onAccountSettingsClick
 
     useDetectOutsideClick(profileDropdownRef, onOutsideClick)
 
-    const {currentUser, setCurrentUser} = useContext(AuthContext);
+    const {currentUser} = useContext(AuthContext);
 
     const {bgColor} = generateUniqueColors(currentUser!.email || "");
     const profileColor = {

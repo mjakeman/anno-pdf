@@ -53,9 +53,9 @@ export default function PenTool({ id } : Props) {
 
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'} p-1 `}>
+            <span className={`transition-all duration-300 flex flex-row items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'}`}>
 
-                <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'}  p-1 rounded-full transition-colors dark:hover:bg-anno-space-700`}>
+                <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2 ' : 'border-transparent border hover:bg-gray-200'} p-1 dark:bg-anno-space-700  rounded-full transition-colors dark:hover:bg-anno-space-700`}>
                     <PencilIcon className="w-7 h-7 stroke-1" style={{fill: pen.color, stroke:  "black"}} />
                 </button>
                 {isActiveTool &&

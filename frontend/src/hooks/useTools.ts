@@ -3,7 +3,7 @@ import {ToolContext} from "../components/app/editor/Editor";
 
 export default function useTools(canvas: any) {
 
-    const [activeToolData, setActiveToolData] = useContext(ToolContext);
+    const [activeToolData] = useContext(ToolContext);
 
     useEffect(() => {
         if (canvas) {

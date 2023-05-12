@@ -21,8 +21,8 @@ export default function SignUp() {
 
     const [error, setError] = useState('');
 
-    const [signInWithGoogle, googleUser] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword, user] = useCreateUserWithEmailAndPassword(auth);
+    const [signInWithGoogle] = useSignInWithGoogle(auth);
+    const [createUserWithEmailAndPassword, , , creationError] = useCreateUserWithEmailAndPassword(auth);
     const {clearDocBuffer } = useContext(RecentContext);
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
@@ -32,9 +32,17 @@ export default function SignUp() {
 
     useEffect(() => {
         if (currentUser) {
-            navigate(location.state?.redirect ? location.state.redirect : "/dash");
-        }
-    }, []);
+            if(location.state){
+                if(location.state.redirect=="/login" || location.state.redirect=="/signup"){
+                    navigate("/dash");
+                }else{
+                navigate(location.state?.redirect ? location.state.redirect : "/dash");
+                }
+            }
+            else{
+                navigate("/dash");
+            }        }
+    }, [currentUser]);
 
     const handleSignUpFormChange = (event: ChangeEvent<HTMLInputElement>) => {
         setSignUpForm({
@@ -64,12 +72,7 @@ export default function SignUp() {
                     },
                     auth.currentUser!
                 );
-                if (location.state && location.state.redirect){
-                    navigate(location.state.redirect ? location.state.redirect:"/dash");
-                } else {
-                    navigate("/dash");
-                }
-
+        
             }
         }).catch(async function (error) {
             setError(`Error: ${error.name} (${error.code})`);
@@ -93,7 +96,11 @@ export default function SignUp() {
     async function handleDefaultSignUpSubmit() {
         createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
             async (emailUser) => {
-                const user = emailUser?.user!;
+                const user = emailUser?.user;
+                if (!user) {
+                    let message = creationError ? creationError.message : 'Creating the user failed';
+                    throw Error(message);
+                }
                 const token = await user.getIdToken();
                 await createBackendRecord(token, `${signUpForm.firstName} ${signUpForm.lastName}`);
             }
@@ -114,6 +121,7 @@ export default function SignUp() {
                             <label className="mb-2 text-neutral-400 dark:text-white"
                                    htmlFor="fname-input">First Name:</label>
                             <input onChange={handleSignUpFormChange} value={signUpForm.firstName} type="text"
+                                   data-cy="first-name-input" 
                                    id="fname-input" name="firstName" placeholder="Enter your first name here..."
                                    className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                         </span>
@@ -122,6 +130,7 @@ export default function SignUp() {
                                    htmlFor="jname-input">Last Name:</label>
                             <input onChange={handleSignUpFormChange} value={signUpForm.lastName} type="text"
                                    id="lname-input" name="lastName" placeholder="Enter your last name here..."
+                                   data-cy="last-name-input" 
                                    className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                         </span>
                     </div>
@@ -129,6 +138,7 @@ export default function SignUp() {
                         <label className="mb-2 text-neutral-400 dark:text-white" htmlFor="email-input">Email:</label>
                         <input onChange={handleSignUpFormChange} value={signUpForm.email} type="email" id="email-input"
                                name="email" placeholder="Enter your email address here..."
+                               data-cy="email-input" 
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
                     <div className="w-96">
@@ -136,6 +146,7 @@ export default function SignUp() {
                                htmlFor="password-input">Password:</label>
                         <input onChange={handleSignUpFormChange} value={signUpForm.password} type="password"
                                id="password-input" name="password" placeholder="Enter your password here..."
+                               data-cy="password-input" 
                                className="bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white invalid:text-pink-500 focus:invalid:text-pink-500 invalid:border-pink-600 invalid:ring-pink-500 focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
                     </div>
 
