@@ -34,7 +34,6 @@ export default function Contact() {
                   <textarea rows={8} maxLength={500} id="message-input" placeholder="Enter your message here..." className="resize-none bg-white dark:bg-anno-space-700 px-2 py-1 border-2 border-zinc-300 rounded-lg placeholder:text-neutral-400 placeholder:font-light focus:outline-none focus:border-blue-500 w-full rounded-md focus:ring-1 dark:focus:invalid:bg-pink-200 dark:text-white focus:invalid:border-pink-600 focus:invalid:ring-pink-500"/>
               </div>
 
-              {/* TODO: add email / form submut functionality */}
               <span className="w-fit">
                    <PrimaryButton onClick={() => handleSubmit()} label="Submit"/>
               </span>
