@@ -31,7 +31,7 @@ describe('File share functionality', () => {
             documentId = url.split('/').pop();
             
             cy.request('POST', 
-            `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyA3gTfsWuuEoLZktxhjBRwg1DqsaBbL_OE`
+            `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${Cypress.env('API_TOKEN')}`
             , {
                 email: "postmanuser@email.com",
                 password: "password",
