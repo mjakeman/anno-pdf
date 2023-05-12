@@ -10,25 +10,78 @@ export default function Terms() {
                 {/*TODO: replace with actual policies */}
                 <div className="text-lg dark:text-white mt-12 text-justify">
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam commodo est magna, a convallis dolor
-                        lacinia at. Nullam tellus nisl, vestibulum a diam vitae, volutpat maximus orci. Nam est enim,
-                        blandit at orci tempus, dictum porttitor justo. Phasellus ac sagittis odio. Fusce vulputate
-                        consequat arcu, in pellentesque nisl. Sed eget sapien pretium, molestie orci nec, ultrices ipsum.
-                        Phasellus pharetra urna quis vulputate venenatis. Praesent lacus massa, accumsan et facilisis nec,
-                        aliquet ac tellus.
+                        <b>
+                            Note: This is a sample document and NOT an official Terms of Use and Privacy Policy. It is
+                            provided for educational purposes and should not be considered legally binding. For official
+                            and legally enforceable policies, please consult with legal professionals or advisors.
+                        </b>
                     </p>
                     <br />
+                    <h1 className="mt-2 text-2xl font-bold text-black dark:text-white">Terms of Use</h1>
+                    <br />
                     <p>
-                        Duis orci sem, hendrerit bibendum mauris sit amet, iaculis aliquam odio. Aenean et vestibulum risus. Mauris quis elit sollicitudin, sagittis sapien vel, iaculis ante. Sed at dui tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus non fringilla mauris. Maecenas euismod metus ut lobortis gravida. Aliquam erat volutpat. Ut auctor leo a commodo hendrerit. Integer facilisis massa dui, vel euismod mauris laoreet eget. Curabitur porta est sit amet dui pellentesque scelerisque. Donec at dui quis ipsum condimentum ultrices vitae eu nulla. Nam dictum turpis ex, sed tincidunt erat blandit non. Praesent mollis sem a sem suscipit tincidunt ut nec ex.
+                        Welcome to Anno! Please read these Terms of Use carefully before using our website.
+                        By accessing or using the website, you agree to be bound by these terms and conditions.
+                        If you do not agree with any part of these terms, please do not use the website.
                     </p>
                     <br />
                     <ol className="list-decimal ml-8">
-                        <li>Duis orci sem, hendrerit bibendum mauris sit amet, iaculis aliquam odio.</li>
-                        <li>Maecenas euismod metus ut lobortis gravida</li>
+                        <li>
+                            <p><b>Intellectual Property:</b></p>
+                            <p>All content on the website, including but not limited to text, graphics, logos, images,
+                                and software, is the property of Anno or its licensors and is protected by intellectual
+                                property laws. You may not modify, distribute, reproduce, or create derivative works
+                                based on our content without explicit permission.</p>
+                        </li>
+                        <li>
+                            <p><b>Limited Liability:</b></p>
+                            <p>As Anno is currently in the development phase and not fully functional, we do not guarantee
+                                the accuracy, availability, or reliability of the website. We shall not be held liable
+                                for any direct, indirect, incidental, or consequential damages resulting from your use
+                                or inability to use the website.</p>
+                        </li>
+                    </ol>
+                    <br />
+                    <br />
+                    <h1 className="mt-2 text-2xl font-bold text-black dark:text-white">Privacy Policy</h1>
+                    <br />
+                    <p>
+                        Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect
+                        your personal information on this website.
+                    </p>
+                    <br />
+                    <ol className="list-decimal ml-8">
+                        <li>
+                            <p><b>Information Collection:</b></p>
+                            <p>We may collect personal information, such as your name and email address, if you choose to
+                                provide it voluntarily through various forms. We assure you that any information you provide
+                                will be securely stored and used only for the purpose of conveying the web-app idea related
+                                to the university course assignment.
+                            </p>
+                        </li>
+                        <li>
+                            <p><b>Data Security:</b></p>
+                            <p>We take the security of your information seriously and implement appropriate measures to
+                                protect it from unauthorized access, alteration, or disclosure. However, please understand
+                                that no method of transmission or storage over the internet is 100% secure, and we cannot
+                                guarantee absolute security.
+                            </p>
+                        </li>
+                        <li>
+                            <p><b>Third-party Websites:</b></p>
+                            <p>
+                                This website may contain links to third-party websites. We are not responsible for the
+                                privacy practices or content of such websites. We encourage you to review the privacy
+                                policies of those websites before providing any personal information.
+                            </p>
+                        </li>
                     </ol>
                     <br />
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam commodo est magna, a convallis dolor lacinia at. Nullam tellus nisl, vestibulum a diam vitae, volutpat maximus orci. Nam est enim, blandit at orci tempus, dictum porttitor.
+                        If you have any questions or concerns about our Terms of Use or Privacy Policy, please contact us at the provided email address.
+                    </p>
+                    <p>
+                        Again, please remember that this is not an official document and should not be considered legally binding. Seek appropriate legal advice when creating official policies.
                     </p>
                 </div>
             </section>
