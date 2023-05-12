@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FC } from "react";
 import { createContext } from "react";
 import Toast from "../components/Toast";
-import { ToastContextType, ToastPoisition, ToastProps } from "../types/ToastUtils";
+import { ToastContextType, ToastProps } from "../types/ToastUtils";
 
 
 export const ToastContext = createContext<ToastContextType>({
