@@ -245,7 +245,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
                 case activeToolData instanceof Highlighter:
                     canvas.isDrawingMode = true;
                     canvas.freeDrawingBrush.width = activeToolData.size;
-                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`; // TODO: see https://stackoverflow.com/questions/23201134/transparent-argb-hex-value
+                    canvas.freeDrawingBrush.color = `${activeToolData.color}59`;
                     break;
                 case activeToolData instanceof TextModel:
                     canvas.on('mouse:down', drawText);
@@ -263,7 +263,7 @@ const Viewer = React.memo(({ url, pageNumber }: Props) => {
         if (canvas) {
             canvas.__eventListeners = {};
             canvas.isDrawingMode = false;
-            canvas.off('mouse:down', drawText); // TODO: Not working?
+            canvas.off('mouse:down', drawText);
             canvas.off('mouse:down', drawMath);
         }
     }

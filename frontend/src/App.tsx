@@ -74,17 +74,10 @@ export default function App() {
                     setFirebaseUserRef(user)
                     return;
                 }
-                await user.getIdToken()
-                    .then((token) => {
-                        validateWithBackend(token);
-                    })
-                    .catch(async error => {
-                        await signOut(auth);
-                        clearDocBuffer();
-                    });
             } else {
                 setCurrentUserInternal(null);
                 setFirebaseUserRef(null);
+                clearDocBuffer();
             }
         });
         return unsubscribe;

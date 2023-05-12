@@ -44,7 +44,6 @@ class MathObject extends fabric.Object {
                     // Formula is
                     // current.left = current._latestLeft - current.group?.left - current.group?.width/2
                     // But we want to override that.
-                    // TODO: Maybe refactor?
                     if (current.left && current.top && current.group && current.group.left && current.group.top && current.group.width && current.group.height) {
                         left = current.left + current.group?.left + current.group?.width/2;
                         top = current.top + current.group?.top + current.group?.height/2;
