@@ -231,10 +231,6 @@ export default class SocketClient {
 
         console.log(`ADDED: ${object.type} ${(object as any).uuid}`);
 
-        if (object.type === 'MathItext') {
-            console.info("Sending maths annotation");
-        }
-
         const json = this.safeConvertToPayload(object);
 
         // console.log(`Sending: ${json}`);
