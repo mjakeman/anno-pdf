@@ -47,7 +47,7 @@ export default function TextTool({id} : Props) {
 
     return (
         <span className="relative">
-            <span className={`transition-all duration-300 flex flex-row gap-1 items-center rounded-full bg-white dark:bg-anno-space-700`}>
+            <span className={`transition-all duration-300 flex flex-row items-center rounded-full ${isActiveTool ? 'border-2 bg-zinc-800' : 'bg-white dark:bg-transparent border-2 border-transparent'}`}>
 
                 <button onClick={handleClick} type="button" className={`bg-white ${isActiveTool ? 'border-2' : 'border-transparent border hover:bg-gray-200 '} p-1 overflow-hidden rounded-full transition-colors dark:bg-anno-space-700`}>
                     <svg className="w-7 h-7" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
