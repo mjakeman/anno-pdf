@@ -5,6 +5,10 @@ import Pan from "../model/tools/Pan";
 interface Props {
     id: string
 }
+
+/**
+ * This is currently unused - as Pan is not yet implemented.
+ */
 export default function PanTool({id} : Props) {
 
     const [panTool, setPanTool] = useState<Pan>(new Pan(id));

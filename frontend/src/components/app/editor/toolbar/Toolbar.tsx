@@ -6,17 +6,12 @@ import HighlighterTool from "./tools/HighlighterTool";
 import RectangleTool from "./tools/RectangleTool";
 import TextTool from "./tools/TextTool";
 import MathTool from "./tools/MathTool";
-import Undo from "./tools/Undo";
-import Redo from "./tools/Redo";
 import Tooltip from "../../../Tooltip";
 
 export default function Toolbar() {
 
     return (
     <div className="bg-white dark:bg-anno-space-800 p-2 rounded-full flex items-center gap-2 drop-shadow-around w-min">
-        <Tooltip text="Pan" position="bottom">
-            <PanTool id={'pan'}/>
-        </Tooltip>
         <Tooltip text="Select" position="bottom">
             <SelectTool id={'select'} />
         </Tooltip>
@@ -37,12 +32,6 @@ export default function Toolbar() {
         </Tooltip>
         <Tooltip text="Rectangle" position="bottom">
             <RectangleTool id={'rect'} />
-        </Tooltip>
-        <Tooltip text="Undo" position="bottom">
-            <Undo/>
-        </Tooltip>
-        <Tooltip text="Redo" position="bottom">
-            <Redo/>
         </Tooltip>
     </div>
     );
