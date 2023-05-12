@@ -24,6 +24,8 @@ class UserController {
     let currentUserUid = req.user!.uid;
 
     const currentUserObj = await getUser(currentUserUid);
+    if (!currentUserObj) return res.status(404).send('User not found');
+
     const documents = await getDocuments(currentUserObj);
     return res.json(documents);
   }
