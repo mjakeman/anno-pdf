@@ -9,6 +9,7 @@ import {useToast} from "../../../hooks/useToast";
 import {AnnoDocument} from "./Models";
 import {RecentContext} from "../../../contexts/RecentContextProvider";
 import {DocumentRecord} from "../dashboard/DashboardTable";
+import * as jspdf from "jspdf";
 
 interface Props {
     onDocumentLoaded: () => void,
@@ -114,7 +115,7 @@ export default function DocumentViewer({ onDocumentLoaded, document } : Props) {
                 {/* Only start the page rendering once we have a full list of pages */}
                 {pdfDocument && pdfPages.length === pdfDocument.numPages &&
                     pdfPages.map((page, index) => (
-                        <PageRenderer onLoad={(pageIndex) => onPageLoaded(pageIndex)} key={index} page={page} pageIndex={index} socketClientRef={socketClient} />
+                        <PageRenderer onLoad={(pageIndex) => onPageLoaded(pageIndex)} doc={document} key={index} page={page} pageIndex={index} socketClientRef={socketClient} />
                     ))
                 }
             </div>
