@@ -2,6 +2,7 @@ import Tool from "./Tool";
 import {Canvas, IObjectOptions, Object} from "fabric/fabric-impl";
 import {fabric} from "fabric";
 import TeXToSVG from "tex-to-svg";
+import PageRenderer from "../../../PageRenderer";
 
 class Maths extends Tool {
 
@@ -13,7 +14,7 @@ class Maths extends Tool {
         canvas.on('mouse:down', (event) => {
             if (event.target === null) {
                 // @ts-ignore
-                let text = new fabric.Math("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
+                let text = new MathAnnotation("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", {
                     left: event.e.offsetX,
                     top: event.e.offsetY,
                 });
@@ -26,8 +27,7 @@ class Maths extends Tool {
 }
 export default Maths;
 
-// @ts-ignore
-fabric.Math = fabric.util.createClass(fabric.Object, {
+export const MathAnnotation = fabric.util.createClass(fabric.Object, {
     type: 'MathItext',
     latex: '',
     svgString: '',
@@ -39,9 +39,11 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
         this.callSuper('initialize', options);
         this.on('mousedblclick', this.edit);
     },
+
     _renderMath(svgString: string, canvas: fabric.Canvas) {
         // Render Math object
         let current = this;
+        console.log(`at stage a: ${(current as any).uuid}`);
         fabric.loadSVGFromString(svgString, (objects, options) => {
             let obj = fabric.util.groupSVGElements(objects, options);
             (obj as any).set({latex: this.latex});
@@ -55,13 +57,24 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
                 top: top,
                 angle: angle,
             });
-            obj.toObject = (function(toObject) {
-                return function() {
-                    return fabric.util.object.extend(toObject.call(obj), {
-                        latex: (obj as any).latex
+            // @ts-ignore
+            obj['uuid'] = current['uuid'];
+            console.log(`at stage b: ${(obj as any).uuid}`);
+            obj.toObject = (function(objRef, toObject) {
+                return () => {
+                    console.log("to objecting");
+                    console.log(objRef);
+                    const intermediary = fabric.util.object.extend(toObject.call(objRef), {
+                        uuid: (objRef as any).uuid,
+                        latex: (objRef as any).latex
                     });
+                    let mathAnnotation = new MathAnnotation("\\frac{n!}{k!(n-k)!} = \\binom{n}{k}", intermediary.options);
+                    mathAnnotation.uuid = intermediary.uuid;
+                    console.log(mathAnnotation);
+                    return mathAnnotation.toObject(['uuid', 'latex']);
                 };
-            })(fabric.Group.prototype.toObject);
+            })(obj, obj.toObject);
+
             canvas.add(obj);
             canvas.setActiveObject(obj);
             canvas.remove(current);
@@ -79,6 +92,10 @@ fabric.Math = fabric.util.createClass(fabric.Object, {
             left: mathSvg.left,
             top: mathSvg.top,
         });
+
+        // Mark ourselves as transient (i.e. don't report changes)
+        (iText as any).transient = true;
+
         canvas.add(iText);
         canvas.setActiveObject(iText);
 

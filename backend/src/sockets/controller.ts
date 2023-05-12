@@ -1,6 +1,7 @@
 import * as socketio from "socket.io";
 import * as http from "http";
 import {User} from "../models/User";
+import {backfill, loadPdf, saveAddition, saveModification, savePdf, saveRemoval} from "./canvas";
 
 // Match Editor.tsx in frontend
 interface UserData {
@@ -80,38 +81,86 @@ const on_connect = async (socket: socketio.Socket) => {
             // Set up document map
             if (documentMap[documentId] == undefined) {
                 documentMap[documentId] = Array(socket.id);
+
+                // LOAD DOCUMENT (ONLY DO THIS ONCE)
+                await loadPdf(documentId);
+
+                // Only now are we ready to backfill
             }
             else {
                 documentMap[documentId].push(socket.id);
             }
 
             console.log(`[${documentId}] ${socket.id}: joined room ${documentId}`);
+
+            // Initialise canvas
+            const backfillMap = backfill(documentId);
+            console.log(`backfillMap`);
+            console.log(backfillMap);
+
+            for (let [pageNumber, annotations] of backfillMap) {
+                for (let obj of annotations) {
+                    socket.emit('peer-added', pageNumber, obj);
+                }
+                console.log(`Pushed ${annotations.length} backfill objects to page ${pageNumber}`);
+            }
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
     });
 
-    socket.on("object-modified", (index: number, uuid: string, data: string) => {
+    socket.on("object-modified", (index: number, data: any) => {
         try {
             guard(socket);
 
             const documentId = socketMap[socket.id];
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-modified', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} modified object ${data.uuid} of type ${data.type}`);
+            socket.to(documentId).emit('peer-modified', index, data);
+
+            saveModification(documentId, index, data);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
     });
 
-    socket.on('object-added', (index: number, uuid: string, data: string) => {
+    socket.on('object-added', (index: number, data: any) => {
         try {
             guard(socket);
 
+            if (!data.uuid) {
+                throw Error("No uuid detected on object. Ignoring");
+            }
+
             const documentId = socketMap[socket.id];
 
-            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${uuid}`); // with data:\n${JSON.stringify(data)}`);
-            socket.to(documentId).emit('peer-added', index, uuid, data);
+            console.log(`[${documentId}] ${socket.id}: on page ${index} added object ${data.uuid} of type ${data.type}`);
+            socket.to(documentId).emit('peer-added', index, data);
+
+            saveAddition(documentId, index, data);
+        } catch (e) {
+            disconnectWithError(socket, e.toString());
+        }
+    });
+
+    socket.on('object-removed', (index: number, uuid: string) => {
+        try {
+            guard(socket);
+
+            if (!uuid) {
+                throw Error("No uuid provided. Ignoring");
+            }
+
+            const documentId = socketMap[socket.id];
+
+            console.log(`[${documentId}] ${socket.id}: on page ${index} removed object ${uuid}`);
+            socket.to(documentId).emit('peer-removed', index, uuid);
+
+            saveRemoval(documentId, index, uuid);
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }
@@ -133,6 +182,10 @@ const on_connect = async (socket: socketio.Socket) => {
             delete documentMap[documentId][index];
 
             console.log(`[${documentId}] ${socket.id}: left room ${documentId}`);
+
+            // Save document
+            savePdf(documentId);
+
         } catch (e) {
             disconnectWithError(socket, e.toString());
         }

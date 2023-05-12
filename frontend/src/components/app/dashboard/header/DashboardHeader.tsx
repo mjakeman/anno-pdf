@@ -41,7 +41,7 @@ export default function DashboardHeader({  onCommandMenuClicked } : DashboardHea
 
             </div>
             <div className="relative">
-                <button onClick={() => setShowProfileDropdown(true)} className="flex flex-row gap-4 items-center p-3 transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 rounded-xl">
+                <button onClick={() => setShowProfileDropdown(true)} data-cy="profile-toggle" className="flex flex-row gap-4 items-center p-3 transition-colors hover:bg-slate-100 dark:hover:bg-anno-space-800 rounded-xl">
                     {/*TODO: replace with profile square component*/}
                     <div className="grid place-items-center rounded text-white font-bold w-6 h-6" style={profileColor}>
                         {currentUser?.name[0].toUpperCase()}

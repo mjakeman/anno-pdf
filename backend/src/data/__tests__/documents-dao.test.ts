@@ -14,7 +14,6 @@ const document1 = {
     title: 'Document1',
     uuid: '0001',
     sharedWith: ['shared1@email.com'],
-    annotations: {},
 }
 
 const document2 = {
@@ -26,7 +25,6 @@ const document2 = {
     title: 'Document2',
     uuid: '0002',
     sharedWith: ['User1@email.com'],
-    annotations: {},
 }
 
 const document3 = {
@@ -38,7 +36,6 @@ const document3 = {
     title: 'Document3',
     uuid: '0003',
     sharedWith: ['shared3@email.com'],
-    annotations: {},
 }
 
 const documents = [document1, document2, document3];
@@ -99,7 +96,6 @@ describe('Test documents-dao', () => {
         expect(dbDocument!.title).toBe(documents[0].title);
         expect(dbDocument!.uuid).toBe(documents[0].uuid);
         expect(dbDocument!.sharedWith).toStrictEqual(documents[0].sharedWith);
-        expect(dbDocument!.annotations).toMatchObject(documents[0].annotations);
     })
 
     it ('getDocument fails when uuid does not exist', async () => {
@@ -121,7 +117,6 @@ describe('Test documents-dao', () => {
         expect(dbDocuments[0]!.title).toBe(documents[0].title);
         expect(dbDocuments[0]!.uuid).toBe(documents[0].uuid);
         expect(dbDocuments[0]!.sharedWith).toStrictEqual(documents[0].sharedWith);
-        expect(dbDocuments[0]!.annotations).toMatchObject(documents[0].annotations);
 
         expect(dbDocuments[1]!.owner!.uid).toBe(documents[1].owner.uid);
         expect(dbDocuments[1]!.owner!.email).toBe(documents[1].owner.email);
@@ -130,7 +125,6 @@ describe('Test documents-dao', () => {
         expect(dbDocuments[1]!.title).toBe(documents[1].title);
         expect(dbDocuments[1]!.uuid).toBe(documents[1].uuid);
         expect(dbDocuments[1]!.sharedWith).toStrictEqual(documents[1].sharedWith);
-        expect(dbDocuments[1]!.annotations).toMatchObject(documents[1].annotations);
     })
 
     it ('createDocument adds Document to db', async () => {
@@ -160,7 +154,6 @@ describe('Test documents-dao', () => {
         expect(dbDocument!.title).toBe(newDocument.title);
         expect(dbDocument!.uuid).toBe(newDocument.uuid);
         expect(dbDocument!.sharedWith).toStrictEqual(newDocument.sharedWith);
-        expect(dbDocument!.annotations).toMatchObject(newDocument.annotations);
     })
 
     it ('createDocument fails when missing a field', async () => {
