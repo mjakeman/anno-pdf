@@ -17,15 +17,14 @@ import {getUser, getUsersByEmailList} from "../data/users/users-dao";
 const emailService = new EmailService();
 
 /**
- * Controller for handling document-related operations
+ * Controller class for handling document-related endpoint operations
  */
 class DocumentController {
 
     /**
-     * Deletes a document from the database and S3 bucket
+     * Deletes a document from the mongoDB database and S3 bucket
      *
-     * @param req - Express request object containing document UUID in URL params
-     * @param res - Express response object
+     * @returns {Response} An appropriate http status code and message
      */
     deleteDocument = async (req: Request, res: Response) => {
         const currentUserUid = req.user!.uid;
@@ -58,10 +57,9 @@ class DocumentController {
     }
 
     /**
-     * Retrieves a document from the database and S3 bucket, and sends it as a response with base64-encoded PDF
+     * Retrieves a document from the mongoDB database and S3 bucket
      *
-     * @param req - Express request object containing document UUID in URL params
-     * @param res - Express response object
+     * @returns {Response} The document data (with the PDF file base64 encoded) or an appropriate http code.
      */
     getDocument = async (req: Request, res: Response) => {
         // Retrieve document from the database
@@ -98,9 +96,8 @@ class DocumentController {
 
     /**
      * Updates a document in MongoDB and returns the updated document
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     * @returns {Object} - The updated document or an error response
+     *
+     * @returns {Response} - The updated document or an appropriate http response
      */
     updateDocument = async (req: Request, res: Response) => {
         // Get the document from MongoDB
@@ -122,10 +119,9 @@ class DocumentController {
 
 
     /**
-     * Creates a new document and uploads it to Amazon S3 and MongoDB
-     * @param {Object} req - Express request object
-     * @param {Object} res - Express response object
-     * @returns {Object} - The created document or an error response
+     * Creates a new document entry in MongoDB and uploads the file data to Amazon S3
+
+     * @returns {Response} - JSON of document data, or appropriate HTTP code.
      */
     createAndUploadDocument = async (req: Request, res: Response) => {
         const dbUser = await getUser(req.user!.uid);
@@ -180,10 +176,9 @@ class DocumentController {
     }
     
     /**
-        Copies a document to a new UUID and adds it to the MongoDB database and Amazon S3 bucket.
-        @param {Request} req - The HTTP request object containing the user's Firebase UID and the UUID of the document to copy.
-        @param {Response} res - The HTTP response object that will be returned to the client.
-        @returns {Response} - Returns a response with a JSON object containing the UUID and metadata of the new document, or a status code and error message if there was an issue.
+        Copies an existing document and adds it to the MongoDB database and Amazon S3 bucket.
+
+        @returns {Response} - JSON of document data, or appropriate HTTP code.
     */
     copyDocument = async (req: Request, res: Response) =>  {
         const dbUser = await getUser(req.user!.uid);
@@ -232,10 +227,9 @@ class DocumentController {
     }
 
     /**
-        Shares a document with a user by adding their email to the "sharedWith" array in MongoDB and sending them an email invite.
-        @param {Request} req - The HTTP request object containing the user's Firebase UID, the UUID of the document to share, and the email address of the user to share with.
-        @param {Response} res - The HTTP response object that will be returned to the client.
-        @returns {Response} - Returns a response with a JSON object containing the updated document metadata, or a status code and error message if there was an issue.
+        Shares a document with a user
+
+        @returns {Response} - Returns a response with a JSON object containing the updated document or a status code and error message if there was an issue.
     */
     shareDocument = async (req: Request, res: Response) => {
         if (!req.body.email) {
@@ -259,6 +253,11 @@ class DocumentController {
         return res.json(updatedDoc);
     }
 
+    /**
+     * Removes a user from the documents shared list
+     *
+     * @returns {Response} - Returns a response with a JSON object containing the updated document or a status code and error message if there was an issue.
+     */
     removeUserFromDocument = async (req: Request, res: Response)  => {
         if (!req.body.email) {
             return res.status(400).send('"email" field is required in the request body');
@@ -272,6 +271,9 @@ class DocumentController {
         return res.json(updatedDoc);
     }
 
+    /**
+     * Middleware function to check if the requesting user has viewing permissions for the requested document
+     */
     checkDocumentViewingPermissions = async (req: Request, res: Response, next: NextFunction) => {
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
@@ -287,6 +289,9 @@ class DocumentController {
         return next();
     }
 
+    /**
+     * Middleware function to check if the requesting user has owner permissions for the requested document
+     */
     checkDocumentOwnerPermissions = async (req: Request, res: Response, next: NextFunction) => {
         const dbDoc = await getDocument(req.params.uuid);
         if (!dbDoc) {
@@ -311,6 +316,7 @@ class DocumentController {
     }
 }
 
+// Converts a document uuid to its s3 key representation
 function toS3Key(uuid: string) : string {
     return `${uuid}.pdf`
 }

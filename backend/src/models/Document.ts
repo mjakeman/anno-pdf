@@ -28,6 +28,7 @@ interface IDocument extends Document {
     updatedAt?: Date;
 }
 
+// Mongoose schema for a document object
 const documentSchema = new Schema<IDocument>({
     owner: {
         uid: { type: String, required: true },

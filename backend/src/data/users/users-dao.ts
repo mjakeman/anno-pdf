@@ -1,9 +1,7 @@
 import {User} from '../../models/User';
 
 /**
- * 
- * This class is responsible for testing User model. It tests many of the methods associated with 
- * the model.
+ * This module is responsible for mongo queries related to the Document model.
  */
 
 async function getUsers() {

@@ -2,6 +2,7 @@ import admin from './firebaseAdminConfig';
 import { Request, Response, NextFunction } from 'express'
 import {DecodedIdToken} from "firebase-admin/lib/auth";
 
+// Middleware helper function to verify a token using firebase admin
 const decodeToken = async (authHeader: string|undefined): Promise<DecodedIdToken|null> => {
     if (!authHeader) {
         console.error("Auth header not found");
@@ -23,7 +24,10 @@ const decodeToken = async (authHeader: string|undefined): Promise<DecodedIdToken
     return null;
 }
 
-// Authentication middleware
+/**
+ * Authentication middleware.
+ * Decodes the auth token and appends user details to requests if successful, as well as passing control to the controller methods.
+ */
 let validateToken = async (req: Request, res: Response, next: NextFunction) => {
     // Bearer token
     let token = await decodeToken(req.headers.authorization);

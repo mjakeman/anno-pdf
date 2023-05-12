@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
+// Mongoose schema for a user object
 const userSchema = new Schema({
     uid: { type: String, required: true, unique: true },
     name: { type: String, required: true },
