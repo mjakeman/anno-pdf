@@ -5,11 +5,13 @@ import {ToolContext} from "../../Editor";
 import Highlighter from "../model/tools/Highlighter";
 import Rectangle from "../model/tools/Rectangle";
 import Pen from "../model/tools/Pen";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 
 interface Props {
     id: string
 }
 export default function RectangleTool({id} : Props) {
+    const isMount = useIsMount();
     const [rectTool, setRectTool] = useState<Rectangle>(new Rectangle(id, '#000000'));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -36,12 +38,13 @@ export default function RectangleTool({id} : Props) {
         setActiveToolData(rectTool);
     }
 
+
     useEffect(() => {
         setIsActiveTool(activeToolData.id === id);
     }, [activeToolData.id]);
 
     useEffect(() => {
-        setActiveToolData(rectTool);
+        if (!isMount) setActiveToolData(rectTool);
     }, [rectTool]);
 
 

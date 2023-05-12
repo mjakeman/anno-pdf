@@ -2,6 +2,7 @@ import {HandRaisedIcon} from "@heroicons/react/20/solid";
 import {useContext, useEffect, useState} from "react";
 import {ToolContext} from "../../Editor";
 import Pan from "../model/tools/Pan";
+import {useIsMount} from "../../../../../hooks/useIsMount";
 interface Props {
     id: string
 }
@@ -11,6 +12,7 @@ interface Props {
  */
 export default function PanTool({id} : Props) {
 
+    const isMount = useIsMount();
     const [panTool, setPanTool] = useState<Pan>(new Pan(id));
 
     const [activeToolData, setActiveToolData] = useContext(ToolContext);
@@ -27,7 +29,7 @@ export default function PanTool({id} : Props) {
 
 
     useEffect(() => {
-        setActiveToolData(panTool);
+        if (!isMount) setActiveToolData(panTool);
     }, [panTool]);
 
     return (
