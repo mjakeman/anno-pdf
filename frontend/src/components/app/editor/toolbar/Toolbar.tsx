@@ -4,7 +4,6 @@ import PenTool from "./tools/PenTool";
 import HighlighterTool from "./tools/HighlighterTool";
 import RectangleTool from "./tools/RectangleTool";
 import TextTool from "./tools/TextTool";
-import MathTool from "./tools/MathTool";
 import Tooltip from "../../../Tooltip";
 import ClearAllButton from "./tools/ClearAllButton";
 
@@ -27,9 +26,6 @@ export default function Toolbar() {
         </Tooltip>
         <Tooltip text="Text" position="bottom">
             <TextTool id={'text'} />
-        </Tooltip>
-        <Tooltip text="Equation" position="bottom">
-            <MathTool id={'math'} />
         </Tooltip>
         <Tooltip text="Rectangle" position="bottom">
             <RectangleTool id={'rect'} />
