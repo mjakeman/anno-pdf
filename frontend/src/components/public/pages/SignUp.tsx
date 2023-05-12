@@ -22,7 +22,7 @@ export default function SignUp() {
     const [error, setError] = useState('');
 
     const [signInWithGoogle] = useSignInWithGoogle(auth);
-    const [createUserWithEmailAndPassword] = useCreateUserWithEmailAndPassword(auth);
+    const [createUserWithEmailAndPassword, , , creationError] = useCreateUserWithEmailAndPassword(auth);
     const {clearDocBuffer } = useContext(RecentContext);
 
     const {currentUser, setCurrentUser} = useContext(AuthContext);
@@ -96,7 +96,11 @@ export default function SignUp() {
     async function handleDefaultSignUpSubmit() {
         createUserWithEmailAndPassword(signUpForm.email, signUpForm.password).then(
             async (emailUser) => {
-                const user = emailUser?.user!;
+                const user = emailUser?.user;
+                if (!user) {
+                    let message = creationError ? creationError.message : 'Creating the user failed';
+                    throw Error(message);
+                }
                 const token = await user.getIdToken();
                 await createBackendRecord(token, `${signUpForm.firstName} ${signUpForm.lastName}`);
             }
