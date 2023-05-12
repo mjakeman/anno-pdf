@@ -19,7 +19,6 @@ export default function About() {
                     <div className="mt-8 flex flex-row gap-12 items-center">
                         <img className="w-1/2 object-cover h-112 rounded-xl" src={heroImg} alt="Holding a light bulb"/>
                         <div className="w-1/2 text-lg dark:text-white text-justify">
-                            {/*TODO: Change this text */}
                             <p>
                                 Our journey began with a simple problem: quickly annotating lecture notes and slides at university was a huge headache.
                                 It would either cost money, take too long, or miss features like collaborative editing. And after scouring the internet for
