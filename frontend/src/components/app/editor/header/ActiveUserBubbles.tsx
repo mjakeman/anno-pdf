@@ -9,7 +9,6 @@ interface Props {
 }
 export default function ActiveUserBubbles({activeUsers} : Props) {
 
-    // TODO: Can change this value - might be good to change based on screen size in the future?
     const maxBubblesToDisplay = 3;
 
     const [showOverflow, setShowOverflow] = useState(false);
@@ -64,7 +63,6 @@ export default function ActiveUserBubbles({activeUsers} : Props) {
                 </button>
 
                 {/* Toggled when clicking above button */}
-                {/* TODO add ability such that when clicking anywhere it disappears */}
                 <div className={`${!showOverflowUsersList && "hidden"} mt-2 right-0 absolute max-h-72 overflow-auto w-max bg-white dark:bg-anno-space-900 dark:border-2 dark:border-anno-space-100 shadow px-6 py-4 rounded-xl flex flex-col gap-2`}>
                     {overflowUsers.map((user, index) => (
                         <div key={index} className="flex flex-row items-center gap-2">

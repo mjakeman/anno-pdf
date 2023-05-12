@@ -36,6 +36,8 @@ export default function DashboardTable({documentData} : Props) {
     const [sortDirection, setSortDirection] = useState<SortOrder>("Ascending");
 
     const sortedData = useCallback(()=>{
+
+        //Assemble data in either ascending or descending order in table
         return documentData.sort((a, b) => {
         if (sortDirection === "Ascending") {
                 if (a[sortKey] < b[sortKey]) {
@@ -59,6 +61,7 @@ export default function DashboardTable({documentData} : Props) {
     , [sortKey, sortDirection]);
 
     function handleDocumentClicked(document: DocumentRecord) {
+        //take user to document editor
         navigate(`/document/${document.uuid}`);
     }
 
@@ -72,6 +75,7 @@ export default function DashboardTable({documentData} : Props) {
         <>  
             <FileUploadModal isVisible={isUploadModalOpen} onOutsideClick={()=>setIsUploadModalOpen(false)}/>
             <div className="flex flex-row gap-2">
+                {/*Show all possible filters to the user*/}
                 <Tooltip text="Filter by" position="bottom">
                     <FilterButton label="All" onClick={()=> setFilter("All")} isSelected={filter==="All"}/>
                 </Tooltip>
@@ -83,6 +87,7 @@ export default function DashboardTable({documentData} : Props) {
                 </Tooltip>
                 <PrimaryButton label="Upload PDF +" onClick={()=> setIsUploadModalOpen(true)}></PrimaryButton>
             </div>
+            {/*Display user's documents along with the document name, owner and when it was last updated*/}
                 <div className="relative overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-200">
                     <thead className="text-lg text-gray-500 dark:text-gray-200">
