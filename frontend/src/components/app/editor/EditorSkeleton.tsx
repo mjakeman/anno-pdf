@@ -1,9 +1,13 @@
 import React from "react";
 
+/**
+ * A placeholder skeleton while the editor is loading
+ */
 export default function EditorSkeleton() {
     return (
         <div className="bg-white dark:bg-anno-space-700 h-screen flex flex-col">
 
+            {/* Header Bar */}
             <header className="bg-white dark:bg-anno-space-700 dark:border-anno-space-100 w-full flex flex-row items-center justify-between px-4 py-2 dark:bg-anno-space-700">
                     <div className={"animate-pulse h-14 grow bg-slate-200 dark:bg-anno-space-800"}>
                     </div>
