@@ -18,6 +18,7 @@ export default function CommandMenuDialogResults({ searchInput } : Props) {
     const searchableData = buildInitialSearchableData(documents);
     const [searchResults, setSearchResults] = useState<CommandOption[]>([]);
 
+    //retrieve results of search based on user input
     useEffect(() => {
         const results = searchableData.filter((option : CommandOption) => option.text.toLowerCase().includes(searchInput.toLowerCase()));
         setSearchResults(results)
@@ -37,6 +38,8 @@ export default function CommandMenuDialogResults({ searchInput } : Props) {
 }
 
 function buildRecentData(documents: DocumentRecord[]) {
+
+    //add to data that is recent
     let recentData : CommandOption[] = [];
     documents.map((document) => {
         recentData.push(transformDocumentToCommandOption(document));
