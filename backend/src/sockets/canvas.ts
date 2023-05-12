@@ -1,4 +1,5 @@
 import {Document} from "../models/Document";
+import {debugLog} from "./controller";
 
 type DocumentPageRef = {documentId: string, pageNumber: number};
 
@@ -54,7 +55,7 @@ export const backfill = (documentId: string) => {
 
 // ONLY run on first load -> use in-memory cache to avoid data loss
 export const loadPdf = async (documentId: string) => {
-    console.log(`Loading document ${documentId}`);
+    debugLog(`Loading document ${documentId}`);
 
     // Populate canvas page map with data from mongo
     const document = await Document.findOne({uuid: documentId});
@@ -72,7 +73,7 @@ export const loadPdf = async (documentId: string) => {
 }
 
 export const savePdf = async (documentId: string) => {
-    console.log(`Persisting document ${documentId}`);
+    debugLog(`Persisting document ${documentId}`);
 
     const document = await Document.findOne({uuid: documentId});
 
@@ -88,18 +89,18 @@ export const savePdf = async (documentId: string) => {
     const pageCount = pageCountMap.get(documentId) ?? 0;
     for (let i = 0; i <= pageCount; i++) {
         const annotations = getCanvasPageMap({documentId, pageNumber: i});
-        console.log(annotations);
+        debugLog(annotations);
         document.pages.push({
             annotations: annotations,
         });
     }
 
-    console.log(pageCount);
-    console.log(document.pages);
+    debugLog(pageCount);
+    debugLog(document.pages);
 
     document.save()
         .then(_ => {
-            console.log("Saved document successfully");
+            debugLog("Saved document successfully");
         })
         .catch(err => {
             console.error("Failed to save document: ", err);
@@ -108,8 +109,8 @@ export const savePdf = async (documentId: string) => {
 
 export const saveModification = (documentId: string, pageNumber: number, modification: any) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
-    console.log("object:")
-    console.log(objects);
+    debugLog("object:")
+    debugLog(objects);
 
     const object = objects.find(obj => (obj as any).uuid === (modification as any).uuid);
 
@@ -120,7 +121,7 @@ export const saveModification = (documentId: string, pageNumber: number, modific
     }
 
     Object.assign(object, modification);
-    console.log("Saved modification to canvas");
+    debugLog("Saved modification to canvas");
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
@@ -129,17 +130,17 @@ export const saveAddition = (documentId: string, pageNumber: number, addition: a
 
     objects.push(addition);
 
-    console.log("Saved addition to canvas");
+    debugLog("Saved addition to canvas");
     setCanvasPageMap({documentId, pageNumber}, objects);
 }
 
 export const saveRemoval = (documentId: string, pageNumber: number, uuid: string) => {
     let objects = getCanvasPageMap({documentId, pageNumber});
-    console.log("object:")
-    console.log(objects);
+    debugLog("object:")
+    debugLog(objects);
 
     const newObjects = objects.filter(obj => (obj as any).uuid !== uuid);
 
-    console.log("Saved removal to canvas");
+    debugLog("Saved removal to canvas");
     setCanvasPageMap({documentId, pageNumber}, newObjects);
 }
