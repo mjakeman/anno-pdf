@@ -29,8 +29,8 @@ export default function ClearAllButton() {
     }
 
     return (
-        <span className="relative">
-            <button onClick={handleClearAllClick} type="button" className={`bg-white border-transparent border hover:bg-gray-200 active:bg-gray-300 p-2 rounded-full transition-colors dark:hover:bg-anno-space-700 dark:hover:bg-anno-space-800`}>
+        <span className="relative flex items-center justify-center">
+            <button onClick={handleClearAllClick} type="button" className={`bg-white border-transparent border hover:bg-gray-200 active:bg-gray-300 rounded-full transition-colors dark:hover:bg-anno-space-700 dark:hover:bg-anno-space-800 p-2`}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5"
                      stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round"
