@@ -1,6 +1,5 @@
 import ActionMenu from "./ActionMenu";
 import Fullscreen from "./Fullscreen";
-import Zoom from "./Zoom";
 import ActiveUserBubbles from "./ActiveUserBubbles";
 import PrimaryButton from "../../../PrimaryButton";
 import {UserPlusIcon} from "@heroicons/react/24/outline";
@@ -15,6 +14,7 @@ import {DocumentContext} from "../Editor";
 import {AnnoDocument} from "../Models";
 import moment from "moment";
 import Tooltip from "../../../Tooltip";
+import * as jspdf from "jspdf";
 
 interface Props {
     annoDocument: AnnoDocument,
@@ -62,6 +62,47 @@ export default function EditorHeader({ annoDocument } : Props) {
                 type: 'error'
             })
         });
+    }
+
+    // Inspiration:
+    // https://github.com/RavishaHesh/PDFJsAnnotations/blob/master/pdfannotate.js
+    async function exportDocument() {
+        const pages = annoDocument.pages;
+        console.log(pages);
+
+        const firstPage = pages[0];
+
+        const format = [firstPage.getWidth(), firstPage.getHeight()];
+        const orientation = "portrait";
+
+        let doc = new jspdf.jsPDF({
+            unit: "px",
+            format,
+            orientation
+        });
+
+        pages.forEach((page, index) => {
+            if (index != 0) {
+                doc.addPage([page.getWidth(), page.getHeight()], orientation);
+                doc.setPage(index + 1);
+            }
+
+            doc.addImage(
+                page.toDataURL({
+                    format: 'png',
+                }),
+                'png',
+                0,
+                0,
+                page.getWidth(),
+                page.getHeight(),
+                `page-${index + 1}`,
+                'NONE',
+                0
+            );
+        });
+
+        doc.save(`${annoDocument.title}.pdf`);
     }
 
     async function deleteDocument() {
@@ -146,7 +187,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                 {/* Document details */}
                 <div className="flex flex-col justify-start">
                     {/* TODO: add edit function*/}
-                    <Tooltip text={annoDocument.title} position="bottom">
+                    <Tooltip text={annoDocument.title} position="right">
                         <h1 data-cy="document-title" className="truncate max-w-sm text-lg font-bold text-anno-red-primary dark:text-anno-pink-500 self-start">
                             {annoDocument.title}
                         </h1>
@@ -156,7 +197,7 @@ export default function EditorHeader({ annoDocument } : Props) {
                     </p>
                 </div>
 
-                <ActionMenu onCopy={() => copyDocument()} onDelete={() => deleteDocument()} onDownload={() => console.log('Download pressed')} annoDoc={annoDocument}/>
+                <ActionMenu onCopy={() => copyDocument()} onDelete={() => deleteDocument()} onDownload={() => exportDocument()} annoDoc={annoDocument}/>
 
             </div>
 
@@ -166,8 +207,6 @@ export default function EditorHeader({ annoDocument } : Props) {
                 <Tooltip text="Fullscreen" position="bottom">
                     <Fullscreen onClick={() => fullScreenClick()}/>
                 </Tooltip>
-
-                <Zoom />
 
                 {/* Active Users */}
                 <ActiveUserBubbles activeUsers={[currentUser, ...activeUsers]} />

@@ -8,6 +8,9 @@ const userController = new UserController();
 // Create new user in database (if they don't already exist)
 router.post('/', userController.createUser);
 
+// Delete user
+router.delete('/', userController.deleteUser);
+
 // Get all users
 router.get('/', userController.getUsers);
 
