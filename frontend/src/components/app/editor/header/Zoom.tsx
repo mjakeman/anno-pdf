@@ -8,7 +8,6 @@ export default function Zoom() {
 
     const [zoom, setZoom] = useContext(ZoomContext);
     const [displayZoom, setDisplayZoom] = useState(`${zoom}%`);
-    const [inputValue, setInputValue] = useState('');
 
     const zoomIncrements = [
         25,
