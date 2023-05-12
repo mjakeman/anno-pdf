@@ -61,6 +61,8 @@ function UserSettings() {
 
     const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
 
+    const {addToast} = useToast();
+
     function turnOnDarkMode() {
         if (!isDarkMode) {
             setIsDarkMode(true);
@@ -79,6 +81,10 @@ function UserSettings() {
             clearDocBuffer();
             currentUser.setCurrentUser(null, null);
             navigate('/');
+            addToast({
+                message: 'Logged out successfully',
+                type: 'success'
+            })
         } catch(error) {
             console.log(error);
             setErrorMessage('Error logging out. Please try again later.');
@@ -99,7 +105,8 @@ function UserSettings() {
                         </div>
                     </div>
                 </div>
-            </div>            <button data-cy="logout-button" className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
+            </div>
+            <button data-cy="logout-button" className="bg-anno-red-primary py-1.5 px-4 text-white flex flex-row items-center justify-center rounded-lg gap-1 text-lg transition-colors hover:bg-anno-red-secondary" onClick={handleSignOut}>
                 Sign Out
             </button>
             {errorMessage != '' && <div
