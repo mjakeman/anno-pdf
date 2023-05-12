@@ -46,7 +46,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
 
     return(
         <Modal isVisible={isVisible} onOutsideClick={onOutsideClick}>
-        <div ref={settingModal} className="grid grid-cols-12 bg-white h-[90vh] rounded-md dark:bg-anno-space-900">
+        <div ref={settingModal} className="grid grid-cols-12 bg-white rounded-md dark:bg-anno-space-900">
             <div className="col-span-3 mr-9 bg-neutral-100 h-full rounded-tl-md rounded-bl-md dark:bg-anno-space-800">
                 <div className="flex flex-col justify-between h-full">
                    <div className="flex flex-col mt-8 gap-2">
@@ -67,7 +67,7 @@ export default function SettingModal({isVisible, onOutsideClick}: SettingModalPr
                     </div>
                 </div>
             </div>
-            <div className="col-span-7 p-5 rounded-md pl-4">
+            <div className="col-span-7 p-5 rounded-md pl-4 min-h-[26rem]">
                 {activeTab === "account" && <AccountContent/>}
                 {activeTab === "settings" && <UserSettings/>}
             </div>
