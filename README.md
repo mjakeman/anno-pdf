@@ -13,12 +13,12 @@ Created for SOFTENG 750 at the University of Auckland.
 **Team:** Fearless Foxes
 
 **Members:**
- * Matthew Jakeman (mjak923)
- * Ben Lowthian (blow247)
- * Ojas Madaan (omad882)
- * Jia Tee (jtee256)
- * Jordan York (jyor212)
- * Matan Yosef (myos911)
+ * Matthew Jakeman
+ * Ben Lowthian
+ * Ojas Madaan
+ * Jia Tee
+ * Jordan York
+ * Matan Yosef
 
 ## Features
 Anno supports:
@@ -164,31 +164,3 @@ To run the backend api and schema tests, run `npm test` in the backend directory
 To run the frontend cypress tests (locally), ensure both the backend server and frontend are running (following the instructions above in the [compilation](#compilation) section).
 Then, in a new terminal in the frontend directory - run `npm test`. When the cypress window opens, follow the setup prompts if any, then select End-to-End testing and Chrome as the browser.
 This will take you to the spec files, where you can select an End-to-End test to run.
-
-## Project Management
-The team decided on using Jira for project management, as it is a powerful and widely used issue tracker solution which the team is experienced with. This is used as our 'source of truth' for task allocations.
-
-The Jira instance can be found at https://pdfcollab.atlassian.net/.
-
-Access permission has been given to Andrew Meads. Please contact the team for any additional access to the Jira board.
-
-### Branch Strategy
-A branch has been created for each Jira ticket. The Jira workflow is set up to automatically update issue statuses when certain actions occur. For example, when opening a Pull Request, the issue will be moved to the 'In Review' status.
-
-Branch names should take the format of `PDF-<key>-optional-short-description-of-issue`.
-
-### Feature Freeze
-A feature freeze was instituted on the morning of the deliverable. All further work on Friday 12 May  focused on polish, robustness, and code quality.
-
-
-## Wiki, Meetings, and Communication
-
-Notion was used as our Wiki and Knowledge Base. All meeting minutes, architectural decisions, and supplementary documentation is recorded here.
-
-The Notion can be viewed through this link: [Team Notion Site Invitation](https://uncovered-aftershave-870.notion.site/SOFTENG-750-Anno-Team-Fearless-Foxes-8ea5b6d8044e467793413bf6cf217367).
-
-### Meetings
-The team had an 'official' meeting weekly and a shorter standup on a close-to-daily basis. Task allocations from meetings are recorded comprehensively on Jira. Where architectural decisions were made, mainly in the early weeks, these are recorded on Notion.
-
-### Slack
-A Slack workspace was created for asynchronous communication. The team used this for general discussion, requesting code reviews, and technical help.
